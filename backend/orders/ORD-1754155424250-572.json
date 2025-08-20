@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754155424250-572",
+  "orderNumber": "ORD-1754155424250-572",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "اللي طلبتيه؟ علشان أقدر أتابع مع القسم المختص بشكل أدق وأتاكد انهم بيراجعوا الطلب الصح.",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "ايه؟",
+        "size": "37",
+        "conversationId": "cmduiol35002gufbg4rnjkomo",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmduiol35002gufbg4rnjkomo\nطلب تلقائي من المحادثة cmduiol35002gufbg4rnjkomo - ٢‏/٨‏/٢٠٢٥، ٨:٢٣:٤٤ م",
+  "createdAt": "2025-08-02T17:23:44.250Z",
+  "updatedAt": "2025-08-02T17:23:44.250Z"
+}

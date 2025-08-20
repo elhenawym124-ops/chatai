@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754229311985-360",
+  "orderNumber": "ORD-1754229311985-360",
+  "customerName": "24481720681421855 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "اللي مهتمة بيه",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "عجبك؟",
+        "size": "37",
+        "conversationId": "cmdvqmsxh007ouf90nducrksk",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdvqmsxh007ouf90nducrksk\nطلب تلقائي من المحادثة cmdvqmsxh007ouf90nducrksk - ٣‏/٨‏/٢٠٢٥، ٤:٥٥:١١ م",
+  "createdAt": "2025-08-03T13:55:11.986Z",
+  "updatedAt": "2025-08-03T13:55:11.986Z"
+}

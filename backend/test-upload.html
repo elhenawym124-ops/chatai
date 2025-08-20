@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار رفع الصور</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .upload-area.dragover {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .preview img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ اختبار رفع الصور</h1>
+        <p>اختبار نظام رفع الصور للمنتجات</p>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <h3>📁 اختر الصور أو اسحبها هنا</h3>
+            <p>يمكنك رفع عدة صور في نفس الوقت</p>
+            <p>الأنواع المدعومة: JPG, PNG, GIF (حتى 10MB لكل صورة)</p>
+        </div>
+        
+        <input type="file" id="fileInput" multiple accept="image/*">
+        
+        <div class="loading">
+            <p>⏳ جاري رفع الصور...</p>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="preview" id="preview"></div>
+        
+        <button class="btn" onclick="testUpload()">🧪 اختبار الرفع</button>
+        <button class="btn" onclick="clearAll()">🗑️ مسح الكل</button>
+    </div>
+
+    <script>
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const loading = document.querySelector('.loading');
+        const result = document.getElementById('result');
+        
+        let selectedFiles = [];
+
+        // Handle file selection
+        fileInput.addEventListener('change', handleFiles);
+        
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles({ target: { files } });
+        });
+
+        function handleFiles(e) {
+            const files = Array.from(e.target.files);
+            selectedFiles = files;
+            
+            preview.innerHTML = '';
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Auto upload
+            uploadFiles();
+        }
+
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                showResult('⚠️ لم يتم اختيار أي صور', 'error');
+                return;
+            }
+
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const formData = new FormData();
+                selectedFiles.forEach(file => {
+                    formData.append('images', file);
+                });
+
+                const response = await fetch('http://localhost:3001/api/v1/uploads/multiple', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+
+                if (data.success) {
+                    let message = `✅ تم رفع ${data.data.length} صور بنجاح!<br><br>`;
+                    data.data.forEach((file, index) => {
+                        message += `📷 صورة ${index + 1}: <a href="${file.fullUrl}" target="_blank">${file.originalName}</a><br>`;
+                    });
+                    showResult(message, 'success');
+                } else {
+                    showResult(`❌ فشل في رفع الصور: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showResult(`❌ خطأ في الاتصال: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(message, type) {
+            result.innerHTML = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+        }
+
+        function testUpload() {
+            if (selectedFiles.length > 0) {
+                uploadFiles();
+            } else {
+                showResult('⚠️ اختر صور أولاً', 'error');
+            }
+        }
+
+        function clearAll() {
+            selectedFiles = [];
+            preview.innerHTML = '';
+            result.style.display = 'none';
+            loading.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>

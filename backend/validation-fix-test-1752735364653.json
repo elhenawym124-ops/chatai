@@ -1,0 +1,57 @@
+{
+  "tests": [
+    {
+      "name": "اختبار إنشاء محادثة ببيانات صحيحة",
+      "passed": true,
+      "message": "إنشاء محادثة ببيانات صحيحة نجح",
+      "details": {
+        "status": 201,
+        "hasData": true,
+        "conversationId": "1752735360563"
+      }
+    },
+    {
+      "name": "اختبار إنشاء محادثة ببيانات خاطئة",
+      "passed": true,
+      "message": "إنشاء محادثة ببيانات خاطئة فشل كما هو متوقع",
+      "details": {
+        "status": 422,
+        "errorCode": "VALIDATION_ERROR",
+        "validationErrors": 3
+      }
+    },
+    {
+      "name": "اختبار البيانات المطلوبة المفقودة",
+      "passed": true,
+      "message": "البيانات المطلوبة المفقودة تم رفضها كما هو متوقع",
+      "details": {
+        "status": 422,
+        "errorCode": "VALIDATION_ERROR",
+        "validationErrors": 2
+      }
+    },
+    {
+      "name": "اختبار validation تسجيل الدخول",
+      "passed": true,
+      "message": "validation تسجيل الدخول يعمل",
+      "details": {
+        "status": 401,
+        "hasError": true
+      }
+    },
+    {
+      "name": "اختبار validation معاملات الاستعلام",
+      "passed": true,
+      "message": "validation معاملات الاستعلام يعمل أو يتم تجاهلها بأمان",
+      "details": {
+        "status": 422,
+        "hasData": false
+      }
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  }
+}

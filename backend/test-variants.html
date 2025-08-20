@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام متغيرات المنتجات</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .variant {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .variant h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .variants-container {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 اختبار نظام متغيرات المنتجات</h1>
+        
+        <!-- Product Form -->
+        <form id="productForm">
+            <div class="form-group">
+                <label>اسم المنتج:</label>
+                <input type="text" id="productName" value="كوتشي رياضي نايك" required>
+            </div>
+            
+            <div class="form-group">
+                <label>الوصف:</label>
+                <textarea id="productDescription">كوتشي رياضي عصري ومريح للاستخدام اليومي</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>السعر الأساسي:</label>
+                <input type="number" id="productPrice" value="299.99" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label>رمز المنتج الأساسي:</label>
+                <input type="text" id="productSku" value="NIKE-SHOE-BASE" required>
+            </div>
+            
+            <div class="form-group">
+                <label>الفئة:</label>
+                <input type="text" id="productCategory" value="أحذية رياضية" required>
+            </div>
+        </form>
+        
+        <!-- Variants Section -->
+        <div class="variants-container">
+            <h2>🎨 متغيرات المنتج</h2>
+            <div id="variantsContainer">
+                <!-- Variants will be added here -->
+            </div>
+            <button type="button" onclick="addVariant()">➕ إضافة متغير</button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="createProductWithVariants()">🚀 إنشاء المنتج مع المتغيرات</button>
+            <button onclick="testGetVariants()" style="background: #28a745;">📋 عرض المتغيرات</button>
+            <button onclick="clearResults()" style="background: #6c757d;">🧹 مسح النتائج</button>
+        </div>
+        
+        <!-- Results -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let variantCount = 0;
+        let lastProductId = null;
+
+        // Add default variants
+        window.onload = function() {
+            addVariant('أبيض', 'color', 'NIKE-WHITE-001', 299.99, 15);
+            addVariant('أسود', 'color', 'NIKE-BLACK-001', 319.99, 10);
+            addVariant('أحمر', 'color', 'NIKE-RED-001', 329.99, 5);
+        };
+
+        function addVariant(name = '', type = 'color', sku = '', price = '', stock = 0) {
+            variantCount++;
+            const container = document.getElementById('variantsContainer');
+            
+            const variantDiv = document.createElement('div');
+            variantDiv.className = 'variant';
+            variantDiv.id = `variant-${variantCount}`;
+            
+            variantDiv.innerHTML = `
+                <h3>متغير ${variantCount} <button type="button" onclick="removeVariant(${variantCount})" style="background: #dc3545; font-size: 12px; padding: 5px 10px;">حذف</button></h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>اسم المتغير:</label>
+                        <input type="text" id="variantName-${variantCount}" value="${name}" placeholder="مثل: أبيض، كبير">
+                    </div>
+                    <div>
+                        <label>نوع المتغير:</label>
+                        <select id="variantType-${variantCount}">
+                            <option value="color" ${type === 'color' ? 'selected' : ''}>لون</option>
+                            <option value="size" ${type === 'size' ? 'selected' : ''}>حجم</option>
+                            <option value="material" ${type === 'material' ? 'selected' : ''}>مادة</option>
+                            <option value="style" ${type === 'style' ? 'selected' : ''}>نمط</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>رمز المتغير (SKU):</label>
+                        <input type="text" id="variantSku-${variantCount}" value="${sku}" placeholder="NIKE-WHITE-001">
+                    </div>
+                    <div>
+                        <label>السعر (اختياري):</label>
+                        <input type="number" id="variantPrice-${variantCount}" value="${price}" step="0.01" placeholder="اتركه فارغ للسعر الأساسي">
+                    </div>
+                    <div>
+                        <label>المخزون:</label>
+                        <input type="number" id="variantStock-${variantCount}" value="${stock}" min="0">
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" id="variantActive-${variantCount}" checked> نشط
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(variantDiv);
+        }
+
+        function removeVariant(id) {
+            const variant = document.getElementById(`variant-${id}`);
+            if (variant) {
+                variant.remove();
+            }
+        }
+
+        async function createProductWithVariants() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div style="text-align: center;">⏳ جاري إنشاء المنتج...</div>';
+
+            try {
+                // 1. Create the main product
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    description: document.getElementById('productDescription').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    sku: document.getElementById('productSku').value,
+                    category: document.getElementById('productCategory').value,
+                    stock: 0, // Will be calculated from variants
+                    isActive: true
+                };
+
+                console.log('Creating product:', productData);
+
+                const productResponse = await fetch('http://localhost:3001/api/v1/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+
+                const productResult = await productResponse.json();
+                console.log('Product result:', productResult);
+
+                if (!productResult.success) {
+                    throw new Error(productResult.error || 'فشل في إنشاء المنتج');
+                }
+
+                lastProductId = productResult.data.id;
+                let successMessage = `✅ تم إنشاء المنتج بنجاح!<br>معرف المنتج: ${lastProductId}<br><br>`;
+
+                // 2. Create variants
+                const variants = [];
+                for (let i = 1; i <= variantCount; i++) {
+                    const nameElement = document.getElementById(`variantName-${i}`);
+                    if (nameElement && nameElement.value.trim()) {
+                        const variant = {
+                            name: nameElement.value.trim(),
+                            type: document.getElementById(`variantType-${i}`).value,
+                            sku: document.getElementById(`variantSku-${i}`).value,
+                            price: document.getElementById(`variantPrice-${i}`).value ? parseFloat(document.getElementById(`variantPrice-${i}`).value) : null,
+                            stock: parseInt(document.getElementById(`variantStock-${i}`).value) || 0,
+                            isActive: document.getElementById(`variantActive-${i}`).checked,
+                            sortOrder: i - 1
+                        };
+                        variants.push(variant);
+                    }
+                }
+
+                console.log('Creating variants:', variants);
+
+                for (const variant of variants) {
+                    const variantResponse = await fetch(`http://localhost:3001/api/v1/products/${lastProductId}/variants`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(variant)
+                    });
+
+                    const variantResult = await variantResponse.json();
+                    console.log('Variant result:', variantResult);
+
+                    if (variantResult.success) {
+                        successMessage += `✅ تم إنشاء متغير "${variant.name}" بنجاح<br>`;
+                    } else {
+                        successMessage += `❌ فشل في إنشاء متغير "${variant.name}": ${variantResult.error}<br>`;
+                    }
+                }
+
+                results.innerHTML = `<div class="result success">${successMessage}</div>`;
+
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = `<div class="result error">❌ خطأ: ${error.message}</div>`;
+            }
+        }
+
+        async function testGetVariants() {
+            if (!lastProductId) {
+                document.getElementById('results').innerHTML = '<div class="result error">❌ يجب إنشاء منتج أولاً</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3001/api/v1/products/${lastProductId}/variants`);
+                const result = await response.json();
+
+                if (result.success) {
+                    let variantsHtml = `<h3>📋 متغيرات المنتج (${result.data.length}):</h3>`;
+                    result.data.forEach(variant => {
+                        variantsHtml += `
+                            <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 5px;">
+                                <strong>${variant.name}</strong> (${variant.type})<br>
+                                SKU: ${variant.sku}<br>
+                                السعر: ${variant.price || 'السعر الأساسي'}<br>
+                                المخزون: ${variant.stock}<br>
+                                الحالة: ${variant.isActive ? 'نشط' : 'غير نشط'}
+                            </div>
+                        `;
+                    });
+                    document.getElementById('results').innerHTML = `<div class="result success">${variantsHtml}</div>`;
+                } else {
+                    document.getElementById('results').innerHTML = `<div class="result error">❌ ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<div class="result error">❌ خطأ: ${error.message}</div>`;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

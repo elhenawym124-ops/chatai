@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754081322654-85",
+  "orderNumber": "ORD-1754081322654-85",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الإسكوتش يا فندم هو 349 جنيه 😊",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdtanaxx0005ufe01nd8gpnj",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdtanaxx0005ufe01nd8gpnj\nطلب تلقائي من المحادثة cmdtanaxx0005ufe01nd8gpnj - ١‏/٨‏/٢٠٢٥، ١١:٤٨:٤٢ م",
+  "createdAt": "2025-08-01T20:48:42.654Z",
+  "updatedAt": "2025-08-01T20:48:42.654Z"
+}

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار إضافة مفاتيح API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .api-key {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 اختبار إضافة مفاتيح API</h1>
+        
+        <div class="section">
+            <h3>1. إضافة مفتاح API جديد</h3>
+            <input type="text" id="keyName" placeholder="اسم المفتاح" value="Test Key">
+            <input type="text" id="keyValue" placeholder="مفتاح API" value="AIza_test_key_123">
+            <input type="number" id="keyPriority" placeholder="الأولوية" value="1" min="1">
+            <input type="number" id="keyDailyLimit" placeholder="الحد اليومي" value="1000" min="1">
+            <br>
+            <button onclick="addApiKey()">➕ إضافة مفتاح API</button>
+            <button onclick="saveSettings()">💾 حفظ الإعدادات</button>
+        </div>
+
+        <div class="section">
+            <h3>2. تحميل الإعدادات</h3>
+            <button onclick="loadSettings()">📥 تحميل الإعدادات</button>
+            <button onclick="clearResults()">🧹 مسح النتائج</button>
+        </div>
+
+        <div class="section">
+            <h3>3. النتائج</h3>
+            <div id="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>4. مفاتيح API المحملة</h3>
+            <div id="apiKeys"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api/v1';
+        let currentApiKeys = [];
+        
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            resultDiv.innerHTML += `<div class="${className}">${new Date().toLocaleTimeString()}: ${message}</div>`;
+        }
+        
+        function clearResults() {
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('apiKeys').innerHTML = '';
+        }
+        
+        function addApiKey() {
+            const name = document.getElementById('keyName').value;
+            const key = document.getElementById('keyValue').value;
+            const priority = parseInt(document.getElementById('keyPriority').value);
+            const dailyLimit = parseInt(document.getElementById('keyDailyLimit').value);
+            
+            if (!name || !key) {
+                showResult('❌ يرجى إدخال اسم ومفتاح API', 'error');
+                return;
+            }
+            
+            const newKey = {
+                id: Date.now().toString(),
+                name: name,
+                key: key,
+                models: ['gemini-1.5-flash', 'gemini-pro'],
+                priority: priority,
+                dailyLimit: dailyLimit,
+                monthlyLimit: 30000,
+                isActive: true
+            };
+            
+            currentApiKeys.push(newKey);
+            showResult(`✅ تم إضافة مفتاح API: ${name}`, 'success');
+            displayApiKeys();
+            
+            // Clear inputs
+            document.getElementById('keyName').value = '';
+            document.getElementById('keyValue').value = '';
+            document.getElementById('keyPriority').value = currentApiKeys.length + 1;
+        }
+        
+        async function saveSettings() {
+            try {
+                showResult('🔄 جاري حفظ الإعدادات...', 'info');
+                
+                const modelSettings = {
+                    primaryModel: 'gemini-1.5-flash',
+                    fallbackModels: ['gemini-pro'],
+                    maxResponseDelay: 30,
+                    enableUsageTracking: true,
+                    enableCostOptimization: true,
+                    apiKeys: currentApiKeys.map(key => ({
+                        key: key.key,
+                        name: key.name,
+                        models: key.models,
+                        priority: key.priority,
+                        dailyLimit: key.dailyLimit,
+                        monthlyLimit: key.monthlyLimit
+                    }))
+                };
+                
+                const escalationRules = {
+                    apiKey: currentApiKeys.length > 0 ? currentApiKeys[0].key : '',
+                    maxResponseDelay: 30
+                };
+                
+                const response = await fetch(`${API_URL}/ai/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        autoReplyEnabled: true,
+                        confidenceThreshold: 0.8,
+                        modelSettings: JSON.stringify(modelSettings),
+                        escalationRules: JSON.stringify(escalationRules)
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(`✅ تم حفظ ${currentApiKeys.length} مفتاح API بنجاح!`, 'success');
+                    showResult(`📊 البيانات المحفوظة: ${JSON.stringify(data.data, null, 2)}`, 'info');
+                } else {
+                    showResult(`❌ فشل في الحفظ: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ خطأ في الحفظ: ${error.message}`, 'error');
+            }
+        }
+        
+        async function loadSettings() {
+            try {
+                showResult('🔄 جاري تحميل الإعدادات...', 'info');
+                
+                const response = await fetch(`${API_URL}/ai/settings`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('✅ تم تحميل الإعدادات بنجاح!', 'success');
+                    
+                    const modelSettings = data.data.modelSettings || {};
+                    showResult(`📊 Model Settings: ${JSON.stringify(modelSettings, null, 2)}`, 'info');
+                    
+                    // Load API keys from modelSettings
+                    currentApiKeys = [];
+                    if (modelSettings.apiKeys && Array.isArray(modelSettings.apiKeys)) {
+                        currentApiKeys = modelSettings.apiKeys.map((key, index) => ({
+                            id: key.id || (index + 1).toString(),
+                            name: key.name || `API Key ${index + 1}`,
+                            key: key.key,
+                            models: key.models || ['gemini-1.5-flash', 'gemini-pro'],
+                            priority: key.priority || (index + 1),
+                            dailyLimit: key.dailyLimit || 1000,
+                            monthlyLimit: key.monthlyLimit || 30000,
+                            isActive: key.isActive !== false
+                        }));
+                        showResult(`🔑 تم تحميل ${currentApiKeys.length} مفتاح API من modelSettings`, 'success');
+                    }
+                    
+                    // Fallback to escalation rules
+                    if (currentApiKeys.length === 0 && data.data.escalationRules) {
+                        const rules = data.data.escalationRules;
+                        if (rules.apiKey) {
+                            currentApiKeys = [{
+                                id: '1',
+                                name: 'Primary Key',
+                                key: rules.apiKey,
+                                models: ['gemini-1.5-flash', 'gemini-pro'],
+                                priority: 1,
+                                dailyLimit: 1000,
+                                monthlyLimit: 30000,
+                                isActive: true
+                            }];
+                            showResult('🔑 تم تحميل مفتاح API من escalationRules (backward compatibility)', 'info');
+                        }
+                    }
+                    
+                    displayApiKeys();
+                } else {
+                    showResult(`❌ فشل في التحميل: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ خطأ في التحميل: ${error.message}`, 'error');
+            }
+        }
+        
+        function displayApiKeys() {
+            const apiKeysDiv = document.getElementById('apiKeys');
+            if (currentApiKeys.length === 0) {
+                apiKeysDiv.innerHTML = '<p>لا توجد مفاتيح API</p>';
+                return;
+            }
+            
+            let html = `<h4>عدد المفاتيح: ${currentApiKeys.length}</h4>`;
+            currentApiKeys.forEach((key, index) => {
+                html += `
+                    <div class="api-key">
+                        <strong>${key.name}</strong> (الأولوية: ${key.priority})
+                        <br>المفتاح: ${key.key.substring(0, 10)}...
+                        <br>النماذج: ${key.models.join(', ')}
+                        <br>الحد اليومي: ${key.dailyLimit} | الحد الشهري: ${key.monthlyLimit}
+                        <br>الحالة: ${key.isActive ? '✅ نشط' : '❌ غير نشط'}
+                    </div>
+                `;
+            });
+            apiKeysDiv.innerHTML = html;
+        }
+        
+        // Load settings on page load
+        window.onload = function() {
+            loadSettings();
+        };
+    </script>
+</body>
+</html>

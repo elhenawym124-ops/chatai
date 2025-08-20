@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754388153366-71",
+  "orderNumber": "ORD-1754388153366-71",
+  "customerName": "24724147047169139 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 140,
+  "subtotal": 65,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "ات اللي اخترتيها (كوتشي أبيض مقاس 38 و كوتشي أسود مقاس 39).",
+      "price": 65,
+      "quantity": 1,
+      "total": 65,
+      "metadata": {
+        "color": "أبيض",
+        "size": "38",
+        "conversationId": "cmdyc3srs00uvufgsivlal09b",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyc3srs00uvufgsivlal09b\nطلب تلقائي من المحادثة cmdyc3srs00uvufgsivlal09b - ٥‏/٨‏/٢٠٢٥، ١:٠٢:٣٣ م",
+  "createdAt": "2025-08-05T10:02:33.367Z",
+  "updatedAt": "2025-08-05T10:02:33.367Z"
+}

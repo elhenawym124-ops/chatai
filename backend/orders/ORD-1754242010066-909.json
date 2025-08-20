@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754242010066-909",
+  "orderNumber": "ORD-1754242010066-909",
+  "customerName": "24328369456849770 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 100,
+  "subtotal": 50,
+  "tax": 0,
+  "shipping": 50,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "القاهرة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "بالمقاس 41 واللون الأبيض والشحن لحد عندك هيكون 399 جنيه.",
+      "price": 50,
+      "quantity": 1,
+      "total": 50,
+      "metadata": {
+        "color": "الأبيض",
+        "size": "41",
+        "conversationId": "cmdvy1qfd00djuf902m1jyntx",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdvy1qfd00djuf902m1jyntx\nطلب تلقائي من المحادثة cmdvy1qfd00djuf902m1jyntx - ٣‏/٨‏/٢٠٢٥، ٨:٢٦:٥٠ م",
+  "createdAt": "2025-08-03T17:26:50.066Z",
+  "updatedAt": "2025-08-03T17:26:50.066Z"
+}

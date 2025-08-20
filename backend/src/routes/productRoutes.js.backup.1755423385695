@@ -1,0 +1,1445 @@
+const express = require('express');
+const router = express.Router();
+
+// Set UTF-8 encoding for console output
+process.stdout.setEncoding('utf8');
+process.stderr.setEncoding('utf8');
+
+// Import controllers and middleware
+// Mock authentication middleware for testing
+const mockAuth = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: 'Authentication required',
+      message: 'يجب تسجيل الدخول أولاً'
+    });
+  }
+
+  // Accept mock token from login or development mock token
+  if (token === 'mock-access-token' || token.includes('mock-signature')) {
+    req.user = {
+      id: 'dev-user',
+      email: 'dev@example.com',
+      role: 'COMPANY_ADMIN',
+      companyId: 'cmd5c0c9y0000ymzdd7wtv7ib'
+    };
+    return next();
+  }
+
+  return res.status(401).json({
+    success: false,
+    error: 'Invalid token',
+    message: 'توكن غير صحيح'
+  });
+};
+
+// Mock product controller for now
+const productController = {
+  getProducts: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      // جلب companyId من المستخدم المصادق عليه فقط
+      const companyId = req.user?.companyId;
+
+      if (!companyId) {
+        return res.status(403).json({
+          success: false,
+          message: 'غير مصرح بالوصول - معرف الشركة مطلوب'
+        });
+      }
+
+      console.log('Fetching products from database for company:', companyId);
+
+      // بناء where clause مع فلترة companyId الإجبارية
+      const whereClause = { companyId };
+
+      // Get products from database
+      const products = await prisma.product.findMany({
+        where: whereClause,
+        include: {
+          category: true,
+          company: true,
+          variants: {
+            where: { isActive: true },
+            orderBy: { sortOrder: 'asc' }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      console.log(`Found ${products.length} products in database`);
+
+      // Process products to ensure JSON fields are properly parsed
+      const processedProducts = products.map(product => {
+        const processedProduct = { ...product };
+
+        // Safely parse JSON fields
+        try {
+          processedProduct.images = product.images ? JSON.parse(product.images) : [];
+        } catch (error) {
+          console.warn(`Failed to parse images for product ${product.id}:`, product.images);
+          processedProduct.images = [];
+        }
+
+        try {
+          processedProduct.tags = product.tags ? JSON.parse(product.tags) : [];
+        } catch (error) {
+          console.warn(`Failed to parse tags for product ${product.id}:`, product.tags);
+          processedProduct.tags = [];
+        }
+
+        try {
+          processedProduct.dimensions = product.dimensions ? JSON.parse(product.dimensions) : null;
+        } catch (error) {
+          console.warn(`Failed to parse dimensions for product ${product.id}:`, product.dimensions);
+          processedProduct.dimensions = null;
+        }
+
+        return processedProduct;
+      });
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: processedProducts,
+        pagination: {
+          page: 1,
+          limit: 100,
+          total: products.length,
+          pages: 1
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch products',
+        details: error.message
+      });
+    }
+  },
+
+  getProduct: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productId = req.params.id;
+
+      console.log('Fetching product:', productId);
+
+      // Get product from database with variants
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+        include: {
+          category: true,
+          company: true,
+          variants: {
+            orderBy: { sortOrder: 'asc' }
+          }
+        }
+      });
+
+      if (!product) {
+        await prisma.$disconnect();
+        return res.status(404).json({
+          success: false,
+          error: 'Product not found'
+        });
+      }
+
+      console.log('Product found:', product);
+
+      // Process product to ensure JSON fields are properly parsed
+      const processedProduct = { ...product };
+
+      try {
+        processedProduct.images = product.images ? JSON.parse(product.images) : [];
+      } catch (error) {
+        console.warn(`Failed to parse images for product ${product.id}:`, product.images);
+        processedProduct.images = [];
+      }
+
+      try {
+        processedProduct.tags = product.tags ? JSON.parse(product.tags) : [];
+      } catch (error) {
+        console.warn(`Failed to parse tags for product ${product.id}:`, product.tags);
+        processedProduct.tags = [];
+      }
+
+      try {
+        processedProduct.dimensions = product.dimensions ? JSON.parse(product.dimensions) : null;
+      } catch (error) {
+        console.warn(`Failed to parse dimensions for product ${product.id}:`, product.dimensions);
+        processedProduct.dimensions = null;
+      }
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: processedProduct
+      });
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch product'
+      });
+    }
+  },
+
+  getCategories: async (req, res) => {
+    try {
+      console.log('🔍 Getting categories from database...');
+
+      // Get user from auth middleware
+      const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };
+
+      // Get categories from database
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const categories = await prisma.category.findMany({
+        where: { companyId: user.companyId },
+        include: {
+          _count: {
+            select: { products: true }
+          }
+        },
+        orderBy: { name: 'asc' }
+      });
+
+      console.log('📦 Categories found:', categories.length);
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: categories
+      });
+    } catch (error) {
+      console.error('❌ Error fetching categories:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch categories'
+      });
+    }
+  },
+
+  createCategory: async (req, res) => {
+    try {
+      console.log('🔍 Creating new category...');
+
+      const { name, description } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: 'Category name is required'
+        });
+      }
+
+      // Get user from auth middleware
+      const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };
+
+      // Create category in database
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const category = await prisma.category.create({
+        data: {
+          name: name.trim(),
+          description: description ? description.trim() : null,
+          companyId: user.companyId
+        },
+        include: {
+          _count: {
+            select: { products: true }
+          }
+        }
+      });
+
+      console.log('✅ Category created:', category.name);
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: category,
+        message: 'Category created successfully'
+      });
+    } catch (error) {
+      console.error('❌ Error creating category:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create category'
+      });
+    }
+  },
+
+  updateCategory: async (req, res) => {
+    try {
+      console.log('🔍 Updating category...');
+
+      const { id } = req.params;
+      const { name, description } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: 'Category name is required'
+        });
+      }
+
+      // Get user from auth middleware
+      const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };
+
+      // Update category in database
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      // Check if category exists and belongs to company
+      const existingCategory = await prisma.category.findFirst({
+        where: {
+          id: id,
+          companyId: user.companyId
+        }
+      });
+
+      if (!existingCategory) {
+        await prisma.$disconnect();
+        return res.status(404).json({
+          success: false,
+          error: 'Category not found'
+        });
+      }
+
+      const category = await prisma.category.update({
+        where: { id: id },
+        data: {
+          name: name.trim(),
+          description: description ? description.trim() : null
+        },
+        include: {
+          _count: {
+            select: { products: true }
+          }
+        }
+      });
+
+      console.log('✅ Category updated:', category.name);
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: category,
+        message: 'Category updated successfully'
+      });
+    } catch (error) {
+      console.error('❌ Error updating category:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update category'
+      });
+    }
+  },
+
+  cleanupCategories: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      console.log('🧹 Starting categories cleanup...');
+
+      // Get all categories
+      const categories = await prisma.category.findMany({
+        include: {
+          products: true
+        }
+      });
+
+      console.log(`📊 Found ${categories.length} categories to analyze`);
+
+      // Find duplicates based on name
+      const duplicates = [];
+      const seen = new Map();
+      
+      categories.forEach(category => {
+        const key = category.name.toLowerCase().trim();
+        if (seen.has(key)) {
+          duplicates.push({
+            original: seen.get(key),
+            duplicate: category
+          });
+        } else {
+          seen.set(key, category);
+        }
+      });
+
+      console.log(`🔍 Found ${duplicates.length} duplicate categories`);
+
+      let cleanedCount = 0;
+      const cleanupResults = [];
+
+      // Process each duplicate
+      for (const { original, duplicate } of duplicates) {
+        try {
+          // Move products from duplicate to original category
+          if (duplicate.products.length > 0) {
+            // FIXED: Add company isolation for security
+            await prisma.product.updateMany({
+              where: {
+                categoryId: duplicate.id,
+                companyId: req.user.companyId // Company isolation
+              },
+              data: { categoryId: original.id }
+            });
+            console.log(`📦 Moved ${duplicate.products.length} products from duplicate category '${duplicate.name}' to original`);
+          }
+
+          // Delete the duplicate category
+          await prisma.category.delete({
+            where: { id: duplicate.id }
+          });
+
+          cleanedCount++;
+          cleanupResults.push({
+            action: 'deleted',
+            category: duplicate.name,
+            productsMovedTo: original.name,
+            productsCount: duplicate.products.length
+          });
+
+          console.log(`✅ Deleted duplicate category: ${duplicate.name}`);
+        } catch (error) {
+          console.error(`❌ Error cleaning up category ${duplicate.name}:`, error);
+          cleanupResults.push({
+            action: 'error',
+            category: duplicate.name,
+            error: error.message
+          });
+        }
+      }
+
+      await prisma.$disconnect();
+
+      console.log(`🎉 Cleanup completed! Removed ${cleanedCount} duplicate categories`);
+
+      res.json({
+        success: true,
+        message: `تم تنظيف ${cleanedCount} فئة مكررة بنجاح`,
+        data: {
+          totalCategories: categories.length,
+          duplicatesFound: duplicates.length,
+          duplicatesRemoved: cleanedCount,
+          results: cleanupResults
+        }
+      });
+    } catch (error) {
+      console.error('❌ Error during categories cleanup:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to cleanup categories',
+        message: 'فشل في تنظيف الفئات',
+        details: error.message
+      });
+    }
+  },
+
+  deleteCategory: async (req, res) => {
+    try {
+      console.log('🔍 Deleting category...');
+
+      const { id } = req.params;
+
+      // Get user from auth middleware
+      const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };
+
+      // Delete category from database
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      // Check if category exists and belongs to company
+      const existingCategory = await prisma.category.findFirst({
+        where: {
+          id: id,
+          companyId: user.companyId
+        },
+        include: {
+          _count: {
+            select: { products: true }
+          }
+        }
+      });
+
+      if (!existingCategory) {
+        await prisma.$disconnect();
+        return res.status(404).json({
+          success: false,
+          error: 'Category not found'
+        });
+      }
+
+      // Check if category has products
+      if (existingCategory._count.products > 0) {
+        await prisma.$disconnect();
+        return res.status(400).json({
+          success: false,
+          error: `Cannot delete category with ${existingCategory._count.products} products`
+        });
+      }
+
+      await prisma.category.delete({
+        where: { id: id }
+      });
+
+      console.log('✅ Category deleted:', existingCategory.name);
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        message: 'Category deleted successfully'
+      });
+    } catch (error) {
+      console.error('❌ Error deleting category:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete category'
+      });
+    }
+  },
+
+  createProduct: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productData = req.body;
+      console.log('Creating product with data:', productData);
+
+      // Validate required fields
+      if (!productData.name || !productData.price) {
+        return res.status(400).json({
+          success: false,
+          error: 'Name and price are required'
+        });
+      }
+
+      // FIXED: Get company ID from authenticated user instead of first company
+      const companyId = req.user?.companyId;
+
+      if (!companyId) {
+        return res.status(401).json({
+          success: false,
+          error: 'Company ID not found in user context'
+        });
+      }
+
+      if (!companyId) {
+        return res.status(400).json({
+          success: false,
+          error: 'No company found in database'
+        });
+      }
+
+      // Get or create default category
+      let categoryId = null;
+      if (productData.category) {
+        let category = await prisma.category.findFirst({
+          where: {
+            name: productData.category,
+            companyId: companyId
+          }
+        });
+
+        if (!category) {
+          category = await prisma.category.create({
+            data: {
+              name: productData.category,
+              companyId: companyId
+            }
+          });
+        }
+        categoryId = category.id;
+      }
+
+      // Handle SKU - only validate if provided
+      let sku = productData.sku || null;
+      if (sku) {
+        // Ensure SKU is unique if provided
+        const skuExists = await prisma.product.findUnique({ where: { sku } });
+        if (skuExists) {
+          return res.status(400).json({
+            success: false,
+            error: 'SKU already exists. Please use a different SKU.'
+          });
+        }
+      }
+
+      // Create product in database
+      const newProduct = await prisma.product.create({
+        data: {
+          name: productData.name,
+          description: productData.description || '',
+          price: parseFloat(productData.price),
+          sku: sku,
+          stock: parseInt(productData.stock) || 0,
+          isActive: productData.isActive !== false,
+          categoryId: categoryId,
+          companyId: companyId,
+          tags: productData.tags ? JSON.stringify(productData.tags) : null,
+          images: productData.images ? JSON.stringify(productData.images) : null
+        },
+        include: {
+          category: true,
+          company: true
+        }
+      });
+
+      console.log('Product created successfully:', newProduct);
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد إنشاء منتج جديد
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after product creation');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after product creation:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.status(201).json({
+        success: true,
+        data: newProduct,
+        message: 'Product created successfully'
+      });
+    } catch (error) {
+      console.error('Error creating product:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create product',
+        details: error.message
+      });
+    }
+  },
+
+  updateProduct: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productId = req.params.id;
+      const updateData = { ...req.body };
+
+      console.log('Updating product:', productId, 'with data:', updateData);
+
+      // Handle category field - convert category to categoryId
+      if (updateData.category) {
+        // First, try to find category by name (for cases like "1", "2", "3", etc.)
+        const categoryByName = await prisma.category.findFirst({
+          where: {
+            name: updateData.category,
+            companyId: updateData.companyId || 'cmd5c0c9y0000ymzdd7wtv7ib' // Default company ID
+          }
+        });
+
+        if (categoryByName) {
+          updateData.categoryId = categoryByName.id;
+        } else {
+          // If not found by name, try to use it as an ID directly
+          const categoryById = await prisma.category.findUnique({
+            where: { id: updateData.category }
+          });
+
+          if (categoryById) {
+            updateData.categoryId = updateData.category;
+          } else {
+            // If neither name nor ID works, use the first available category
+            const firstCategory = await prisma.category.findFirst({
+              where: {
+                companyId: updateData.companyId || 'cmd5c0c9y0000ymzdd7wtv7ib'
+              }
+            });
+            if (firstCategory) {
+              updateData.categoryId = firstCategory.id;
+              console.log(`Category "${updateData.category}" not found, using first available category: ${firstCategory.name} (${firstCategory.id})`);
+            }
+          }
+        }
+        delete updateData.category;
+      }
+
+      // Update product in database
+      const updatedProduct = await prisma.product.update({
+        where: { id: productId },
+        data: updateData,
+        include: {
+          category: true,
+          company: true
+        }
+      });
+
+      console.log('Product updated successfully:', updatedProduct);
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد تحديث المنتج
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after product update');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after product update:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.json({
+        success: true,
+        data: updatedProduct
+      });
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update product'
+      });
+    }
+  },
+
+  deleteProduct: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productId = req.params.id;
+
+      console.log('Deleting product:', productId);
+
+      // Delete product from database
+      await prisma.product.delete({
+        where: { id: productId }
+      });
+
+      console.log('Product deleted successfully');
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد حذف المنتج
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after product deletion');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after product deletion:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.json({
+        success: true,
+        message: 'Product deleted successfully'
+      });
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete product'
+      });
+    }
+  },
+
+  // Product Variants Controllers
+  getProductVariants: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productId = req.params.id;
+
+      console.log('Fetching variants for product:', productId);
+
+      // Get product variants from database
+      const variants = await prisma.productVariant.findMany({
+        where: { productId: productId },
+        orderBy: { sortOrder: 'asc' }
+      });
+
+      console.log('Found variants:', variants.length);
+
+      await prisma.$disconnect();
+
+      res.json({
+        success: true,
+        data: variants
+      });
+    } catch (error) {
+      console.error('Error fetching product variants:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch product variants'
+      });
+    }
+  },
+
+  createProductVariant: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const productId = req.params.id;
+      const variantData = req.body;
+
+      console.log('Creating variant for product:', productId, 'with data:', variantData);
+
+      // Handle variant SKU - only validate if provided
+      let variantSku = variantData.sku || null;
+      if (variantSku) {
+        // Ensure variant SKU is unique if provided
+        const variantSkuExists = await prisma.productVariant.findUnique({ where: { sku: variantSku } });
+        if (variantSkuExists) {
+          return res.status(400).json({
+            success: false,
+            error: 'Variant SKU already exists. Please use a different SKU.'
+          });
+        }
+      }
+
+      // Create variant in database
+      const variant = await prisma.productVariant.create({
+        data: {
+          productId: productId,
+          name: variantData.name,
+          type: variantData.type || 'color',
+          sku: variantSku,
+          price: variantData.price ? parseFloat(variantData.price) : null,
+          comparePrice: variantData.comparePrice ? parseFloat(variantData.comparePrice) : null,
+          cost: variantData.cost ? parseFloat(variantData.cost) : null,
+          images: variantData.images ? JSON.stringify(variantData.images) : null,
+          stock: variantData.stock ? parseInt(variantData.stock) : 0,
+          trackInventory: variantData.trackInventory !== undefined ? variantData.trackInventory : true,
+          isActive: variantData.isActive !== undefined ? variantData.isActive : true,
+          sortOrder: variantData.sortOrder || 0,
+          metadata: variantData.metadata || null
+        }
+      });
+
+      console.log('Variant created successfully:', variant);
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد إنشاء متغير جديد
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after variant creation');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after variant creation:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.status(201).json({
+        success: true,
+        data: variant
+      });
+    } catch (error) {
+      console.error('Error creating product variant:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create product variant'
+      });
+    }
+  },
+
+  updateProductVariant: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const variantId = req.params.variantId;
+      const updateData = req.body;
+
+      console.log('Updating variant:', variantId, 'with data:', updateData);
+
+      // Process update data - handle images array
+      const processedData = { ...updateData };
+
+      // Handle images array - convert to JSON string if it's an array
+      if (processedData.images && Array.isArray(processedData.images)) {
+        processedData.images = JSON.stringify(processedData.images);
+        console.log('📸 [VARIANT-UPDATE] Converted images array to JSON string');
+      }
+
+      // Ensure numeric fields are properly typed
+      if (processedData.price !== undefined) {
+        processedData.price = parseFloat(processedData.price);
+      }
+      if (processedData.comparePrice !== undefined) {
+        processedData.comparePrice = parseFloat(processedData.comparePrice);
+      }
+      if (processedData.cost !== undefined) {
+        processedData.cost = parseFloat(processedData.cost);
+      }
+      if (processedData.stock !== undefined) {
+        processedData.stock = parseInt(processedData.stock);
+      }
+
+      // Handle trackInventory field
+      if (processedData.trackInventory !== undefined) {
+        processedData.trackInventory = Boolean(processedData.trackInventory);
+        console.log(`📦 [VARIANT-UPDATE] Track inventory: ${processedData.trackInventory}`);
+      }
+
+      // Handle empty SKU - set to null to avoid unique constraint issues
+      if (processedData.sku !== undefined && processedData.sku.trim() === '') {
+        processedData.sku = null;
+        console.log('🏷️ [VARIANT-UPDATE] Empty SKU converted to null');
+      }
+
+      console.log('🔧 [VARIANT-UPDATE] Processed data:', processedData);
+
+      // Update variant in database
+      const variant = await prisma.productVariant.update({
+        where: { id: variantId },
+        data: processedData
+      });
+
+      console.log('Variant updated successfully:', variant);
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد تحديث المتغير
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after variant update');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after variant update:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.json({
+        success: true,
+        data: variant
+      });
+    } catch (error) {
+      console.error('Error updating product variant:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update product variant'
+      });
+    }
+  },
+
+  deleteProductVariant: async (req, res) => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      const variantId = req.params.variantId;
+
+      console.log('Deleting variant:', variantId);
+
+      // Delete variant from database
+      await prisma.productVariant.delete({
+        where: { id: variantId }
+      });
+
+      console.log('Variant deleted successfully');
+
+      await prisma.$disconnect();
+
+      // تحديث RAG Knowledge Base بعد حذف المتغير
+      try {
+        const ragService = require('../services/ragService');
+        await ragService.updateKnowledgeBase();
+        console.log('✅ RAG Knowledge Base updated after variant deletion');
+      } catch (ragError) {
+        console.error('⚠️ Failed to update RAG after variant deletion:', ragError.message);
+        // لا نوقف العملية إذا فشل تحديث RAG
+      }
+
+      res.json({
+        success: true,
+        message: 'Product variant deleted successfully'
+      });
+    } catch (error) {
+      console.error('Error deleting product variant:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete product variant'
+      });
+    }
+  }
+};
+
+// Public routes (no authentication required)
+router.get('/categories', productController.getCategories);
+router.post('/categories', productController.createCategory);
+router.post('/categories/cleanup', productController.cleanupCategories);
+router.put('/categories/:id', productController.updateCategory);
+router.delete('/categories/:id', productController.deleteCategory);
+router.get('/', productController.getProducts);
+router.post('/', productController.createProduct);
+
+// Product Variants routes (public for testing) - specific routes first
+router.get('/:id/variants', productController.getProductVariants);
+router.post('/:id/variants', productController.createProductVariant);
+router.patch('/variants/:variantId', productController.updateProductVariant);
+router.put('/variants/:variantId', productController.updateProductVariant); // Support both PATCH and PUT
+router.patch('/:id/variants/:variantId', productController.updateProductVariant); // Alternative path
+router.put('/:id/variants/:variantId', productController.updateProductVariant); // Alternative path with PUT
+router.delete('/variants/:variantId', productController.deleteProductVariant);
+
+// Image management endpoints (public for testing)
+
+// Add image to product by URL
+router.post('/:id/images', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const { id } = req.params;
+    const { imageUrl, description } = req.body;
+
+    console.log(`📸 [IMAGE-ADD] Adding image to product ${id}:`, imageUrl);
+
+    if (!imageUrl) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image URL is required',
+        message: 'رابط الصورة مطلوب'
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(imageUrl);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid URL format',
+        message: 'رابط الصورة غير صحيح'
+      });
+    }
+
+    // Get current product
+    const product = await prisma.product.findUnique({
+      where: { id }
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found',
+        message: 'المنتج غير موجود'
+      });
+    }
+
+    // Parse existing images
+    let currentImages = [];
+    try {
+      currentImages = product.images ? JSON.parse(product.images) : [];
+    } catch (error) {
+      console.log('⚠️ [IMAGE-ADD] Error parsing existing images, starting fresh');
+      currentImages = [];
+    }
+
+    // Check if image already exists
+    if (currentImages.includes(imageUrl)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image already exists',
+        message: 'هذه الصورة موجودة بالفعل'
+      });
+    }
+
+    // Add new image
+    currentImages.push(imageUrl);
+
+    // Update product
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        images: JSON.stringify(currentImages)
+      }
+    });
+
+    console.log(`✅ [IMAGE-ADD] Image added successfully. Total images: ${currentImages.length}`);
+
+    await prisma.$disconnect();
+
+    // تحديث RAG Knowledge Base بعد إضافة صورة
+    try {
+      const ragService = require('../services/ragService');
+      await ragService.updateKnowledgeBase();
+      console.log('✅ RAG Knowledge Base updated after image addition');
+    } catch (ragError) {
+      console.error('⚠️ Failed to update RAG after image addition:', ragError.message);
+      // لا نوقف العملية إذا فشل تحديث RAG
+    }
+
+    res.json({
+      success: true,
+      data: {
+        productId: id,
+        imageUrl,
+        totalImages: currentImages.length,
+        allImages: currentImages
+      },
+      message: 'تم إضافة الصورة بنجاح'
+    });
+
+  } catch (error) {
+    console.error('❌ [IMAGE-ADD] Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to add image',
+      message: 'فشل في إضافة الصورة',
+      details: error.message
+    });
+  }
+});
+
+// Add image to variant by URL
+router.post('/:id/variants/:variantId/images', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const { id, variantId } = req.params;
+    const { imageUrl, description } = req.body;
+
+    console.log(`📸 [VARIANT-IMAGE-ADD] Adding image to variant ${variantId}:`, imageUrl);
+
+    if (!imageUrl) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image URL is required',
+        message: 'رابط الصورة مطلوب'
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(imageUrl);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid URL format',
+        message: 'رابط الصورة غير صحيح'
+      });
+    }
+
+    // Get current variant
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+      include: { product: true }
+    });
+
+    if (!variant || variant.productId !== id) {
+      return res.status(404).json({
+        success: false,
+        error: 'Variant not found',
+        message: 'المتغير غير موجود'
+      });
+    }
+
+    // Parse existing images
+    let currentImages = [];
+    try {
+      currentImages = variant.images ? JSON.parse(variant.images) : [];
+    } catch (error) {
+      console.log('⚠️ [VARIANT-IMAGE-ADD] Error parsing existing images, starting fresh');
+      currentImages = [];
+    }
+
+    // Check if image already exists
+    if (currentImages.includes(imageUrl)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image already exists',
+        message: 'هذه الصورة موجودة بالفعل'
+      });
+    }
+
+    // Add new image
+    currentImages.push(imageUrl);
+
+    // Update variant
+    const updatedVariant = await prisma.productVariant.update({
+      where: { id: variantId },
+      data: {
+        images: JSON.stringify(currentImages)
+      }
+    });
+
+    console.log(`✅ [VARIANT-IMAGE-ADD] Image added successfully. Total images: ${currentImages.length}`);
+
+    await prisma.$disconnect();
+
+    res.json({
+      success: true,
+      data: {
+        productId: id,
+        variantId,
+        imageUrl,
+        totalImages: currentImages.length,
+        allImages: currentImages
+      },
+      message: 'تم إضافة الصورة للمتغير بنجاح'
+    });
+
+  } catch (error) {
+    console.error('❌ [VARIANT-IMAGE-ADD] Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to add image to variant',
+      message: 'فشل في إضافة الصورة للمتغير',
+      details: error.message
+    });
+  }
+});
+
+// Delete image from product endpoint
+router.delete('/:id/images', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const { id } = req.params;
+    const { imageUrl } = req.body;
+
+    console.log(`🗑️ [IMAGE-DELETE] Removing image from product ${id}:`, imageUrl);
+
+    if (!imageUrl) {
+      console.log('❌ [IMAGE-DELETE] Error: Image URL is required');
+      return res.status(400).json({
+        success: false,
+        error: 'Image URL is required',
+        message: 'رابط الصورة مطلوب'
+      });
+    }
+
+    // Get current product
+    const product = await prisma.product.findUnique({
+      where: { id: id }
+    });
+
+    if (!product) {
+      console.log(`❌ [IMAGE-DELETE] Error: Product ${id} not found`);
+      await prisma.$disconnect();
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found',
+        message: 'المنتج غير موجود'
+      });
+    }
+
+    console.log(`📦 [IMAGE-DELETE] Current product images:`, product.images);
+
+    // Parse existing images
+    let currentImages = [];
+    try {
+      currentImages = product.images ? JSON.parse(product.images) : [];
+      console.log(`📋 [IMAGE-DELETE] Parsed current images:`, currentImages);
+    } catch (parseError) {
+      console.log('⚠️ [IMAGE-DELETE] Warning: Could not parse existing images');
+      currentImages = [];
+    }
+
+    // Remove image URL
+    const initialCount = currentImages.length;
+    currentImages = currentImages.filter(img => img !== imageUrl);
+    const finalCount = currentImages.length;
+
+    if (initialCount === finalCount) {
+      console.log(`ℹ️ [IMAGE-DELETE] Image URL not found in product images`);
+      await prisma.$disconnect();
+      return res.status(404).json({
+        success: false,
+        error: 'Image not found',
+        message: 'الصورة غير موجودة'
+      });
+    }
+
+    console.log(`➖ [IMAGE-DELETE] Removed image. Images count: ${initialCount} → ${finalCount}`);
+
+    // Update product in database
+    const updatedProduct = await prisma.product.update({
+      where: { id: id },
+      data: {
+        images: JSON.stringify(currentImages)
+      }
+    });
+
+    console.log(`✅ [IMAGE-DELETE] Successfully removed image from product ${id}`);
+    console.log(`📊 [IMAGE-DELETE] Final images array:`, currentImages);
+
+    await prisma.$disconnect();
+
+    // تحديث RAG Knowledge Base بعد حذف صورة
+    try {
+      const ragService = require('../services/ragService');
+      await ragService.updateKnowledgeBase();
+      console.log('✅ RAG Knowledge Base updated after image deletion');
+    } catch (ragError) {
+      console.error('⚠️ Failed to update RAG after image deletion:', ragError.message);
+      // لا نوقف العملية إذا فشل تحديث RAG
+    }
+
+    res.json({
+      success: true,
+      message: 'تم حذف الصورة بنجاح',
+      data: {
+        removedImageUrl: imageUrl,
+        productId: id,
+        remainingImages: currentImages.length,
+        allImages: currentImages
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [IMAGE-DELETE] Error removing image:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'خطأ في الخادم'
+    });
+  }
+});
+
+// Image upload from URL endpoint
+router.post('/:id/images/url', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const { id } = req.params;
+    const { imageUrl } = req.body;
+
+    console.log(`🖼️ [IMAGE-URL] Adding image URL to product ${id}:`, imageUrl);
+
+    if (!imageUrl) {
+      console.log('❌ [IMAGE-URL] Error: Image URL is required');
+      return res.status(400).json({
+        success: false,
+        error: 'Image URL is required',
+        message: 'رابط الصورة مطلوب'
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(imageUrl);
+      console.log('✅ [IMAGE-URL] URL format is valid');
+    } catch {
+      console.log('❌ [IMAGE-URL] Error: Invalid URL format');
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid URL format',
+        message: 'تنسيق الرابط غير صحيح'
+      });
+    }
+
+    // Get current product
+    const product = await prisma.product.findUnique({
+      where: { id: id }
+    });
+
+    if (!product) {
+      console.log(`❌ [IMAGE-URL] Error: Product ${id} not found`);
+      await prisma.$disconnect();
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found',
+        message: 'المنتج غير موجود'
+      });
+    }
+
+    console.log(`📦 [IMAGE-URL] Current product images:`, product.images);
+
+    // Parse existing images
+    let currentImages = [];
+    try {
+      currentImages = product.images ? JSON.parse(product.images) : [];
+      console.log(`📋 [IMAGE-URL] Parsed current images:`, currentImages);
+    } catch (parseError) {
+      console.log('⚠️ [IMAGE-URL] Warning: Could not parse existing images, starting fresh');
+      currentImages = [];
+    }
+
+    // Add new image URL
+    if (!currentImages.includes(imageUrl)) {
+      currentImages.push(imageUrl);
+      console.log(`➕ [IMAGE-URL] Added new image URL. Total images: ${currentImages.length}`);
+    } else {
+      console.log(`ℹ️ [IMAGE-URL] Image URL already exists, skipping duplicate`);
+    }
+
+    // Update product in database
+    const updatedProduct = await prisma.product.update({
+      where: { id: id },
+      data: {
+        images: JSON.stringify(currentImages)
+      }
+    });
+
+    console.log(`✅ [IMAGE-URL] Successfully updated product ${id} with new images`);
+    console.log(`📊 [IMAGE-URL] Final images array:`, currentImages);
+
+    await prisma.$disconnect();
+
+    // تحديث RAG Knowledge Base بعد إضافة صورة من URL
+    try {
+      const ragService = require('../services/ragService');
+      await ragService.updateKnowledgeBase();
+      console.log('✅ RAG Knowledge Base updated after image URL addition');
+    } catch (ragError) {
+      console.error('⚠️ Failed to update RAG after image URL addition:', ragError.message);
+      // لا نوقف العملية إذا فشل تحديث RAG
+    }
+
+    res.json({
+      success: true,
+      message: 'تم إضافة الصورة من الرابط بنجاح',
+      data: {
+        imageUrl: imageUrl,
+        productId: id,
+        totalImages: currentImages.length,
+        allImages: currentImages
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [IMAGE-URL] Error adding image from URL:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'خطأ في الخادم'
+    });
+  }
+});
+
+// Public product details route (no authentication required)
+router.get('/:id', productController.getProduct);
+
+// Authenticated routes
+router.use(mockAuth);
+
+// Routes that require authentication - specific routes before generic
+router.patch('/:id', productController.updateProduct);
+router.delete('/:id', productController.deleteProduct);
+
+module.exports = router;

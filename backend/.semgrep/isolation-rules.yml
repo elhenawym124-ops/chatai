@@ -1,0 +1,239 @@
+rules:
+  # قاعدة للكشف عن Prisma queries بدون company isolation
+  - id: prisma-missing-company-filter
+    pattern-either:
+      # findMany بدون where أو بدون companyId
+      - pattern: |
+          prisma.$MODEL.findMany({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.findMany()
+      # findFirst بدون where أو بدون companyId  
+      - pattern: |
+          prisma.$MODEL.findFirst({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.findFirst()
+      # findUnique بدون companyId في where
+      - pattern: |
+          prisma.$MODEL.findUnique({
+            where: {
+              $...FIELDS
+            }
+          })
+      # count بدون where أو بدون companyId
+      - pattern: |
+          prisma.$MODEL.count({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.count()
+      # aggregate بدون where أو بدون companyId
+      - pattern: |
+          prisma.$MODEL.aggregate({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.aggregate()
+    metavariable-pattern:
+      metavariable: $MODEL
+      patterns:
+        - pattern-not: user
+        - pattern-not: company
+        - pattern-not: notification
+    message: "Potential company isolation bypass: Prisma query without companyId filter"
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      category: security
+      subcategory: [isolation]
+      impact: HIGH
+      likelihood: HIGH
+
+  # قاعدة للكشف عن queries مع where لكن بدون companyId
+  - id: prisma-where-missing-company-id
+    pattern: |
+      prisma.$MODEL.$METHOD({
+        where: {
+          $...FIELDS
+        },
+        ...
+      })
+    metavariable-pattern:
+      metavariable: $FIELDS
+      pattern-not-regex: ".*companyId.*"
+    metavariable-pattern:
+      metavariable: $MODEL
+      patterns:
+        - pattern-not: user
+        - pattern-not: company
+        - pattern-not: notification
+    metavariable-pattern:
+      metavariable: $METHOD
+      patterns:
+        - pattern-either:
+          - pattern: findMany
+          - pattern: findFirst
+          - pattern: count
+          - pattern: aggregate
+          - pattern: updateMany
+          - pattern: deleteMany
+    message: "Missing companyId in where clause for multi-tenant query"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن update/delete operations بدون company isolation
+  - id: prisma-unsafe-bulk-operations
+    pattern-either:
+      - pattern: |
+          prisma.$MODEL.updateMany({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.updateMany()
+      - pattern: |
+          prisma.$MODEL.deleteMany({
+            ...
+          })
+      - pattern: |
+          prisma.$MODEL.deleteMany()
+    metavariable-pattern:
+      metavariable: $MODEL
+      patterns:
+        - pattern-not: user
+        - pattern-not: company
+    message: "Unsafe bulk operation without company isolation"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن raw queries بدون company filtering
+  - id: prisma-raw-query-no-isolation
+    pattern-either:
+      - pattern: |
+          prisma.$queryRaw`$QUERY`
+      - pattern: |
+          prisma.$executeRaw`$QUERY`
+      - pattern: |
+          prisma.$queryRawUnsafe($QUERY)
+      - pattern: |
+          prisma.$executeRawUnsafe($QUERY)
+    metavariable-pattern:
+      metavariable: $QUERY
+      pattern-not-regex: ".*company_id.*|.*companyId.*"
+    message: "Raw SQL query without company isolation"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن API routes بدون company isolation middleware
+  - id: api-route-missing-isolation
+    pattern: |
+      router.$METHOD('$PATH', $...HANDLERS)
+    metavariable-pattern:
+      metavariable: $HANDLERS
+      pattern-not-regex: ".*companyIsolation.*|.*requireCompanyAccess.*"
+    metavariable-pattern:
+      metavariable: $PATH
+      pattern-not-regex: ".*/auth/.*|.*/public/.*|.*/webhook.*"
+    message: "API route missing company isolation middleware"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن direct database access بدون filtering
+  - id: direct-db-access-no-filter
+    pattern-either:
+      - pattern: |
+          db.collection('$COLLECTION').find()
+      - pattern: |
+          db.collection('$COLLECTION').find({})
+      - pattern: |
+          db.$COLLECTION.find()
+      - pattern: |
+          db.$COLLECTION.find({})
+    message: "Direct database access without company filtering"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن hardcoded company IDs
+  - id: hardcoded-company-id
+    pattern-either:
+      - pattern: |
+          companyId: "$COMPANY_ID"
+      - pattern: |
+          company_id: "$COMPANY_ID"
+      - pattern: |
+          companyId = "$COMPANY_ID"
+      - pattern: |
+          company_id = "$COMPANY_ID"
+    metavariable-pattern:
+      metavariable: $COMPANY_ID
+      pattern-regex: "^[a-zA-Z0-9]{20,}$"
+    message: "Hardcoded company ID found - use dynamic company ID from auth context"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن missing authentication في sensitive operations
+  - id: missing-auth-sensitive-ops
+    pattern-either:
+      - pattern: |
+          router.$METHOD('$PATH', async (req, res) => {
+            $...BODY
+            prisma.$MODEL.$OP({...})
+            $...REST
+          })
+      - pattern: |
+          app.$METHOD('$PATH', async (req, res) => {
+            $...BODY
+            prisma.$MODEL.$OP({...})
+            $...REST
+          })
+    metavariable-pattern:
+      metavariable: $BODY
+      pattern-not-regex: ".*req\\.user.*|.*req\\.companyId.*|.*authenticate.*"
+    metavariable-pattern:
+      metavariable: $OP
+      patterns:
+        - pattern-either:
+          - pattern: create
+          - pattern: update
+          - pattern: delete
+          - pattern: upsert
+    message: "Sensitive database operation without authentication check"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن cross-company data access
+  - id: potential-cross-company-access
+    pattern: |
+      prisma.$MODEL.findMany({
+        where: {
+          companyId: $COMPANY_ID,
+          $...OTHER
+        },
+        include: {
+          $RELATION: true
+        }
+      })
+    metavariable-pattern:
+      metavariable: $RELATION
+      patterns:
+        - pattern-not-regex: ".*company.*"
+    message: "Potential cross-company data access through relations - verify isolation"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن missing input validation
+  - id: missing-company-id-validation
+    pattern: |
+      const companyId = req.$FIELD
+    metavariable-pattern:
+      metavariable: $FIELD
+      patterns:
+        - pattern-either:
+          - pattern: body.companyId
+          - pattern: params.companyId
+          - pattern: query.companyId
+    message: "Company ID from request without validation - potential security risk"
+    languages: [javascript, typescript]
+    severity: WARNING

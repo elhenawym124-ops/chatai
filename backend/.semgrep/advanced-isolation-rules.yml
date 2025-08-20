@@ -1,0 +1,241 @@
+rules:
+  # قاعدة متقدمة للكشف عن Prisma queries مع OR conditions بدون company isolation
+  - id: prisma-or-condition-missing-company
+    pattern: |
+      prisma.$MODEL.$METHOD({
+        where: {
+          OR: [
+            $...CONDITIONS
+          ]
+        }
+      })
+    metavariable-pattern:
+      metavariable: $CONDITIONS
+      pattern-not-regex: ".*companyId.*"
+    message: "OR condition in Prisma query without company isolation in all branches"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن nested queries بدون company isolation
+  - id: prisma-nested-query-missing-company
+    pattern: |
+      prisma.$MODEL.$METHOD({
+        where: {
+          $RELATION: {
+            $...NESTED_CONDITIONS
+          }
+        }
+      })
+    metavariable-pattern:
+      metavariable: $NESTED_CONDITIONS
+      pattern-not-regex: ".*companyId.*"
+    message: "Nested Prisma query without company isolation"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن transactions بدون company isolation
+  - id: prisma-transaction-missing-isolation
+    pattern: |
+      prisma.$transaction([
+        $...OPERATIONS
+      ])
+    metavariable-pattern:
+      metavariable: $OPERATIONS
+      pattern-not-regex: ".*companyId.*"
+    message: "Prisma transaction without company isolation checks"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن middleware bypass
+  - id: middleware-bypass-attempt
+    pattern-either:
+      - pattern: |
+          req.user = $USER
+      - pattern: |
+          req.companyId = $COMPANY_ID
+      - pattern: |
+          req.userId = $USER_ID
+    message: "Manual assignment to auth properties - potential middleware bypass"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن admin routes بدون proper authorization
+  - id: admin-route-missing-auth
+    pattern: |
+      router.$METHOD('/admin/$PATH', $...HANDLERS)
+    metavariable-pattern:
+      metavariable: $HANDLERS
+      pattern-not-regex: ".*requireAdmin.*|.*checkAdmin.*|.*adminOnly.*"
+    message: "Admin route without proper authorization middleware"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # قاعدة للكشف عن file operations بدون company isolation
+  - id: file-operation-missing-isolation
+    pattern-either:
+      - pattern: |
+          fs.readFile($PATH, ...)
+      - pattern: |
+          fs.writeFile($PATH, ...)
+      - pattern: |
+          fs.unlink($PATH, ...)
+      - pattern: |
+          fs.readdir($PATH, ...)
+    metavariable-pattern:
+      metavariable: $PATH
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "File operation without company isolation in path"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن cache operations بدون company isolation
+  - id: cache-operation-missing-isolation
+    pattern-either:
+      - pattern: |
+          cache.get($KEY)
+      - pattern: |
+          cache.set($KEY, $VALUE)
+      - pattern: |
+          cache.del($KEY)
+      - pattern: |
+          redis.get($KEY)
+      - pattern: |
+          redis.set($KEY, $VALUE)
+    metavariable-pattern:
+      metavariable: $KEY
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "Cache operation without company isolation in key"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن event emissions بدون company context
+  - id: event-emission-missing-company
+    pattern-either:
+      - pattern: |
+          eventEmitter.emit($EVENT, $DATA)
+      - pattern: |
+          io.emit($EVENT, $DATA)
+      - pattern: |
+          socket.emit($EVENT, $DATA)
+    metavariable-pattern:
+      metavariable: $DATA
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "Event emission without company context"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن logging بدون company context
+  - id: logging-missing-company-context
+    pattern-either:
+      - pattern: |
+          console.log($MESSAGE, $DATA)
+      - pattern: |
+          logger.info($MESSAGE, $DATA)
+      - pattern: |
+          logger.error($MESSAGE, $DATA)
+      - pattern: |
+          logger.warn($MESSAGE, $DATA)
+    metavariable-pattern:
+      metavariable: $DATA
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "Logging sensitive data without company context"
+    languages: [javascript, typescript]
+    severity: INFO
+
+  # قاعدة للكشف عن external API calls بدون company isolation
+  - id: external-api-missing-isolation
+    pattern-either:
+      - pattern: |
+          axios.get($URL, {
+            params: {
+              $...PARAMS
+            }
+          })
+      - pattern: |
+          fetch($URL, {
+            body: JSON.stringify({
+              $...BODY
+            })
+          })
+    metavariable-pattern:
+      metavariable: $PARAMS
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    metavariable-pattern:
+      metavariable: $BODY
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "External API call without company context"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن database migrations بدون company consideration
+  - id: migration-missing-company-field
+    pattern: |
+      createTable('$TABLE', function (table) {
+        $...COLUMNS
+      })
+    metavariable-pattern:
+      metavariable: $COLUMNS
+      pattern-not-regex: ".*companyId.*|.*company_id.*"
+    metavariable-pattern:
+      metavariable: $TABLE
+      patterns:
+        - pattern-not: users
+        - pattern-not: companies
+        - pattern-not: sessions
+    message: "Database table creation without companyId field"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن JWT tokens بدون company claim
+  - id: jwt-missing-company-claim
+    pattern: |
+      jwt.sign({
+        $...PAYLOAD
+      }, $SECRET)
+    metavariable-pattern:
+      metavariable: $PAYLOAD
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "JWT token without company claim"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن session data بدون company isolation
+  - id: session-missing-company-isolation
+    pattern-either:
+      - pattern: |
+          req.session.$FIELD = $VALUE
+      - pattern: |
+          session.set($KEY, $VALUE)
+      - pattern: |
+          session.save($DATA)
+    metavariable-pattern:
+      metavariable: $VALUE
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    metavariable-pattern:
+      metavariable: $DATA
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "Session data without company isolation"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # قاعدة للكشف عن email/notification sending بدون company context
+  - id: notification-missing-company-context
+    pattern-either:
+      - pattern: |
+          sendEmail({
+            $...OPTIONS
+          })
+      - pattern: |
+          sendNotification({
+            $...OPTIONS
+          })
+      - pattern: |
+          emailService.send({
+            $...OPTIONS
+          })
+    metavariable-pattern:
+      metavariable: $OPTIONS
+      pattern-not-regex: ".*companyId.*|.*company.*"
+    message: "Email/notification without company context"
+    languages: [javascript, typescript]
+    severity: WARNING

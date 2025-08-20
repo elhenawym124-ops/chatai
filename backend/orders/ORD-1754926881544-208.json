@@ -1,0 +1,118 @@
+{
+  "id": "ORD-1754926881544-208",
+  "orderNumber": "ORD-1754926881544-208",
+  "customerName": "عميل جديد",
+  "customerPhone": "01011333610",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "كفر الزيات",
+    "country": "مصر",
+    "fullAddress": ""
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي الاسكوتش",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أسود",
+        "size": "37",
+        "conversationId": "cme5c8o0j001pufgce3xo9zio",
+        "source": "ai_agent",
+        "confidence": 0.5,
+        "extractionMethod": "ai_enhanced"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب تلقائي من المحادثة\nمعرف المحادثة: cme5c8o0j001pufgce3xo9zio\nملاحظات إضافية: طلب تلقائي من المحادثة cme5c8o0j001pufgce3xo9zio - ١١‏/٨‏/٢٠٢٥، ٦:٤١:٢١ م\nتاريخ الإنشاء: ١١‏/٨‏/٢٠٢٥، ٦:٤١:٢١ م",
+  "createdAt": "2025-08-11T15:41:21.550Z",
+  "updatedAt": "2025-08-11T15:41:21.550Z",
+  "metadata": {
+    "conversationId": "cme5c8o0j001pufgce3xo9zio",
+    "customerId": "cme5c8nlm001nufgceadlhll1",
+    "companyId": "cmdt8nrjq003vufuss47dqc45",
+    "dataQuality": {
+      "score": "71",
+      "level": "جيدة",
+      "recommendation": "يحتاج مراجعة بسيطة",
+      "details": {
+        "totalScore": 10,
+        "maxScore": 14,
+        "issues": [
+          "productSize: قيمة افتراضية أو غير دقيقة",
+          "productPrice: قيمة افتراضية أو غير دقيقة",
+          "customerName: قيمة افتراضية أو غير دقيقة"
+        ],
+        "strengths": [
+          "productName: قيمة صحيحة ومحددة",
+          "productColor: قيمة صحيحة ومحددة",
+          "customerPhone: قيمة صحيحة ومحددة",
+          "city: قيمة صحيحة ومحددة"
+        ],
+        "checks": [
+          {
+            "field": "productName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "كوتشي الاسكوتش"
+          },
+          {
+            "field": "productColor",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 1,
+            "value": "أسود"
+          },
+          {
+            "field": "productSize",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 1,
+            "value": "37"
+          },
+          {
+            "field": "productPrice",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": 349
+          },
+          {
+            "field": "customerName",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 3,
+            "value": "24296165430073021 "
+          },
+          {
+            "field": "customerPhone",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 3,
+            "value": "01011333610"
+          },
+          {
+            "field": "city",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "كفر الزيات"
+          }
+        ]
+      }
+    },
+    "extractionTimestamp": "2025-08-11T15:41:21.551Z"
+  }
+}

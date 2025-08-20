@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار API الواجهة</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .pattern-item {
+            background-color: #f8f9fa;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 اختبار API الواجهة - إدارة الأنماط</h1>
+        
+        <div class="test-section info">
+            <h3>📊 معلومات الاختبار</h3>
+            <p><strong>الهدف:</strong> التحقق من أن الواجهة تحصل على الأنماط من الـ API</p>
+            <p><strong>API URL:</strong> http://localhost:3001/api/v1/success-learning/patterns</p>
+            <p><strong>Company ID:</strong> cme4yvrco002kuftceydlrwdi</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 اختبارات API</h3>
+            <button onclick="testDirectAPI()">اختبار API مباشر</button>
+            <button onclick="testFrontendAPI()">اختبار API الواجهة</button>
+            <button onclick="clearResults()">مسح النتائج</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3001/api/v1/success-learning';
+        const COMPANY_ID = 'cme4yvrco002kuftceydlrwdi';
+
+        function addResult(title, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-section ${type}`;
+            resultDiv.innerHTML = `
+                <h4>${title}</h4>
+                <div>${content}</div>
+            `;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testDirectAPI() {
+            try {
+                addResult('🔄 اختبار API مباشر', 'جاري الاختبار...', 'info');
+                
+                const url = `${API_BASE_URL}/patterns?companyId=${COMPANY_ID}&limit=100`;
+                console.log('🔍 Testing URL:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                console.log('📊 API Response:', data);
+                
+                if (data.success) {
+                    const patterns = data.data.patterns;
+                    let content = `
+                        <p><strong>✅ نجح الاختبار!</strong></p>
+                        <p><strong>عدد الأنماط:</strong> ${patterns.length}</p>
+                        <p><strong>إجمالي العدد:</strong> ${data.data.count}</p>
+                        <h5>🎯 الأنماط المكتشفة:</h5>
+                    `;
+                    
+                    patterns.forEach((pattern, index) => {
+                        const metadata = pattern.metadata ? JSON.parse(pattern.metadata) : {};
+                        const isAIGenerated = metadata.aiGenerated || metadata.source === 'ai_detection';
+                        
+                        content += `
+                            <div class="pattern-item">
+                                <strong>${index + 1}. ${pattern.description}</strong>
+                                <br>📈 معدل النجاح: ${(pattern.successRate * 100).toFixed(0)}%
+                                <br>🤖 مولد بالذكاء الصناعي: ${isAIGenerated ? 'نعم' : 'لا'}
+                                <br>✅ نشط: ${pattern.isActive ? 'نعم' : 'لا'}
+                                <br>🔍 معتمد: ${pattern.isApproved ? 'نعم' : 'لا'}
+                                <br>📅 تاريخ الإنشاء: ${new Date(pattern.createdAt).toLocaleString('ar-EG')}
+                            </div>
+                        `;
+                    });
+                    
+                    addResult('✅ API مباشر - نجح', content, 'success');
+                } else {
+                    addResult('❌ API مباشر - فشل', `<pre>${JSON.stringify(data, null, 2)}</pre>`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error in direct API test:', error);
+                addResult('❌ API مباشر - خطأ', `<pre>${error.message}</pre>`, 'error');
+            }
+        }
+
+        async function testFrontendAPI() {
+            try {
+                addResult('🔄 اختبار API الواجهة', 'جاري محاكاة استدعاء الواجهة...', 'info');
+                
+                // محاكاة successAnalyticsAPI.getPatterns
+                const params = new URLSearchParams();
+                params.append('companyId', COMPANY_ID);
+                params.append('limit', '100');
+                
+                console.log('🔍 Frontend API params:', params.toString());
+                
+                const response = await fetch(`${API_BASE_URL}/patterns?${params}`);
+                const data = await response.json();
+                
+                console.log('📊 Frontend API Response:', data);
+                
+                if (data.success) {
+                    const patterns = data.data.patterns;
+                    
+                    // تصنيف الأنماط
+                    const aiPatterns = patterns.filter(p => {
+                        const metadata = p.metadata ? JSON.parse(p.metadata) : {};
+                        return metadata.aiGenerated || metadata.source === 'ai_detection';
+                    });
+                    
+                    const manualPatterns = patterns.filter(p => {
+                        const metadata = p.metadata ? JSON.parse(p.metadata) : {};
+                        return !metadata.aiGenerated && metadata.source !== 'ai_detection';
+                    });
+                    
+                    let content = `
+                        <p><strong>✅ نجح اختبار الواجهة!</strong></p>
+                        <p><strong>إجمالي الأنماط:</strong> ${patterns.length}</p>
+                        <p><strong>أنماط الذكاء الصناعي:</strong> ${aiPatterns.length}</p>
+                        <p><strong>أنماط يدوية:</strong> ${manualPatterns.length}</p>
+                        
+                        <h5>🤖 الأنماط المكتشفة بالذكاء الصناعي:</h5>
+                    `;
+                    
+                    if (aiPatterns.length > 0) {
+                        aiPatterns.forEach((pattern, index) => {
+                            const metadata = JSON.parse(pattern.metadata || '{}');
+                            content += `
+                                <div class="pattern-item">
+                                    <strong>${index + 1}. ${pattern.description}</strong>
+                                    <br>📈 معدل النجاح: ${(pattern.successRate * 100).toFixed(0)}%
+                                    <br>🧠 اسم النمط: ${metadata.name || 'غير محدد'}
+                                    <br>💡 رؤى الذكاء الصناعي: ${metadata.aiInsights || 'غير متوفر'}
+                                    <br>📅 تاريخ الاكتشاف: ${new Date(pattern.createdAt).toLocaleString('ar-EG')}
+                                </div>
+                            `;
+                        });
+                    } else {
+                        content += '<p>❌ لم يتم العثور على أنماط مكتشفة بالذكاء الصناعي</p>';
+                    }
+                    
+                    addResult('✅ API الواجهة - نجح', content, 'success');
+                } else {
+                    addResult('❌ API الواجهة - فشل', `<pre>${JSON.stringify(data, null, 2)}</pre>`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error in frontend API test:', error);
+                addResult('❌ API الواجهة - خطأ', `<pre>${error.message}</pre>`, 'error');
+            }
+        }
+
+        // تشغيل الاختبارات تلقائياً عند تحميل الصفحة
+        window.onload = function() {
+            setTimeout(() => {
+                testDirectAPI();
+                setTimeout(() => {
+                    testFrontendAPI();
+                }, 1000);
+            }, 500);
+        };
+    </script>
+</body>
+</html>

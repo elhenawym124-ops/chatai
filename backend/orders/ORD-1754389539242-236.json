@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754389539242-236",
+  "orderNumber": "ORD-1754389539242-236",
+  "customerName": "24724147047169139 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "واحد بس وهو \"كوتشي الاسكوتش\"",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "اللي",
+        "size": "39",
+        "conversationId": "cmdyc3srs00uvufgsivlal09b",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyc3srs00uvufgsivlal09b\nطلب تلقائي من المحادثة cmdyc3srs00uvufgsivlal09b - ٥‏/٨‏/٢٠٢٥، ١:٢٥:٣٩ م",
+  "createdAt": "2025-08-05T10:25:39.242Z",
+  "updatedAt": "2025-08-05T10:25:39.242Z"
+}

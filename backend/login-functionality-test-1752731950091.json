@@ -1,0 +1,105 @@
+{
+  "tests": [
+    {
+      "name": "اختبار API تسجيل الدخول",
+      "passed": false,
+      "message": "فشل API تسجيل الدخول: 429",
+      "details": {
+        "status": 429,
+        "data": {
+          "error": "Too Many Requests",
+          "message": "Too many authentication attempts",
+          "code": "RATE_LIMIT_EXCEEDED",
+          "retryAfter": 900,
+          "timestamp": "2025-07-17T05:59:10.027Z"
+        }
+      },
+      "timestamp": "2025-07-17T05:59:10.033Z"
+    },
+    {
+      "name": "اختبار بيانات خاطئة",
+      "passed": false,
+      "message": "استجابة غير متوقعة: 429",
+      "details": {
+        "status": 429,
+        "data": {
+          "error": "Too Many Requests",
+          "message": "Too many authentication attempts",
+          "code": "RATE_LIMIT_EXCEEDED",
+          "retryAfter": 900,
+          "timestamp": "2025-07-17T05:59:10.038Z"
+        }
+      },
+      "timestamp": "2025-07-17T05:59:10.039Z"
+    },
+    {
+      "name": "اختبار جميع المستخدمين التجريبيين",
+      "passed": false,
+      "message": "0/4 مستخدمين نجحوا (0.0%)",
+      "details": {
+        "successCount": 0,
+        "totalUsers": 4,
+        "successRate": 0,
+        "results": [
+          {
+            "user": "مدير النظام",
+            "email": "admin@example.com",
+            "role": "admin",
+            "success": false,
+            "status": 429
+          },
+          {
+            "user": "مدير",
+            "email": "manager@example.com",
+            "role": "manager",
+            "success": false,
+            "status": 429
+          },
+          {
+            "user": "موظف خدمة عملاء 1",
+            "email": "agent1@example.com",
+            "role": "agent",
+            "success": false,
+            "status": 429
+          },
+          {
+            "user": "موظف خدمة عملاء 2",
+            "email": "agent2@example.com",
+            "role": "agent",
+            "success": false,
+            "status": 429
+          }
+        ]
+      },
+      "timestamp": "2025-07-17T05:59:10.058Z"
+    },
+    {
+      "name": "اختبار صحة التوكن",
+      "passed": false,
+      "message": "خطأ: Request failed with status code 429",
+      "error": "Request failed with status code 429",
+      "timestamp": "2025-07-17T05:59:10.067Z"
+    },
+    {
+      "name": "اختبار تسجيل الخروج",
+      "passed": false,
+      "message": "خطأ: Request failed with status code 429",
+      "error": "Request failed with status code 429",
+      "timestamp": "2025-07-17T05:59:10.072Z"
+    },
+    {
+      "name": "اختبار صفحة تسجيل الدخول",
+      "passed": false,
+      "message": "صفحة تسجيل الدخول غير متاحة: 404",
+      "details": {
+        "status": 404
+      },
+      "timestamp": "2025-07-17T05:59:10.082Z"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 0,
+    "failed": 6
+  }
+}

@@ -1,0 +1,95 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+build/
+dist/
+out/
+.next/
+.nuxt/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+prisma/migrations/
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary folders
+tmp/
+temp/
+
+# Generated files
+CHANGELOG.md
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Documentation build
+docs/.vuepress/dist/
+docs/.docusaurus/
+
+# Storybook
+.storybook-out/
+storybook-static/
+
+# Test results
+test-results/
+playwright-report/
+
+# Uploads
+uploads/
+public/uploads/
+
+# Certificates
+*.pem
+*.key
+*.crt
+
+# Backup files
+*.backup
+*.bak

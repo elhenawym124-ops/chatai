@@ -1,0 +1,50 @@
+[
+  {
+    "id": "prompt_1752853187523",
+    "companyId": "cmd5c0c9y0000ymzdd7wtv7ib",
+    "type": "greeting",
+    "name": "ترحيب المتجر",
+    "content": "مرحباً بك في متجر الإلكترونيات المتقدم! كيف يمكنني مساعدتك اليوم؟ نحن متخصصون في أحدث الأجهزة الإلكترونية.",
+    "variables": [],
+    "priority": 5,
+    "active": true,
+    "createdAt": "2025-07-18T15:39:47.523Z",
+    "updatedAt": "2025-07-18T15:39:47.523Z"
+  },
+  {
+    "id": "prompt_1752853187525",
+    "companyId": "cmd5c0c9y0000ymzdd7wtv7ib",
+    "type": "product",
+    "name": "استفسار المنتجات",
+    "content": "لدينا مجموعة واسعة من {product_category}. هل تبحث عن مواصفات معينة أم لديك ميزانية محددة؟",
+    "variables": ["product_category"],
+    "priority": 4,
+    "active": true,
+    "createdAt": "2025-07-18T15:39:47.525Z",
+    "updatedAt": "2025-07-18T15:39:47.525Z"
+  },
+  {
+    "id": "prompt_1752853187526",
+    "companyId": "cmd5c0c9y0000ymzdd7wtv7ib",
+    "type": "support",
+    "name": "دعم فني",
+    "content": "أهلاً بك في قسم الدعم الفني. كيف يمكنني مساعدتك في حل مشكلتك التقنية؟",
+    "variables": [],
+    "priority": 3,
+    "active": true,
+    "createdAt": "2025-07-21T05:30:00.000Z",
+    "updatedAt": "2025-07-21T05:30:00.000Z"
+  },
+  {
+    "id": "prompt_1752853187527",
+    "companyId": "cmd5c0c9y0000ymzdd7wtv7ib",
+    "type": "order",
+    "name": "متابعة الطلبات",
+    "content": "يمكنك متابعة طلبك رقم {order_id} من خلال الرابط التالي. هل تحتاج مساعدة أخرى؟",
+    "variables": ["order_id"],
+    "priority": 2,
+    "active": false,
+    "createdAt": "2025-07-21T05:31:00.000Z",
+    "updatedAt": "2025-07-21T05:31:00.000Z"
+  }
+]

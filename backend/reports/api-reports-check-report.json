@@ -1,0 +1,468 @@
+{
+  "timestamp": "2025-07-16T22:59:04.022Z",
+  "results": {
+    "reports": {
+      "All Reports": {
+        "name": "All Reports",
+        "path": "/api/v1/reports",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 120,
+        "hasData": true,
+        "success": true
+      },
+      "Sales Report": {
+        "name": "Sales Report",
+        "path": "/api/v1/reports/sales",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 5,
+        "dataSize": 53,
+        "hasData": true,
+        "success": true
+      },
+      "Customer Report": {
+        "name": "Customer Report",
+        "path": "/api/v1/reports/customers",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 5,
+        "dataSize": 130,
+        "hasData": true,
+        "success": true
+      },
+      "Conversations Report": {
+        "name": "Conversations Report",
+        "path": "/api/v1/reports/conversations",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 134,
+        "hasData": true,
+        "success": true
+      },
+      "Products Report": {
+        "name": "Products Report",
+        "path": "/api/v1/reports/products",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 129,
+        "hasData": true,
+        "success": true
+      },
+      "Performance Report": {
+        "name": "Performance Report",
+        "path": "/api/v1/reports/performance",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 132,
+        "hasData": true,
+        "success": true
+      },
+      "Revenue Report": {
+        "name": "Revenue Report",
+        "path": "/api/v1/reports/revenue",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 128,
+        "hasData": true,
+        "success": true
+      },
+      "Conversion Report": {
+        "name": "Conversion Report",
+        "path": "/api/v1/reports/conversion",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 5,
+        "dataSize": 131,
+        "hasData": true,
+        "success": true
+      },
+      "Engagement Report": {
+        "name": "Engagement Report",
+        "path": "/api/v1/reports/engagement",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 131,
+        "hasData": true,
+        "success": true
+      },
+      "Trends Report": {
+        "name": "Trends Report",
+        "path": "/api/v1/reports/trends",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 127,
+        "hasData": true,
+        "success": true
+      },
+      "Custom Reports": {
+        "name": "Custom Reports",
+        "path": "/api/v1/reports/custom",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 127,
+        "hasData": true,
+        "success": true
+      },
+      "Scheduled Reports": {
+        "name": "Scheduled Reports",
+        "path": "/api/v1/reports/scheduled",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 130,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "analytics": {
+      "Analytics Overview": {
+        "name": "Analytics Overview",
+        "path": "/api/v1/analytics",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 72,
+        "hasData": true,
+        "success": true
+      },
+      "Sentiment Analysis": {
+        "name": "Sentiment Analysis",
+        "path": "/api/v1/analytics/sentiment",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Customer Behavior": {
+        "name": "Customer Behavior",
+        "path": "/api/v1/analytics/behavior",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 81,
+        "hasData": true,
+        "success": true
+      },
+      "Usage Patterns": {
+        "name": "Usage Patterns",
+        "path": "/api/v1/analytics/patterns",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 81,
+        "hasData": true,
+        "success": true
+      },
+      "Predictions": {
+        "name": "Predictions",
+        "path": "/api/v1/analytics/predictions",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 84,
+        "hasData": true,
+        "success": true
+      },
+      "Business Insights": {
+        "name": "Business Insights",
+        "path": "/api/v1/analytics/insights",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 81,
+        "hasData": true,
+        "success": true
+      },
+      "KPI Analytics": {
+        "name": "KPI Analytics",
+        "path": "/api/v1/analytics/kpi",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 76,
+        "hasData": true,
+        "success": true
+      },
+      "Cohort Analysis": {
+        "name": "Cohort Analysis",
+        "path": "/api/v1/analytics/cohort",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 79,
+        "hasData": true,
+        "success": true
+      },
+      "Funnel Analysis": {
+        "name": "Funnel Analysis",
+        "path": "/api/v1/analytics/funnel",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 79,
+        "hasData": true,
+        "success": true
+      },
+      "Retention Analysis": {
+        "name": "Retention Analysis",
+        "path": "/api/v1/analytics/retention",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Customer Segmentation": {
+        "name": "Customer Segmentation",
+        "path": "/api/v1/analytics/segmentation",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 85,
+        "hasData": true,
+        "success": true
+      },
+      "Real-time Analytics": {
+        "name": "Real-time Analytics",
+        "path": "/api/v1/analytics/real-time",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "dashboard": {
+      "Dashboard Overview": {
+        "name": "Dashboard Overview",
+        "path": "/api/v1/dashboard",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 46,
+        "dataSize": 72,
+        "hasData": true,
+        "success": true
+      },
+      "Dashboard Stats": {
+        "name": "Dashboard Stats",
+        "path": "/api/v1/dashboard/stats",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 3,
+        "dataSize": 1436,
+        "hasData": true,
+        "success": true
+      },
+      "Dashboard Metrics": {
+        "name": "Dashboard Metrics",
+        "path": "/api/v1/dashboard/metrics",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 1438,
+        "hasData": true,
+        "success": true
+      },
+      "Recent Activity": {
+        "name": "Recent Activity",
+        "path": "/api/v1/dashboard/recent-activity",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 1446,
+        "hasData": true,
+        "success": true
+      },
+      "Dashboard Notifications": {
+        "name": "Dashboard Notifications",
+        "path": "/api/v1/dashboard/notifications",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 1444,
+        "hasData": true,
+        "success": true
+      },
+      "Quick Stats": {
+        "name": "Quick Stats",
+        "path": "/api/v1/dashboard/quick-stats",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 1442,
+        "hasData": true,
+        "success": true
+      },
+      "Performance Metrics": {
+        "name": "Performance Metrics",
+        "path": "/api/v1/dashboard/performance",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 1442,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "exports": {
+      "Export PDF": {
+        "name": "Export PDF",
+        "path": "/api/v1/exports/reports/pdf",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Export Excel": {
+        "name": "Export Excel",
+        "path": "/api/v1/exports/reports/excel",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 84,
+        "hasData": true,
+        "success": true
+      },
+      "Export CSV": {
+        "name": "Export CSV",
+        "path": "/api/v1/exports/reports/csv",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 5,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Export Customers Data": {
+        "name": "Export Customers Data",
+        "path": "/api/v1/exports/data/customers",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 85,
+        "hasData": true,
+        "success": true
+      },
+      "Export Conversations Data": {
+        "name": "Export Conversations Data",
+        "path": "/api/v1/exports/data/conversations",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 89,
+        "hasData": true,
+        "success": true
+      },
+      "Export Products Data": {
+        "name": "Export Products Data",
+        "path": "/api/v1/exports/data/products",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 84,
+        "hasData": true,
+        "success": true
+      },
+      "Export Analytics": {
+        "name": "Export Analytics",
+        "path": "/api/v1/exports/analytics",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 80,
+        "hasData": true,
+        "success": true
+      },
+      "Scheduled Exports": {
+        "name": "Scheduled Exports",
+        "path": "/api/v1/exports/scheduled",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 80,
+        "hasData": true,
+        "success": true
+      },
+      "Export History": {
+        "name": "Export History",
+        "path": "/api/v1/exports/history",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 783,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "summary": {
+      "totalEndpoints": 40,
+      "workingEndpoints": 40,
+      "failedEndpoints": 0,
+      "overallStatus": "GOOD"
+    },
+    "issues": []
+  },
+  "summary": {
+    "status": "GOOD",
+    "successRate": 100,
+    "totalEndpoints": 40,
+    "workingEndpoints": 40,
+    "failedEndpoints": 0,
+    "totalIssues": 0
+  }
+}

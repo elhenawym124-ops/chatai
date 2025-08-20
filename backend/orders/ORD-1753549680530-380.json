@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1753549680530-380",
+  "orderNumber": "ORD-1753549680530-380",
+  "customerName": "??? ??? ????",
+  "customerPhone": "01123087745",
+  "customerEmail": "",
+  "total": 320,
+  "subtotal": 320,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "??????????",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "????? ??????",
+      "price": 320,
+      "quantity": 1,
+      "total": 320,
+      "metadata": {
+        "color": "????",
+        "size": "37",
+        "conversationId": "test-conversation",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: test-conversation\n",
+  "createdAt": "2025-07-26T17:08:00.530Z",
+  "updatedAt": "2025-07-26T17:08:00.531Z"
+}

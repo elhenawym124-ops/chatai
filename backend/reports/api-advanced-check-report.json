@@ -1,0 +1,378 @@
+{
+  "timestamp": "2025-07-16T23:00:39.075Z",
+  "results": {
+    "ai": {
+      "Sentiment Analysis": {
+        "name": "Sentiment Analysis",
+        "path": "/api/v1/ai/sentiment",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 46,
+        "dataSize": 75,
+        "hasData": true,
+        "success": true
+      },
+      "Intent Recognition": {
+        "name": "Intent Recognition",
+        "path": "/api/v1/ai/intent",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "dataSize": 72,
+        "hasData": true,
+        "success": true
+      },
+      "Product Recommendations": {
+        "name": "Product Recommendations",
+        "path": "/api/v1/ai/recommendations",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 81,
+        "hasData": true,
+        "success": true
+      },
+      "Smart Response": {
+        "name": "Smart Response",
+        "path": "/api/v1/ai/response",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 74,
+        "hasData": true,
+        "success": true
+      },
+      "Message Categorization": {
+        "name": "Message Categorization",
+        "path": "/api/v1/ai/categorize",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 76,
+        "hasData": true,
+        "success": true
+      },
+      "Translation": {
+        "name": "Translation",
+        "path": "/api/v1/ai/translate",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 75,
+        "hasData": true,
+        "success": true
+      },
+      "Text Summarization": {
+        "name": "Text Summarization",
+        "path": "/api/v1/ai/summarize",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 75,
+        "hasData": true,
+        "success": true
+      },
+      "AI Models": {
+        "name": "AI Models",
+        "path": "/api/v1/ai/models",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 72,
+        "hasData": true,
+        "success": true
+      },
+      "Model Training": {
+        "name": "Model Training",
+        "path": "/api/v1/ai/training",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 4,
+        "dataSize": 74,
+        "hasData": true,
+        "success": true
+      },
+      "AI Prompts": {
+        "name": "AI Prompts",
+        "path": "/api/v1/ai/prompts",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 3,
+        "dataSize": 26,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "automation": {
+      "Automation Rules": {
+        "name": "Automation Rules",
+        "path": "/api/v1/automation/rules",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 79,
+        "hasData": true,
+        "success": true
+      },
+      "Escalation Rules": {
+        "name": "Escalation Rules",
+        "path": "/api/v1/automation/escalation",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 84,
+        "hasData": true,
+        "success": true
+      },
+      "Follow-up Automation": {
+        "name": "Follow-up Automation",
+        "path": "/api/v1/automation/follow-up",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 83,
+        "hasData": true,
+        "success": true
+      },
+      "Conversation Distribution": {
+        "name": "Conversation Distribution",
+        "path": "/api/v1/automation/distribution",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 86,
+        "hasData": true,
+        "success": true
+      },
+      "Campaign Automation": {
+        "name": "Campaign Automation",
+        "path": "/api/v1/automation/campaigns",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 83,
+        "hasData": true,
+        "success": true
+      },
+      "Automation Scenarios": {
+        "name": "Automation Scenarios",
+        "path": "/api/v1/automation/scenarios",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 83,
+        "hasData": true,
+        "success": true
+      },
+      "Automation Triggers": {
+        "name": "Automation Triggers",
+        "path": "/api/v1/automation/triggers",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Automation Workflows": {
+        "name": "Automation Workflows",
+        "path": "/api/v1/automation/workflows",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 3,
+        "dataSize": 1718,
+        "hasData": true,
+        "success": true
+      },
+      "Scheduled Tasks": {
+        "name": "Scheduled Tasks",
+        "path": "/api/v1/automation/schedule",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 82,
+        "hasData": true,
+        "success": true
+      },
+      "Execute Automation": {
+        "name": "Execute Automation",
+        "path": "/api/v1/automation/execute",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 81,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "advanced": {
+      "Notifications": {
+        "name": "Notifications",
+        "path": "/api/v1/notifications",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "dataSize": 36,
+        "hasData": true,
+        "success": true
+      },
+      "Send Notification": {
+        "name": "Send Notification",
+        "path": "/api/v1/notifications/send",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 3,
+        "dataSize": 50,
+        "hasData": true,
+        "success": true
+      },
+      "Integrations": {
+        "name": "Integrations",
+        "path": "/api/v1/integrations",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 75,
+        "hasData": true,
+        "success": true
+      },
+      "Webhooks": {
+        "name": "Webhooks",
+        "path": "/api/v1/webhooks",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 71,
+        "hasData": true,
+        "success": true
+      },
+      "Message Templates": {
+        "name": "Message Templates",
+        "path": "/api/v1/templates",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 3,
+        "dataSize": 5575,
+        "hasData": true,
+        "success": true
+      },
+      "Media Upload": {
+        "name": "Media Upload",
+        "path": "/api/v1/media/upload",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 2,
+        "dataSize": 45,
+        "hasData": true,
+        "success": true
+      },
+      "Global Search": {
+        "name": "Global Search",
+        "path": "/api/v1/search",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 76,
+        "hasData": true,
+        "success": true
+      },
+      "Backup System": {
+        "name": "Backup System",
+        "path": "/api/v1/backup",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 69,
+        "hasData": true,
+        "success": true
+      },
+      "System Logs": {
+        "name": "System Logs",
+        "path": "/api/v1/logs",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 67,
+        "hasData": true,
+        "success": true
+      },
+      "Performance Metrics": {
+        "name": "Performance Metrics",
+        "path": "/api/v1/performance",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "dataSize": 74,
+        "hasData": true,
+        "success": true
+      },
+      "Security Status": {
+        "name": "Security Status",
+        "path": "/api/v1/security",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 71,
+        "hasData": true,
+        "success": true
+      },
+      "System Information": {
+        "name": "System Information",
+        "path": "/api/v1/system/info",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "dataSize": 74,
+        "hasData": true,
+        "success": true
+      }
+    },
+    "summary": {
+      "totalEndpoints": 32,
+      "workingEndpoints": 32,
+      "failedEndpoints": 0,
+      "overallStatus": "GOOD"
+    },
+    "issues": []
+  },
+  "summary": {
+    "status": "GOOD",
+    "successRate": 100,
+    "totalEndpoints": 32,
+    "workingEndpoints": 32,
+    "failedEndpoints": 0,
+    "totalIssues": 0
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754408304473-84",
+  "orderNumber": "ORD-1754408304473-84",
+  "customerName": "24184348784508088 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "براحتك",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "الأسود",
+        "size": "41",
+        "conversationId": "cmdyoomf401njufgsmeaomirm",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyoomf401njufgsmeaomirm\nطلب تلقائي من المحادثة cmdyoomf401njufgsmeaomirm - ٥‏/٨‏/٢٠٢٥، ٦:٣٨:٢٤ م",
+  "createdAt": "2025-08-05T15:38:24.473Z",
+  "updatedAt": "2025-08-05T15:38:24.473Z"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754176096778-1",
+  "orderNumber": "ORD-1754176096778-1",
+  "customerName": "24097837286524533 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 145,
+  "subtotal": 70,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "لما يوصلك",
+      "price": 70,
+      "quantity": 1,
+      "total": 70,
+      "metadata": {
+        "color": "ين",
+        "size": "37",
+        "conversationId": "cmdtkrkcp001sufrk3oyu70gx",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdtkrkcp001sufrk3oyu70gx\nطلب تلقائي من المحادثة cmdtkrkcp001sufrk3oyu70gx - ٣‏/٨‏/٢٠٢٥، ٢:٠٨:١٦ ص",
+  "createdAt": "2025-08-02T23:08:16.778Z",
+  "updatedAt": "2025-08-02T23:08:16.778Z"
+}

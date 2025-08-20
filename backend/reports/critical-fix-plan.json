@@ -1,0 +1,195 @@
+{
+  "timestamp": "2025-08-16T03:42:55.131Z",
+  "totalCriticalIssues": 51,
+  "issuesByType": {
+    "Raw SQL query without company isolation": 29,
+    "Bulk operation without proper filtering": 22
+  },
+  "priorityFiles": [
+    {
+      "file": "src\\services\\aiAgentService-backup.js",
+      "issueCount": 8,
+      "issues": [
+        {
+          "line": 72,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 104,
+          "description": "Raw SQL query without company isolation",
+          "content": "const modelRecord = await prisma.$queryRaw`"
+        },
+        {
+          "line": 117,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 209,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 234,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 299,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 336,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 342,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        }
+      ]
+    },
+    {
+      "file": "src\\services\\aiAgentService-clean.js",
+      "issueCount": 8,
+      "issues": [
+        {
+          "line": 147,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 179,
+          "description": "Raw SQL query without company isolation",
+          "content": "const modelRecord = await prisma.$queryRaw`"
+        },
+        {
+          "line": 192,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 284,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 309,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 374,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 411,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 417,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        }
+      ]
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "issueCount": 6,
+      "issues": [
+        {
+          "line": 45,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$queryRaw`SELECT 1 as connection_test`;"
+        },
+        {
+          "line": 84,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$queryRaw`SELECT 1 as health_check`;"
+        },
+        {
+          "line": 149,
+          "description": "Raw SQL query without company isolation",
+          "content": "const tables = await client.$queryRaw<Array<{ TABLE_NAME: string }>>`"
+        },
+        {
+          "line": 155,
+          "description": "Raw SQL query without company isolation",
+          "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0`;"
+        },
+        {
+          "line": 161,
+          "description": "Raw SQL query without company isolation",
+          "content": "await client.$executeRawUnsafe(`TRUNCATE TABLE \\`${table.TABLE_NAME}\\``);"
+        },
+        {
+          "line": 166,
+          "description": "Raw SQL query without company isolation",
+          "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 1`;"
+        }
+      ]
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "issueCount": 5,
+      "issues": [
+        {
+          "line": 2954,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 2998,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 3078,
+          "description": "Raw SQL query without company isolation",
+          "content": "const availableModels = await prisma.$queryRaw`"
+        },
+        {
+          "line": 3115,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        },
+        {
+          "line": 3121,
+          "description": "Raw SQL query without company isolation",
+          "content": "await prisma.$executeRaw`"
+        }
+      ]
+    },
+    {
+      "file": "src\\domains\\integrations\\services\\FacebookService.ts",
+      "issueCount": 3,
+      "issues": [
+        {
+          "line": 506,
+          "description": "Bulk operation without proper filtering",
+          "content": "await this.prisma.message.updateMany({"
+        },
+        {
+          "line": 535,
+          "description": "Bulk operation without proper filtering",
+          "content": "await this.prisma.message.updateMany({"
+        },
+        {
+          "line": 587,
+          "description": "Bulk operation without proper filtering",
+          "content": "await this.prisma.integration.updateMany({"
+        }
+      ]
+    }
+  ],
+  "recommendations": {
+    "safeQueries": 4,
+    "prismaNoFilters": 0,
+    "rawSqlWithParams": 25
+  }
+}

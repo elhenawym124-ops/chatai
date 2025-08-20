@@ -1,0 +1,4671 @@
+{
+  "timestamp": "2025-08-17T09:02:11.269Z",
+  "filesScanned": 179,
+  "totalIssues": 666,
+  "criticalIssues": 31,
+  "warningIssues": 635,
+  "issues": [
+    {
+      "file": "src\\config\\database.ts",
+      "line": 46,
+      "content": "await prisma.$queryRaw`SELECT 1 as connection_test`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "line": 86,
+      "content": "await prisma.$queryRaw`SELECT 1 as health_check`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "line": 152,
+      "content": "const tables = await client.$queryRaw<Array<{ TABLE_NAME: string }>>`",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "line": 161,
+      "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "line": 167,
+      "content": "await client.$executeRawUnsafe(`TRUNCATE TABLE \\`${table.TABLE_NAME}\\``);",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\config\\database.ts",
+      "line": 172,
+      "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 1`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 22,
+      "content": "const { companyId } = req.user || { companyId: 'cmdkj6coz0000uf0cyscco6lr' };",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 28,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 32,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 36,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 53,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 373,
+      "content": "where: { companyId: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 446,
+      "content": "where: { id: id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\continuousLearningController_old.js",
+      "line": 494,
+      "content": "where: { id: id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\hybridAiController.js",
+      "line": 162,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\controllers\\hybridAiController.js",
+      "line": 301,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\controllers\\AIController.ts",
+      "line": 161,
+      "content": "where: { companyId: user.companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\controllers\\AIController.ts",
+      "line": 291,
+      "content": "where: { id: customerId, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\controllers\\AIController.ts",
+      "line": 313,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\controllers\\AIController.ts",
+      "line": 325,
+      "content": "where: { conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 19,
+      "content": "router.post('/generate-response', aiController.generateResponse);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 22,
+      "content": "router.post('/analyze-sentiment', aiController.analyzeSentiment);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 23,
+      "content": "router.post('/recommend-products', aiController.recommendProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 24,
+      "content": "router.get('/insights/:conversationId', aiController.getConversationInsights);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 27,
+      "content": "router.get('/analytics', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAnalytics);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 30,
+      "content": "router.get('/settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 31,
+      "content": "router.put('/settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 34,
+      "content": "router.post('/test', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.testResponse);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 39,
+      "content": "router.get('/models', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAvailableModels);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 40,
+      "content": "router.get('/usage-stats', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getUsageStats);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 43,
+      "content": "router.post('/generate-advanced-response', aiController.generateAdvancedResponse);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 48,
+      "content": "router.get('/prompt-templates', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getPromptTemplates);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 51,
+      "content": "router.get('/prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getCompanyPrompts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 52,
+      "content": "router.put('/prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateCompanyPrompts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 53,
+      "content": "router.post('/prompts/apply-template', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.applyTemplate);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 58,
+      "content": "router.get('/static-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getStaticPrompts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 59,
+      "content": "router.post('/static-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.createStaticPrompt);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 60,
+      "content": "router.put('/static-prompts/:id', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateStaticPrompt);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 61,
+      "content": "router.delete('/static-prompts/:id', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.deleteStaticPrompt);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 64,
+      "content": "router.get('/business-templates', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getBusinessTemplates);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 65,
+      "content": "router.get('/business-types', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getBusinessTypes);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 66,
+      "content": "router.post('/business-templates/apply/:templateId', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.applyBusinessTemplate);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 69,
+      "content": "router.get('/advanced-services/company-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAdvancedCompanyPrompts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 70,
+      "content": "router.get('/advanced-services/active-services', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getActiveServices);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 71,
+      "content": "router.get('/advanced-services/configuration', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAdvancedConfiguration);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 72,
+      "content": "router.put('/advanced-services/configuration', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateAdvancedConfiguration);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 77,
+      "content": "router.get('/product-settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getProductAiSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 78,
+      "content": "router.put('/product-settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateProductAiSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 81,
+      "content": "router.post('/recommend-products-advanced', aiController.recommendProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 82,
+      "content": "router.post('/analyze-image', aiController.analyzeCustomerImage);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 83,
+      "content": "router.post('/create-order', aiController.createOrderFromConversation);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\routes\\aiRoutes.ts",
+      "line": 84,
+      "content": "router.get('/product-image/:productId', aiController.getProductImage);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 71,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 306,
+      "content": "where: { id: customerId, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 326,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 387,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 544,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\ai\\services\\GeminiService.ts",
+      "line": 600,
+      "content": "where: { ...where, requiresHumanIntervention: true }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\middleware\\authMiddleware.ts",
+      "line": 37,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\middleware\\authMiddleware.ts",
+      "line": 174,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 16,
+      "content": "router.post('/register', rateLimitMiddleware.register, authController.register);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 17,
+      "content": "router.post('/login', rateLimitMiddleware.login, authController.login);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 18,
+      "content": "router.post('/refresh', rateLimitMiddleware.refresh, authController.refreshToken);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 19,
+      "content": "router.post('/forgot-password', rateLimitMiddleware.forgotPassword, authController.forgotPassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 20,
+      "content": "router.post('/reset-password', rateLimitMiddleware.resetPassword, authController.resetPassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 21,
+      "content": "router.post('/verify-email', authController.verifyEmail);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 22,
+      "content": "router.post('/resend-verification', rateLimitMiddleware.resendVerification, authController.resendVerification);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 27,
+      "content": "router.post('/logout', authController.logout);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 28,
+      "content": "router.get('/me', authController.getProfile);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 29,
+      "content": "router.put('/profile', authController.updateProfile);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\routes\\authRoutes.ts",
+      "line": 30,
+      "content": "router.post('/change-password', authController.changePassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 79,
+      "content": "where: { email: data.email }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 160,
+      "content": "where: { email },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 188,
+      "content": "where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 233,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 271,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 294,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 327,
+      "content": "where: { id: userId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 345,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 362,
+      "content": "where: { email }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 376,
+      "content": "//   where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\auth\\services\\AuthService.ts",
+      "line": 415,
+      "content": "//   where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 8,
+      "content": "router.post('/campaigns', broadcastController.createCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 9,
+      "content": "router.get('/campaigns', broadcastController.getCampaigns.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 10,
+      "content": "router.get('/campaigns/:id', broadcastController.getCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 11,
+      "content": "router.put('/campaigns/:id', broadcastController.updateCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 12,
+      "content": "router.delete('/campaigns/:id', broadcastController.cancelCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 13,
+      "content": "router.post('/campaigns/:id/pause', broadcastController.pauseCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 14,
+      "content": "router.post('/campaigns/:id/resume', broadcastController.resumeCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 15,
+      "content": "router.post('/campaigns/:id/send', broadcastController.sendCampaign.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 18,
+      "content": "router.get('/analytics', broadcastController.getAnalytics.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 19,
+      "content": "router.get('/analytics/:campaignId', broadcastController.getCampaignAnalytics.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 22,
+      "content": "router.get('/customer-lists', broadcastController.getCustomerLists.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 25,
+      "content": "router.get('/settings', broadcastController.getSettings.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\routes\\broadcastRoutes.ts",
+      "line": 26,
+      "content": "router.put('/settings', broadcastController.updateSettings.bind(broadcastController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 108,
+      "content": "where: { id: campaignId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 120,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 133,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 165,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 181,
+      "content": "where: { id: campaignId, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 202,
+      "content": "where: { id: campaignId, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 531,
+      "content": "where: { id: campaignId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 543,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 556,
+      "content": "where: { id: campaignId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 568,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 581,
+      "content": "where: { id: campaignId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 595,
+      "content": "where: { id: campaignId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 608,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\broadcast\\services\\BroadcastService.ts",
+      "line": 640,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 105,
+      "content": "router.get('/', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 130,
+      "content": "router.get('/:id', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 159,
+      "content": "router.get('/:id/messages', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 187,
+      "content": "router.post('/:id/send', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 239,
+      "content": "router.delete('/:id', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\conversations\\routes\\conversationRoutes.ts",
+      "line": 282,
+      "content": "router.post('/', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 19,
+      "content": "router.get('/search', customerController.searchCustomers);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 22,
+      "content": "router.get('/segments', requireRole(['COMPANY_ADMIN', 'MANAGER']), customerController.getCustomerSegments);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 25,
+      "content": "router.get('/export', requireRole(['COMPANY_ADMIN', 'MANAGER']), customerController.exportCustomers);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 28,
+      "content": "router.get('/', customerController.getCustomers);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 29,
+      "content": "router.post('/', customerController.createCustomer);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 30,
+      "content": "router.get('/:id', customerController.getCustomer);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 31,
+      "content": "router.put('/:id', customerController.updateCustomer);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 32,
+      "content": "router.delete('/:id', requireRole(['COMPANY_ADMIN', 'MANAGER']), customerController.deleteCustomer);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 35,
+      "content": "router.get('/:id/interactions', customerController.getCustomerInteractions);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 36,
+      "content": "router.get('/:id/stats', customerController.getCustomerStats);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 39,
+      "content": "router.get('/:id/notes', customerController.getCustomerNotes);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\routes\\customerRoutes.ts",
+      "line": 40,
+      "content": "router.post('/:id/notes', customerController.addCustomerNote);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 146,
+      "content": "where: { id, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 252,
+      "content": "where: { id, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 275,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 305,
+      "content": "where: { id, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 314,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 332,
+      "content": "where: { id: customerId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 363,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 380,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 413,
+      "content": "where: { id: noteData.customerId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 447,
+      "content": "where: { id: customerId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 458,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 485,
+      "content": "where: { id: customerId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 508,
+      "content": "where: { customerId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 511,
+      "content": "where: { customerId, status: { not: 'CANCELLED' } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 515,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 586,
+      "content": "this.prisma.customer.count({ where: { companyId } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 587,
+      "content": "this.prisma.customer.count({ where: { companyId, status: 'ACTIVE' } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\customers\\services\\CustomerService.ts",
+      "line": 588,
+      "content": "this.prisma.customer.count({ where: { companyId, status: 'LEAD' } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 16,
+      "content": "router.get('/webhook', facebookController.verifyWebhook);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 17,
+      "content": "router.post('/webhook', facebookController.handleWebhook);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 23,
+      "content": "router.get('/pages', requireRole(['COMPANY_ADMIN', 'MANAGER']), facebookController.getPages);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 24,
+      "content": "router.post('/connect', requireRole(['COMPANY_ADMIN', 'MANAGER']), facebookController.connectPage);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 25,
+      "content": "router.delete('/:pageId', requireRole(['COMPANY_ADMIN', 'MANAGER']), facebookController.disconnectPage);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 28,
+      "content": "router.get('/connected', facebookController.getConnectedPages);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 29,
+      "content": "router.get('/status', facebookController.getIntegrationStatus);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 30,
+      "content": "router.get('/config', facebookController.getAppConfig);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 33,
+      "content": "router.post('/send-message', facebookController.sendMessage);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\routes\\facebookRoutes.ts",
+      "line": 36,
+      "content": "router.post('/test', requireRole(['COMPANY_ADMIN', 'MANAGER']), facebookController.testConnection);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\integrations\\services\\FacebookService.ts",
+      "line": 506,
+      "content": "await this.prisma.message.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\domains\\integrations\\services\\FacebookService.ts",
+      "line": 535,
+      "content": "await this.prisma.message.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\domains\\integrations\\services\\FacebookService.ts",
+      "line": 587,
+      "content": "await this.prisma.integration.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\domains\\integrations\\services\\FacebookService.ts",
+      "line": 483,
+      "content": "where: { id: conversation.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 166,
+      "content": "where: { id, companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 268,
+      "content": "where: { id, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 291,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 323,
+      "content": "where: { id, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 332,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 390,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 488,
+      "content": "where: { id: categoryId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 537,
+      "content": "where: { id: categoryId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 557,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 585,
+      "content": "where: { id: categoryIds[i] }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 600,
+      "content": "where: { id: category.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 632,
+      "content": "where: { id: productId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 658,
+      "content": "where: { id: productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 749,
+      "content": "this.prisma.product.count({ where: { ...where, isActive: true } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 767,
+      "content": "where: { ...where, isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\products\\services\\ProductService.ts",
+      "line": 771,
+      "content": "where: { ...where, isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\domains\\upload\\routes\\uploadRoutes.ts",
+      "line": 8,
+      "content": "router.post('/image',",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\upload\\routes\\uploadRoutes.ts",
+      "line": 14,
+      "content": "router.post('/images',",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\upload\\routes\\uploadRoutes.ts",
+      "line": 20,
+      "content": "router.delete('/image/:filename', uploadController.deleteImage.bind(uploadController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\domains\\upload\\routes\\uploadRoutes.ts",
+      "line": 23,
+      "content": "router.get('/image/:filename', uploadController.getImageInfo.bind(uploadController));",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\index.ts",
+      "line": 68,
+      "content": "await prisma.$queryRaw`SELECT 1 as connection_test`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\index.ts",
+      "line": 122,
+      "content": "where: { companyId }, // إضافة فلترة الشركة",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\index.ts",
+      "line": 277,
+      "content": "where: { id: conversationId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\index.ts",
+      "line": 311,
+      "content": "where: { id: conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\auth.ts",
+      "line": 59,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\comprehensiveIsolation.js",
+      "line": 93,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\comprehensiveIsolation.js",
+      "line": 100,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\comprehensiveIsolation.js",
+      "line": 107,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\comprehensiveIsolation.js",
+      "line": 114,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\dataIsolation.js",
+      "line": 69,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\dataIsolation.js",
+      "line": 76,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\dataIsolation.js",
+      "line": 83,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\dataIsolation.js",
+      "line": 90,
+      "content": "where: { id: resourceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\superAdminMiddleware.js",
+      "line": 23,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\middleware\\validation.js",
+      "line": 466,
+      "content": "where: { id: req.user.companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 13,
+      "content": "router.get('/growth', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 152,
+      "content": "router.get('/company-performance', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 246,
+      "content": "router.get('/revenue', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 326,
+      "content": "router.get('/system-health', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 22,
+      "content": "where: { createdAt: { gte: startDate } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 27,
+      "content": "where: { createdAt: { gte: startDate } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 32,
+      "content": "where: { createdAt: { gte: startDate } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 37,
+      "content": "where: { createdAt: { gte: startDate } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 76,
+      "content": "prisma.company.count({ where: { createdAt: { gte: previousStartDate, lt: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 77,
+      "content": "prisma.user.count({ where: { createdAt: { gte: previousStartDate, lt: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 78,
+      "content": "prisma.customer.count({ where: { createdAt: { gte: previousStartDate, lt: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 79,
+      "content": "prisma.conversation.count({ where: { createdAt: { gte: previousStartDate, lt: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 80,
+      "content": "prisma.message.count({ where: { createdAt: { gte: previousStartDate, lt: startDate } } })",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 84,
+      "content": "prisma.company.count({ where: { createdAt: { gte: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 85,
+      "content": "prisma.user.count({ where: { createdAt: { gte: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 86,
+      "content": "prisma.customer.count({ where: { createdAt: { gte: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 87,
+      "content": "prisma.conversation.count({ where: { createdAt: { gte: startDate } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 88,
+      "content": "prisma.message.count({ where: { createdAt: { gte: startDate } } })",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 343,
+      "content": "prisma.company.count({ where: { isActive: true } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 347,
+      "content": "where: { createdAt: { gte: oneDayAgo } }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 352,
+      "content": "where: { createdAt: { gte: oneDayAgo } }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminAnalyticsRoutes.js",
+      "line": 357,
+      "content": "where: { createdAt: { gte: oneDayAgo } }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminPlansRoutes.js",
+      "line": 114,
+      "content": "router.get('/plans', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminPlansRoutes.js",
+      "line": 184,
+      "content": "router.put('/plans/:planType', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminPlansRoutes.js",
+      "line": 245,
+      "content": "router.get('/plans/comparison', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\adminPlansRoutes.js",
+      "line": 143,
+      "content": "where: { plan: plan.planType, isActive: true }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\adminPlansRoutes.js",
+      "line": 207,
+      "content": "where: { planType },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 17,
+      "content": "router.get('/capabilities', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 36,
+      "content": "router.put('/capabilities', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 63,
+      "content": "router.post('/test/:capabilityId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 187,
+      "content": "router.get('/performance', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 219,
+      "content": "router.get('/analytics', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 263,
+      "content": "router.post('/test-chat', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 273,
+      "content": "router.post('/chat', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiCapabilitiesRoutes.js",
+      "line": 468,
+      "content": "router.post('/reset', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 29,
+      "content": "router.get('/statistics', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 60,
+      "content": "router.get('/evaluation/:messageId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 100,
+      "content": "router.get('/recent', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 134,
+      "content": "router.get('/by-quality/:level', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 179,
+      "content": "router.get('/problematic', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 213,
+      "content": "router.get('/trends', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 246,
+      "content": "router.get('/system-status', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 278,
+      "content": "router.post('/settings', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 321,
+      "content": "router.get('/metrics-summary', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 379,
+      "content": "router.get('/sentiment-analysis', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\aiQualityRoutes.js",
+      "line": 414,
+      "content": "router.post('/analyze-sentiment', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 24,
+      "content": "router.post('/register', authRateLimiter, register);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 25,
+      "content": "router.post('/login', authRateLimiter, login);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 26,
+      "content": "router.post('/refresh', refreshToken);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 27,
+      "content": "router.post('/forgot-password', passwordResetRateLimiter, forgotPassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 28,
+      "content": "router.post('/reset-password', passwordResetRateLimiter, resetPassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 33,
+      "content": "router.post('/logout', logout);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 34,
+      "content": "router.get('/me', getCurrentUser);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\authRoutes.ts",
+      "line": 35,
+      "content": "router.post('/change-password', changePassword);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 14,
+      "content": "router.get('/status', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 41,
+      "content": "router.post('/start', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 64,
+      "content": "router.post('/stop', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 87,
+      "content": "router.post('/detect-now', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 122,
+      "content": "router.put('/interval', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 154,
+      "content": "router.post('/companies', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 187,
+      "content": "router.delete('/companies/:companyId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 212,
+      "content": "router.get('/history', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\autoPatternRoutes.js",
+      "line": 240,
+      "content": "router.get('/health', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 295,
+      "content": "router.post('/campaigns', broadcastController.createCampaign);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 296,
+      "content": "router.get('/campaigns', broadcastController.getCampaigns);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 297,
+      "content": "router.get('/campaigns/:id', broadcastController.getCampaign);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 298,
+      "content": "router.post('/campaigns/:id/send', broadcastController.sendCampaign);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 301,
+      "content": "router.get('/analytics', broadcastController.getAnalytics);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 304,
+      "content": "router.get('/customer-lists', broadcastController.getCustomerLists);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 307,
+      "content": "router.get('/settings', broadcastController.getSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\broadcastRoutes.js",
+      "line": 308,
+      "content": "router.put('/settings', broadcastController.updateSettings);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 17,
+      "content": "router.get('/', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 116,
+      "content": "router.get('/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 174,
+      "content": "router.get('/plans', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 259,
+      "content": "router.get('/:id/usage', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 121,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 265,
+      "content": "where: { id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 289,
+      "content": "prisma.user.count({ where: { companyId: id, isActive: true } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 290,
+      "content": "prisma.customer.count({ where: { companyId: id } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\companiesRoutes.ts",
+      "line": 291,
+      "content": "prisma.product.count({ where: { companyId: id, isActive: true } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 479,
+      "content": "await enhancedOrderService.prisma.orderItem.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 199,
+      "content": "companyId: 'cmdt8nrjq003vufuss47dqc45'",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 209,
+      "content": "companyId: 'cmdt8nrjq003vufuss47dqc45', // Company ID الافتراضي",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 26,
+      "content": "router.get('/', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 139,
+      "content": "router.post('/migrate-from-files', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 280,
+      "content": "router.get('/stats', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 311,
+      "content": "router.get('/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 359,
+      "content": "router.post('/', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 472,
+      "content": "router.delete('/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 514,
+      "content": "router.get('/conversations/stats', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 545,
+      "content": "router.get('/conversations', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 588,
+      "content": "router.get('/compare/systems', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 629,
+      "content": "router.get('/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 173,
+      "content": "where: { orderNumber: orderData.orderNumber }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 317,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 400,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 442,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\enhancedOrders.js",
+      "line": 490,
+      "content": "where: { id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 116,
+      "content": "router.get('/auth/status', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 131,
+      "content": "router.get('/users', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 145,
+      "content": "router.get('/companies', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 246,
+      "content": "router.get('/companies/plans', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 296,
+      "content": "router.get('/companies/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 374,
+      "content": "router.get('/customers', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 430,
+      "content": "router.get('/conversations', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 512,
+      "content": "router.get('/products', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 527,
+      "content": "router.get('/orders', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 542,
+      "content": "router.get('/reports', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 556,
+      "content": "router.get('/notifications', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 322,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 392,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\index.ts",
+      "line": 448,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 15,
+      "content": "router.post('/intelligent-response', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 23,
+      "content": "router.get('/intelligent-analytics', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 31,
+      "content": "router.get('/conversation-memory/:customerId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 39,
+      "content": "router.post('/cleanup-memory', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 47,
+      "content": "router.post('/test-intelligent', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\intelligentChatRoutes.js",
+      "line": 55,
+      "content": "router.get('/intelligent-info', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 24,
+      "content": "router.get('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 168,
+      "content": "router.get('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 212,
+      "content": "router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 307,
+      "content": "router.put('/:id/status', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 364,
+      "content": "router.post('/:id/send', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 422,
+      "content": "router.get('/stats/overview', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 128,
+      "content": "where: { status: 'PAID' },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 173,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 228,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 328,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 369,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 385,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 438,
+      "content": "prisma.invoice.count({ where: { status: 'PAID' } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 439,
+      "content": "prisma.invoice.count({ where: { status: 'OVERDUE' } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\invoiceRoutes.js",
+      "line": 441,
+      "content": "where: { status: 'PAID' },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 24,
+      "content": "router.get('/stats', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 56,
+      "content": "router.get('/health', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 93,
+      "content": "router.get('/errors', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 140,
+      "content": "router.post('/reset', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 175,
+      "content": "router.get('/performance', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 222,
+      "content": "router.get('/alerts', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 254,
+      "content": "router.get('/alerts/history', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 290,
+      "content": "router.post('/alerts/check', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 328,
+      "content": "router.post('/alerts/:alertId/resolve', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 368,
+      "content": "router.put('/alerts/thresholds', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 403,
+      "content": "router.post('/test-response', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 441,
+      "content": "router.get('/charts', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 487,
+      "content": "router.get('/charts/summary', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 516,
+      "content": "router.post('/charts/save', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 547,
+      "content": "router.get('/alerts/settings', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 576,
+      "content": "router.put('/alerts/settings', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 611,
+      "content": "router.post('/alerts/test-email', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 662,
+      "content": "router.delete('/alerts/suppressed', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 696,
+      "content": "router.get('/reports/daily', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 727,
+      "content": "router.get('/reports/weekly', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 758,
+      "content": "router.get('/reports/summary', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 795,
+      "content": "router.post('/reports/export', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 847,
+      "content": "router.post('/quality/rating', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 905,
+      "content": "router.get('/quality/stats', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 932,
+      "content": "router.get('/quality/performance', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 961,
+      "content": "router.get('/quality/insights', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\monitoringRoutes.js",
+      "line": 990,
+      "content": "router.post('/quality/response', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 104,
+      "content": "await prisma.notification.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 141,
+      "content": "await prisma.notification.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 179,
+      "content": "await prisma.notification.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 37,
+      "content": "router.get('/recent', optionalAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 98,
+      "content": "router.post('/:notificationId/read', requireAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 136,
+      "content": "router.post('/mark-all-read', requireAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 173,
+      "content": "router.delete('/:notificationId', requireAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 207,
+      "content": "router.post('/create', requireAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\notifications.js",
+      "line": 248,
+      "content": "router.get('/stats', requireAuth, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 10,
+      "content": "router.get('/simple', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 31,
+      "content": "router.get('/simple/stats', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 51,
+      "content": "router.post('/simple/:orderNumber/status', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 82,
+      "content": "router.get('/', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 158,
+      "content": "router.get('/:orderNumber', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 226,
+      "content": "router.post('/:orderNumber/confirm', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 250,
+      "content": "router.post('/:orderNumber/cancel', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 274,
+      "content": "router.get('/stats/summary', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 303,
+      "content": "router.get('/customer/:customerId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 326,
+      "content": "router.post('/create-simple', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\orders.js",
+      "line": 363,
+      "content": "router.post('/create', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 24,
+      "content": "router.get('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 157,
+      "content": "router.get('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 202,
+      "content": "router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 162,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 218,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 232,
+      "content": "where: { id: invoiceId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\paymentRoutes.js",
+      "line": 280,
+      "content": "where: { id: invoiceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 18,
+      "content": "router.get('/:companyId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 63,
+      "content": "router.put('/:companyId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 148,
+      "content": "router.post('/:companyId/test-conflict', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 192,
+      "content": "router.get('/:companyId/conflict-reports', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 246,
+      "content": "router.put('/:companyId/conflict-reports/:reportId/resolve', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 25,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\prioritySettingsRoutes.js",
+      "line": 106,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 400,
+      "content": "await prisma.product.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 27,
+      "content": "companyId: 'cmd5c0c9y0000ymzdd7wtv7ib'",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 205,
+      "content": "const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 252,
+      "content": "const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 304,
+      "content": "const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 466,
+      "content": "const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 988,
+      "content": "router.get('/categories', productController.getCategories);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 989,
+      "content": "router.post('/categories', productController.createCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 990,
+      "content": "router.post('/categories/cleanup', productController.cleanupCategories);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 991,
+      "content": "router.put('/categories/:id', productController.updateCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 992,
+      "content": "router.delete('/categories/:id', productController.deleteCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 993,
+      "content": "router.get('/', productController.getProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 994,
+      "content": "router.post('/', productController.createProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 997,
+      "content": "router.get('/:id/variants', productController.getProductVariants);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 998,
+      "content": "router.post('/:id/variants', productController.createProductVariant);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1000,
+      "content": "router.put('/variants/:variantId', productController.updateProductVariant); // Support both PATCH and PUT",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1002,
+      "content": "router.put('/:id/variants/:variantId', productController.updateProductVariant); // Alternative path with PUT",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1003,
+      "content": "router.delete('/variants/:variantId', productController.deleteProductVariant);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1008,
+      "content": "router.post('/:id/images', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1116,
+      "content": "router.post('/:id/variants/:variantId/images', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1216,
+      "content": "router.delete('/:id/images', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1324,
+      "content": "router.post('/:id/images/url', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1436,
+      "content": "router.get('/:id', productController.getProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1443,
+      "content": "router.delete('/:id', productController.deleteProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 68,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 141,
+      "content": "where: { id: productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 212,
+      "content": "where: { companyId: user.companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 327,
+      "content": "where: { id: id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 412,
+      "content": "where: { id: duplicate.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 503,
+      "content": "where: { id: id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 581,
+      "content": "const skuExists = await prisma.product.findUnique({ where: { sku } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 664,
+      "content": "where: { id: updateData.category }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 687,
+      "content": "where: { id: productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 733,
+      "content": "where: { id: productId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 775,
+      "content": "where: { productId: productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 810,
+      "content": "const variantSkuExists = await prisma.productVariant.findUnique({ where: { sku: variantSku } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 914,
+      "content": "where: { id: variantId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 956,
+      "content": "where: { id: variantId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1039,
+      "content": "where: { id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1073,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1147,
+      "content": "where: { id: variantId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1182,
+      "content": "where: { id: variantId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1237,
+      "content": "where: { id: id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1281,
+      "content": "where: { id: id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1358,
+      "content": "where: { id: id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.js",
+      "line": 1393,
+      "content": "where: { id: id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 14,
+      "content": "router.get('/', productController.getProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 15,
+      "content": "router.get('/categories', productController.getCategories);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 18,
+      "content": "router.post('/', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), upload.array('images', 5), productController.createProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 19,
+      "content": "router.post('/categories', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.createCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 20,
+      "content": "router.post('/categories/cleanup', requireRole(UserRole.COMPANY_ADMIN), productController.cleanupCategories);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 21,
+      "content": "router.put('/categories/:id', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.updateCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 22,
+      "content": "router.delete('/categories/:id', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.deleteCategory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 23,
+      "content": "router.put('/:id', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.updateProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 24,
+      "content": "router.delete('/:id', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.deleteProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 27,
+      "content": "router.get('/:id', productController.getProduct);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 28,
+      "content": "router.put('/inventory/:id', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.updateInventory);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 29,
+      "content": "router.get('/low-stock', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.getLowStockProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 30,
+      "content": "router.get('/analytics', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.getProductAnalytics);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\productRoutes.ts",
+      "line": 31,
+      "content": "router.get('/export', requireRole(UserRole.COMPANY_ADMIN, UserRole.MANAGER), productController.exportProducts);",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 22,
+      "content": "companyId: 'cmd5c0c9y0000ymzdd7wtv7ib'",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 34,
+      "content": "router.get('/company', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 114,
+      "content": "router.put('/company', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 181,
+      "content": "router.get('/currencies', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 216,
+      "content": "router.get('/ai', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 321,
+      "content": "router.put('/ai', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 42,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 126,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 150,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 245,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\settingsRoutes.js",
+      "line": 349,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 13,
+      "content": "router.get('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 148,
+      "content": "router.get('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 197,
+      "content": "router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 286,
+      "content": "router.put('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 365,
+      "content": "router.post('/:id/renew', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 514,
+      "content": "router.post('/:id/cancel', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 585,
+      "content": "router.post('/:id/renew', authenticateToken, requireSuperAdmin, async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 108,
+      "content": "where: { status: 'ACTIVE' },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 153,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 212,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 261,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 300,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 318,
+      "content": "where: { id: existingSubscription.companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 331,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 376,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 436,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 520,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 551,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 591,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\subscriptionRoutes.js",
+      "line": 614,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1175,
+      "content": "const enabledPatterns = await prisma.successPattern.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1245,
+      "content": "const disabledPatterns = await prisma.successPattern.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1262,
+      "content": "await prisma.successPattern.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 28,
+      "content": "router.get('/analyze-patterns', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 99,
+      "content": "router.get('/detect-patterns', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 147,
+      "content": "router.post('/record-outcome', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 183,
+      "content": "router.get('/patterns', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 274,
+      "content": "router.put('/patterns/:id/approve', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 310,
+      "content": "router.put('/patterns/:id/reject', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 344,
+      "content": "router.put('/patterns/:id/unapprove', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 407,
+      "content": "router.get('/outcome-stats', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 484,
+      "content": "router.get('/response-effectiveness', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 549,
+      "content": "router.post('/run-analysis', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 599,
+      "content": "router.get('/export', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 664,
+      "content": "router.get('/pattern-performance', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 731,
+      "content": "router.get('/pattern-usage', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 826,
+      "content": "router.post('/test-pattern', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 911,
+      "content": "router.post('/analyze-patterns', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 947,
+      "content": "router.post('/patterns/:patternId/approve', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 982,
+      "content": "router.post('/cleanup-patterns/:companyId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1036,
+      "content": "router.get('/cleanup-stats/:companyId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1080,
+      "content": "router.get('/maintenance/status', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1103,
+      "content": "router.post('/maintenance/run', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1131,
+      "content": "router.post('/maintenance/start', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1160,
+      "content": "router.post('/system/enable', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1228,
+      "content": "router.post('/system/disable', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1320,
+      "content": "router.get('/system/status', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1397,
+      "content": "router.post('/cleanup-patterns', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 280,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 315,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 351,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 371,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 680,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 856,
+      "content": "where: { id: patternId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 955,
+      "content": "where: { id: patternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1193,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1246,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1284,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1336,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1349,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1416,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\successLearning.js",
+      "line": 1447,
+      "content": "where: { id: pattern.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\uploadRoutes.js",
+      "line": 58,
+      "content": "router.post('/single', upload.single('image'), (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\uploadRoutes.js",
+      "line": 91,
+      "content": "router.post('/multiple', upload.array('images', 10), (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\uploadRoutes.js",
+      "line": 127,
+      "content": "router.delete('/file/:filename', (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\uploadRoutes.js",
+      "line": 201,
+      "content": "router.post('/conversation-image', conversationUpload.single('image'), (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 40,
+      "content": "router.get('/wallet-numbers', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 61,
+      "content": "router.get('/invoice/:invoiceId', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 111,
+      "content": "router.post('/submit-receipt', upload.single('receipt'), async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 180,
+      "content": "router.get('/admin/wallet-numbers', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 200,
+      "content": "router.post('/admin/wallet-numbers', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 229,
+      "content": "router.put('/admin/wallet-numbers/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 260,
+      "content": "router.delete('/admin/wallet-numbers/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 282,
+      "content": "router.get('/admin/pending-receipts', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 331,
+      "content": "router.post('/admin/review-receipt/:id', async (req, res) => {",
+      "description": "API route potentially missing isolation middleware",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 43,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 66,
+      "content": "where: { id: invoiceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 124,
+      "content": "where: { id: invoiceId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 143,
+      "content": "where: { id: walletNumberId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 235,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 265,
+      "content": "where: { id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 288,
+      "content": "where: { status: 'PENDING' },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 308,
+      "content": "where: { status: 'PENDING' }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 337,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 359,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\routes\\walletPayment.js",
+      "line": 371,
+      "content": "where: { id: receipt.invoiceId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\scripts\\migrateOrders.js",
+      "line": 57,
+      "content": "companyId: 'cmdt8nrjq003vufuss47dqc45' // Company ID الافتراضي",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\scripts\\migrateOrders.js",
+      "line": 31,
+      "content": "where: { orderNumber: orderData.orderNumber }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedProductService.js",
+      "line": 66,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedProductService.js",
+      "line": 127,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedProductService.js",
+      "line": 138,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedProductService.js",
+      "line": 210,
+      "content": "where: { id: customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 197,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 212,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 334,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 345,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 364,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\advancedPromptService.js",
+      "line": 370,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3137,
+      "content": "await prisma.gemini_keys.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 773,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 795,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 2475,
+      "content": "where: { id: productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 2994,
+      "content": "const keyRecord = await prisma.geminiKey.findUnique({ where: { id: keyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3050,
+      "content": "where: { companyId: targetCompanyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3103,
+      "content": "const keyRecord = await prisma.geminiKey.findUnique({ where: { id: keyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3128,
+      "content": "where: { id: keyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3186,
+      "content": "const company = await prisma.company.findUnique({ where: { id: companyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3205,
+      "content": "where: { companyId: company.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3389,
+      "content": "where: { id: learningData.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 3998,
+      "content": "const company = await prisma.company.findUnique({ where: { id: companyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 4005,
+      "content": "where: { companyId: company.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 4011,
+      "content": "where: { companyId: company.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 4057,
+      "content": "const company = await prisma.company.findUnique({ where: { id: companyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiAgentService.js",
+      "line": 4066,
+      "content": "where: { companyId: company.id }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\aiQualityEvaluator.js",
+      "line": 41,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\analyticsService.js",
+      "line": 676,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 39,
+      "content": "where: { email: data.email },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 136,
+      "content": "where: { email: credentials.email },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 169,
+      "content": "where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 208,
+      "content": "where: { id: decoded.userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 239,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 275,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 294,
+      "content": "where: { id: userId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 309,
+      "content": "where: { email },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 324,
+      "content": "where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\authService.ts",
+      "line": 359,
+      "content": "where: { id: user.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\autoPatternDetectionService.js",
+      "line": 149,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\billingNotificationService.js",
+      "line": 237,
+      "content": "await prisma.invoice.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\billingNotificationService.js",
+      "line": 340,
+      "content": "await prisma.subscription.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\continuousLearningServiceV2.js",
+      "line": 330,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\conversationAnalysisService.js",
+      "line": 274,
+      "content": "companyId: 'cmdt8nrjq003vufuss47dqc45'",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 82,
+      "content": "where: { id: data.customerId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 89,
+      "content": "where: { facebookId: data.customerId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 168,
+      "content": "where: { id: conversationId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 388,
+      "content": "where: { id: order.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 536,
+      "content": "where: { id: conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 576,
+      "content": "where: { id: conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 827,
+      "content": "where: { ...where, confidence: { not: null } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 848,
+      "content": "where: { ...where, city: { not: null } },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\enhancedOrderService.js",
+      "line": 1018,
+      "content": "where: { id: orderId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\inventoryService.js",
+      "line": 666,
+      "content": "await prisma.stockAlert.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\inventoryService.js",
+      "line": 219,
+      "content": "where: { productId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\memoryService.js",
+      "line": 347,
+      "content": "const deletedMemoryCount = await prisma.conversationMemory.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\memoryService.js",
+      "line": 453,
+      "content": "const deletedMemoryCount = await prisma.conversationMemory.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\memoryService.js",
+      "line": 670,
+      "content": "const updatedRecords = await prisma.conversationMemory.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\multimodalService.js",
+      "line": 59,
+      "content": "where: { isActive: true }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\multimodalService.js",
+      "line": 104,
+      "content": "where: { isActive: true }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 64,
+      "content": "where: { id: order.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 149,
+      "content": "where: { id: customerId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 154,
+      "content": "where: { id: customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 172,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 195,
+      "content": "where: { orderNumber },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 217,
+      "content": "where: { orderNumber },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 241,
+      "content": "where: { orderNumber },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 269,
+      "content": "where: { orderNumber },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\orderService.js",
+      "line": 279,
+      "content": "where: { id: order.customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\outcomeTracker.js",
+      "line": 98,
+      "content": "where: { conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\outcomeTracker.js",
+      "line": 350,
+      "content": "where: { id: existing.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\outcomeTracker.js",
+      "line": 395,
+      "content": "where: { id: conversationId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 289,
+      "content": "await this.prisma.patternPerformance.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 319,
+      "content": "where: { id: patternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 358,
+      "content": "where: { patternId, companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 381,
+      "content": "where: { id: performance.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 664,
+      "content": "where: { id: patternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternApplicationService.js",
+      "line": 690,
+      "content": "where: { id: patternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternCleanupService.js",
+      "line": 145,
+      "content": "await this.prisma.successPattern.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\patternCleanupService.js",
+      "line": 44,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternCleanupService.js",
+      "line": 126,
+      "content": "where: { id: bestPattern.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternCleanupService.js",
+      "line": 247,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternDetector.js",
+      "line": 196,
+      "content": "await this.prisma.$queryRaw`SELECT 1 as connection_test`;",
+      "description": "Raw SQL query without company isolation",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\patternDetector.js",
+      "line": 142,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternDetector.js",
+      "line": 958,
+      "content": "where: { id: existingPatternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternDetector.js",
+      "line": 962,
+      "content": "where: { id: existingPatternId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\patternDetector.js",
+      "line": 1035,
+      "content": "where: { id: companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\planLimitsService.js",
+      "line": 51,
+      "content": "where: { id: companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productSearchService.js",
+      "line": 207,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productSearchService.js",
+      "line": 459,
+      "content": "this.prisma.product.count({ where: { companyId } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productSearchService.js",
+      "line": 460,
+      "content": "this.prisma.product.count({ where: { companyId, isActive: true } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productSearchService.js",
+      "line": 461,
+      "content": "this.prisma.product.count({ where: { companyId, isActive: true, stock: { lte: 0 } } }),",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productSearchService.js",
+      "line": 462,
+      "content": "this.prisma.category.count({ where: { companyId } })",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productsPromptBuilder.js",
+      "line": 50,
+      "content": "where: { companyId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\productsPromptBuilder.js",
+      "line": 54,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\promptEnhancementService.js",
+      "line": 160,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\ragService.js",
+      "line": 49,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\ragService.js",
+      "line": 151,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\ragService.js",
+      "line": 326,
+      "content": "// const faqs = await prisma.faq.findMany({ where: { companyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\ragService.js",
+      "line": 364,
+      "content": "// const policies = await prisma.policy.findMany({ where: { companyId } });",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\ragService.js",
+      "line": 763,
+      "content": "where: { customerId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\responseOptimizationService.js",
+      "line": 596,
+      "content": "companyId: 'cmdt8nrjq003vufuss47dqc45'",
+      "description": "Hardcoded company ID found",
+      "severity": "WARNING"
+    },
+    {
+      "file": "src\\services\\responseOptimizer.js",
+      "line": 488,
+      "content": "where: { companyId }",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 200,
+      "content": "await this.prisma.successPattern.updateMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 268,
+      "content": "await this.prisma.successPattern.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 346,
+      "content": "const deletedUsage = await this.prisma.patternUsage.deleteMany({",
+      "description": "Bulk operation without proper filtering",
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 71,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 147,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 293,
+      "content": "where: { isActive: true },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\scheduledPatternMaintenanceService.js",
+      "line": 315,
+      "content": "where: { id: pattern.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\subscriptionRenewalService.js",
+      "line": 81,
+      "content": "where: { id: subscription.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\subscriptionRenewalService.js",
+      "line": 242,
+      "content": "where: { id: subscription.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\subscriptionRenewalService.js",
+      "line": 257,
+      "content": "where: { id: subscription.id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\services\\subscriptionRenewalService.js",
+      "line": 311,
+      "content": "where: { id: subscriptionId },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 44,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 141,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 166,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 197,
+      "content": "where: { [field]: value },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 214,
+      "content": "where: { [field]: value },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    },
+    {
+      "file": "src\\shared\\base\\BaseRepository.ts",
+      "line": 260,
+      "content": "where: { id },",
+      "description": "Where clause potentially missing companyId",
+      "severity": "INFO"
+    }
+  ]
+}

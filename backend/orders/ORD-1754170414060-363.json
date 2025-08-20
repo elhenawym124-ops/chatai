@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754170414060-363",
+  "orderNumber": "ORD-1754170414060-363",
+  "customerName": "23959715940366482 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 150,
+  "subtotal": 100,
+  "tax": 0,
+  "shipping": 50,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "القاهرة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الإسكوتش دلوقتي.  قوليلي بس انتي من انهي محافظة عشان اعرف اقولك سعر الشحن.",
+      "price": 100,
+      "quantity": 1,
+      "total": 100,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdurd5rj006uufiozirm6wlp",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdurd5rj006uufiozirm6wlp\nطلب تلقائي من المحادثة cmdurd5rj006uufiozirm6wlp - ٣‏/٨‏/٢٠٢٥، ١٢:٣٣:٣٤ ص",
+  "createdAt": "2025-08-02T21:33:34.060Z",
+  "updatedAt": "2025-08-02T21:33:34.060Z"
+}

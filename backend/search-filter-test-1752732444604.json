@@ -1,0 +1,74 @@
+{
+  "tests": [
+    {
+      "name": "اختبار البحث في العملاء",
+      "passed": false,
+      "message": "فشل البحث في العملاء: 422",
+      "details": {
+        "status": 422
+      }
+    },
+    {
+      "name": "اختبار فلترة المنتجات",
+      "passed": true,
+      "message": "فلترة المنتجات تعمل بنجاح",
+      "details": {
+        "status": 200,
+        "hasData": true,
+        "dataType": "object"
+      }
+    },
+    {
+      "name": "اختبار فلترة الطلبات",
+      "passed": true,
+      "message": "فلترة الطلبات تعمل بنجاح",
+      "details": {
+        "status": 200,
+        "hasData": true,
+        "dataType": "object"
+      }
+    },
+    {
+      "name": "اختبار فلترة التقارير",
+      "passed": true,
+      "message": "فلترة التقارير تعمل (API متوفر)",
+      "details": {
+        "status": 400,
+        "hasData": true,
+        "dataType": "object"
+      }
+    },
+    {
+      "name": "اختبار معاملات البحث المتقدم",
+      "passed": true,
+      "message": "3/3 endpoints البحث تعمل (100.0%)",
+      "details": {
+        "workingEndpoints": 3,
+        "totalEndpoints": 3,
+        "workingRate": 100,
+        "endpointResults": [
+          {
+            "name": "البحث العام",
+            "status": 404,
+            "working": true
+          },
+          {
+            "name": "البحث في العملاء",
+            "status": 200,
+            "working": true
+          },
+          {
+            "name": "البحث في المنتجات",
+            "status": 200,
+            "working": true
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  }
+}

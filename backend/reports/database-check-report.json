@@ -1,0 +1,507 @@
+{
+  "timestamp": "2025-07-16T22:48:00.817Z",
+  "results": {
+    "tables": {
+      "users": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "companies": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "customers": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "conversations": {
+        "expected": true,
+        "relatedServices": [
+          "conversationService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "messages": {
+        "expected": true,
+        "relatedServices": [
+          "messageSchedulingService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "products": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "categories": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "orders": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "order_items": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "leads": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "opportunities": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "interactions": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "notifications": {
+        "expected": true,
+        "relatedServices": [
+          "advancedNotificationService",
+          "notificationService",
+          "notificationSettingsService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "templates": {
+        "expected": true,
+        "relatedServices": [
+          "templateService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "automations": {
+        "expected": true,
+        "relatedServices": [
+          "adminTaskAutomationService",
+          "automationService",
+          "followUpAutomationService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "reports": {
+        "expected": true,
+        "relatedServices": [
+          "advancedSalesReportsService",
+          "conversationReportsService",
+          "salesReportService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "analytics": {
+        "expected": true,
+        "relatedServices": [
+          "analyticsService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "ai_models": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "prompts": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "escalation_rules": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "follow_ups": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "campaigns": {
+        "expected": true,
+        "relatedServices": [],
+        "status": "MISSING_SERVICE"
+      },
+      "scenarios": {
+        "expected": true,
+        "relatedServices": [
+          "autoResponseScenariosService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "distributions": {
+        "expected": true,
+        "relatedServices": [
+          "conversationDistributionService"
+        ],
+        "status": "FOUND_SERVICE"
+      },
+      "admin_tasks": {
+        "expected": true,
+        "relatedServices": [
+          "taskService"
+        ],
+        "status": "FOUND_SERVICE"
+      }
+    },
+    "mockData": {
+      "adminTaskAutomationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20734,
+        "status": "HAS_MOCK_DATA"
+      },
+      "advancedNotificationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20993,
+        "status": "HAS_MOCK_DATA"
+      },
+      "advancedSalesReportsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20041,
+        "status": "HAS_MOCK_DATA"
+      },
+      "analyticsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 21449,
+        "status": "HAS_MOCK_DATA"
+      },
+      "appointmentService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 15479,
+        "status": "HAS_MOCK_DATA"
+      },
+      "automationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 15686,
+        "status": "HAS_MOCK_DATA"
+      },
+      "autoResponseScenariosService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 21639,
+        "status": "HAS_MOCK_DATA"
+      },
+      "cartService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 15535,
+        "status": "HAS_MOCK_DATA"
+      },
+      "clvService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 13191,
+        "status": "HAS_MOCK_DATA"
+      },
+      "cmsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 18201,
+        "status": "HAS_MOCK_DATA"
+      },
+      "companyService": {
+        "hasMockData": false,
+        "hasInitializeMethod": false,
+        "fileSize": 9546,
+        "status": "NO_MOCK_DATA"
+      },
+      "continuousLearningService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 33484,
+        "status": "HAS_MOCK_DATA"
+      },
+      "conversationDistributionService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 18890,
+        "status": "HAS_MOCK_DATA"
+      },
+      "conversationReportsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20499,
+        "status": "HAS_MOCK_DATA"
+      },
+      "conversationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 21409,
+        "status": "HAS_MOCK_DATA"
+      },
+      "customerBehaviorService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20948,
+        "status": "HAS_MOCK_DATA"
+      },
+      "customKPIService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 19871,
+        "status": "HAS_MOCK_DATA"
+      },
+      "dashboardService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 17371,
+        "status": "HAS_MOCK_DATA"
+      },
+      "discountService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 17613,
+        "status": "HAS_MOCK_DATA"
+      },
+      "emailService": {
+        "hasMockData": false,
+        "hasInitializeMethod": true,
+        "fileSize": 18918,
+        "status": "NO_MOCK_DATA"
+      },
+      "escalationRulesService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20107,
+        "status": "HAS_MOCK_DATA"
+      },
+      "followUpAutomationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 22633,
+        "status": "HAS_MOCK_DATA"
+      },
+      "geminiService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 16038,
+        "status": "HAS_MOCK_DATA"
+      },
+      "inventoryService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 19867,
+        "status": "HAS_MOCK_DATA"
+      },
+      "mediaService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 14837,
+        "status": "HAS_MOCK_DATA"
+      },
+      "messageSchedulingService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 20903,
+        "status": "HAS_MOCK_DATA"
+      },
+      "modelTrainingService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 28223,
+        "status": "HAS_MOCK_DATA"
+      },
+      "notificationService": {
+        "hasMockData": false,
+        "hasInitializeMethod": false,
+        "fileSize": 12062,
+        "status": "NO_MOCK_DATA"
+      },
+      "notificationSettingsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 18948,
+        "status": "HAS_MOCK_DATA"
+      },
+      "opportunityService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 15216,
+        "status": "HAS_MOCK_DATA"
+      },
+      "paymentService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 17364,
+        "status": "HAS_MOCK_DATA"
+      },
+      "productRecommendationService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 31304,
+        "status": "HAS_MOCK_DATA"
+      },
+      "promptManagementService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 29723,
+        "status": "HAS_MOCK_DATA"
+      },
+      "redisService": {
+        "hasMockData": false,
+        "hasInitializeMethod": false,
+        "fileSize": 8498,
+        "status": "NO_MOCK_DATA"
+      },
+      "reminderService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 18826,
+        "status": "HAS_MOCK_DATA"
+      },
+      "reportExportService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 16499,
+        "status": "HAS_MOCK_DATA"
+      },
+      "responseStatsService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 22483,
+        "status": "HAS_MOCK_DATA"
+      },
+      "returnService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 22140,
+        "status": "HAS_MOCK_DATA"
+      },
+      "reviewService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 19139,
+        "status": "HAS_MOCK_DATA"
+      },
+      "salesReportService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 24835,
+        "status": "HAS_MOCK_DATA"
+      },
+      "sentimentAnalysisService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 27309,
+        "status": "HAS_MOCK_DATA"
+      },
+      "shippingService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 18705,
+        "status": "HAS_MOCK_DATA"
+      },
+      "smartResponseService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 27624,
+        "status": "HAS_MOCK_DATA"
+      },
+      "smsService": {
+        "hasMockData": false,
+        "hasInitializeMethod": true,
+        "fileSize": 16002,
+        "status": "NO_MOCK_DATA"
+      },
+      "taskService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 15981,
+        "status": "HAS_MOCK_DATA"
+      },
+      "templateService": {
+        "hasMockData": true,
+        "hasInitializeMethod": true,
+        "fileSize": 22043,
+        "status": "HAS_MOCK_DATA"
+      }
+    },
+    "relationships": {},
+    "issues": [
+      {
+        "type": "HIGH",
+        "message": "Critical service missing: customerService.js"
+      },
+      {
+        "type": "HIGH",
+        "message": "Critical service missing: productService.js"
+      },
+      {
+        "type": "HIGH",
+        "message": "Critical service missing: orderService.js"
+      },
+      {
+        "type": "HIGH",
+        "message": "Critical service missing: authService.js"
+      }
+    ],
+    "summary": {
+      "totalTables": 25,
+      "existingTables": 10,
+      "missingTables": 15,
+      "dataStatus": "unknown",
+      "totalServices": 46
+    },
+    "databaseType": {
+      "hasPrismaSchema": true,
+      "hasDbConfig": false,
+      "hasMockServices": true,
+      "type": "MOCK_SERVICES"
+    },
+    "dataStatus": "MOCK_SERVICES",
+    "additionalServices": [
+      "appointmentService",
+      "cartService",
+      "clvService",
+      "cmsService",
+      "companyService",
+      "continuousLearningService",
+      "customerBehaviorService",
+      "customKPIService",
+      "dashboardService",
+      "discountService",
+      "emailService",
+      "escalationRulesService",
+      "geminiService",
+      "inventoryService",
+      "mediaService",
+      "modelTrainingService",
+      "opportunityService",
+      "paymentService",
+      "productRecommendationService",
+      "promptManagementService",
+      "redisService",
+      "reminderService",
+      "reportExportService",
+      "responseStatsService",
+      "returnService",
+      "reviewService",
+      "sentimentAnalysisService",
+      "shippingService",
+      "smartResponseService",
+      "smsService"
+    ]
+  },
+  "summary": {
+    "status": "ISSUES_FOUND",
+    "coverage": 40,
+    "totalIssues": 4,
+    "criticalIssues": 0
+  }
+}

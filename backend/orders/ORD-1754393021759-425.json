@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754393021759-425",
+  "orderNumber": "ORD-1754393021759-425",
+  "customerName": "24724147047169139 ",
+  "customerPhone": "01096673122",
+  "customerEmail": "",
+  "total": 698,
+  "subtotal": 698,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش الحريمي اللي كلمتك عنه من شوية؟ مقاسات وألوانه كلها متوفرة. ولو محتاجة أي حاجة تانية",
+      "price": 698,
+      "quantity": 1,
+      "total": 698,
+      "metadata": {
+        "color": "الأسود",
+        "size": "39",
+        "conversationId": "cmdyc3srs00uvufgsivlal09b",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyc3srs00uvufgsivlal09b\nطلب تلقائي من المحادثة cmdyc3srs00uvufgsivlal09b - ٥‏/٨‏/٢٠٢٥، ٢:٢٣:٤١ م",
+  "createdAt": "2025-08-05T11:23:41.759Z",
+  "updatedAt": "2025-08-05T11:23:41.759Z"
+}

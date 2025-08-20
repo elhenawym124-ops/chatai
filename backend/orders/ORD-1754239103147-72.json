@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754239103147-72",
+  "orderNumber": "ORD-1754239103147-72",
+  "customerName": "30724504287164023 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش متوفر منه مقاس 40 يا فندم.",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "فيهم",
+        "size": "40",
+        "conversationId": "cmdvwlp2s00bquf907tpx9dtl",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdvwlp2s00bquf907tpx9dtl\nطلب تلقائي من المحادثة cmdvwlp2s00bquf907tpx9dtl - ٣‏/٨‏/٢٠٢٥، ٧:٣٨:٢٣ م",
+  "createdAt": "2025-08-03T16:38:23.147Z",
+  "updatedAt": "2025-08-03T16:38:23.147Z"
+}

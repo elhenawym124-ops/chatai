@@ -1,0 +1,118 @@
+{
+  "id": "ORD-1754431818522-424",
+  "orderNumber": "ORD-1754431818522-424",
+  "customerName": "عميل جديد",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر",
+    "fullAddress": ""
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي ",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdz3b9pr002gufrs6iz10x1u",
+        "source": "ai_agent",
+        "confidence": 0.5,
+        "extractionMethod": "ai_enhanced"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب تلقائي من المحادثة\nمعرف المحادثة: cmdz3b9pr002gufrs6iz10x1u\nملاحظات إضافية: طلب تلقائي من المحادثة cmdz3b9pr002gufrs6iz10x1u - ٦‏/٨‏/٢٠٢٥، ١:١٠:١٨ ص\nتاريخ الإنشاء: ٦‏/٨‏/٢٠٢٥، ١:١٠:١٨ ص",
+  "createdAt": "2025-08-05T22:10:18.522Z",
+  "updatedAt": "2025-08-05T22:10:18.522Z",
+  "metadata": {
+    "conversationId": "cmdz3b9pr002gufrs6iz10x1u",
+    "customerId": "cmdz3b9bh002eufrszph9w89m",
+    "companyId": "cmdt8nrjq003vufuss47dqc45",
+    "dataQuality": {
+      "score": "29",
+      "level": "منخفضة",
+      "recommendation": "يحتاج مراجعة شاملة",
+      "details": {
+        "totalScore": 4,
+        "maxScore": 14,
+        "issues": [
+          "productColor: قيمة افتراضية أو غير دقيقة",
+          "productSize: قيمة افتراضية أو غير دقيقة",
+          "productPrice: قيمة افتراضية أو غير دقيقة",
+          "customerName: قيمة افتراضية أو غير دقيقة",
+          "customerPhone: قيمة مفقودة",
+          "city: قيمة مفقودة"
+        ],
+        "strengths": [
+          "productName: قيمة صحيحة ومحددة"
+        ],
+        "checks": [
+          {
+            "field": "productName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "كوتشي "
+          },
+          {
+            "field": "productColor",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 1,
+            "value": "أبيض"
+          },
+          {
+            "field": "productSize",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 1,
+            "value": "37"
+          },
+          {
+            "field": "productPrice",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": 349
+          },
+          {
+            "field": "customerName",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 3,
+            "value": "24470264589327602 "
+          },
+          {
+            "field": "customerPhone",
+            "hasValue": false,
+            "isValid": "",
+            "weight": 3,
+            "value": ""
+          },
+          {
+            "field": "city",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": "غير محدد"
+          }
+        ]
+      }
+    },
+    "extractionTimestamp": "2025-08-05T22:10:18.522Z"
+  }
+}

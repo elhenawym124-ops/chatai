@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754327935944-974",
+  "orderNumber": "ORD-1754327935944-974",
+  "customerName": "24182650461399953 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش سعره 349 جنيه. ده كوتشي حريمي مريح جداً ونعله طبي من خامات مستوردة",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdxdh5gz001nuf7kz0oor6zk",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdxdh5gz001nuf7kz0oor6zk\nطلب تلقائي من المحادثة cmdxdh5gz001nuf7kz0oor6zk - ٤‏/٨‏/٢٠٢٥، ٨:١٨:٥٥ م",
+  "createdAt": "2025-08-04T17:18:55.944Z",
+  "updatedAt": "2025-08-04T17:18:55.944Z"
+}

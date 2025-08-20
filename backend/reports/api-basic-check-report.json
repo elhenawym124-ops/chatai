@@ -1,0 +1,906 @@
+{
+  "timestamp": "2025-07-16T22:57:16.158Z",
+  "results": {
+    "authentication": {
+      "Auth Status": {
+        "name": "Auth Status",
+        "path": "/api/v1/auth/status",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/auth/status"
+        },
+        "success": true
+      },
+      "Login": {
+        "name": "Login",
+        "path": "/api/v1/auth/login",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 24,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "message": "Login successful",
+          "user": {
+            "id": "1",
+            "email": "test@example.com",
+            "firstName": "أحمد",
+            "lastName": "المدير",
+            "role": "COMPANY_ADMIN",
+            "companyId": "1",
+            "company": {
+              "id": "1",
+              "name": "شركة التواصل التجريبية",
+              "plan": "PREMIUM"
+            }
+          },
+          "tokens": {
+            "accessToken": "mock-access-token",
+            "refreshToken": "mock-refresh-token"
+          }
+        },
+        "success": true
+      },
+      "Register": {
+        "name": "Register",
+        "path": "/api/v1/auth/register",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/auth/register"
+        },
+        "success": true
+      },
+      "Logout": {
+        "name": "Logout",
+        "path": "/api/v1/auth/logout",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "message": "Logout successful"
+        },
+        "success": true
+      },
+      "Refresh Token": {
+        "name": "Refresh Token",
+        "path": "/api/v1/auth/refresh",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/auth/refresh"
+        },
+        "success": true
+      },
+      "User Profile": {
+        "name": "User Profile",
+        "path": "/api/v1/auth/profile",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 5,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/auth/profile"
+        },
+        "success": true
+      }
+    },
+    "customers": {
+      "Get Customers": {
+        "name": "Get Customers",
+        "path": "/api/v1/customers",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 4,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "data": [
+            {
+              "id": "1",
+              "name": "أحمد محمد",
+              "email": "ahmed@example.com",
+              "phone": "+966501234567",
+              "status": "active",
+              "lastContact": "2025-07-14T22:57:16.067Z",
+              "totalOrders": 5,
+              "totalSpent": 2450,
+              "source": "facebook",
+              "tags": [
+                "VIP",
+                "متكرر"
+              ]
+            },
+            {
+              "id": "2",
+              "name": "سارة أحمد",
+              "email": "sara@example.com",
+              "phone": "+966507654321",
+              "status": "potential",
+              "lastContact": "2025-07-11T22:57:16.067Z",
+              "totalOrders": 1,
+              "totalSpent": 350,
+              "source": "whatsapp",
+              "tags": [
+                "جديد"
+              ]
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 2,
+            "pages": 1
+          }
+        },
+        "success": true
+      },
+      "Create Customer": {
+        "name": "Create Customer",
+        "path": "/api/v1/customers",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers"
+        },
+        "success": true
+      },
+      "Get Customer by ID": {
+        "name": "Get Customer by ID",
+        "path": "/api/v1/customers/1",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers/1"
+        },
+        "success": true
+      },
+      "Update Customer": {
+        "name": "Update Customer",
+        "path": "/api/v1/customers/1",
+        "method": "PUT",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers/1"
+        },
+        "success": true
+      },
+      "Search Customers": {
+        "name": "Search Customers",
+        "path": "/api/v1/customers/search",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers/search?q=test"
+        },
+        "success": true
+      },
+      "Customer Stats": {
+        "name": "Customer Stats",
+        "path": "/api/v1/customers/stats",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers/stats"
+        },
+        "success": true
+      },
+      "Customer Segments": {
+        "name": "Customer Segments",
+        "path": "/api/v1/customers/segments",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/customers/segments"
+        },
+        "success": true
+      }
+    },
+    "conversations": {
+      "Get Conversations": {
+        "name": "Get Conversations",
+        "path": "/api/v1/conversations",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations"
+        },
+        "success": true
+      },
+      "Create Conversation": {
+        "name": "Create Conversation",
+        "path": "/api/v1/conversations",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations"
+        },
+        "success": true
+      },
+      "Get Conversation by ID": {
+        "name": "Get Conversation by ID",
+        "path": "/api/v1/conversations/1",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations/1"
+        },
+        "success": true
+      },
+      "Get Messages": {
+        "name": "Get Messages",
+        "path": "/api/v1/conversations/1/messages",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations/1/messages"
+        },
+        "success": true
+      },
+      "Send Message": {
+        "name": "Send Message",
+        "path": "/api/v1/conversations/1/messages",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations/1/messages"
+        },
+        "success": true
+      },
+      "Update Status": {
+        "name": "Update Status",
+        "path": "/api/v1/conversations/1/status",
+        "method": "PUT",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 4,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "المحادثة غير موجودة"
+        },
+        "success": true
+      },
+      "Conversation Stats": {
+        "name": "Conversation Stats",
+        "path": "/api/v1/conversations/stats",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "data": {
+            "total": 2,
+            "active": 1,
+            "pending": 1,
+            "resolved": 0,
+            "closed": 0,
+            "averageResponseTime": 120,
+            "categoryDistribution": {
+              "استفسارات عامة": 1,
+              "مشاكل تقنية": 1
+            },
+            "sentimentDistribution": {
+              "neutral": 1,
+              "negative": 1
+            },
+            "priorityDistribution": {
+              "medium": 1,
+              "high": 1
+            },
+            "platformDistribution": {
+              "messenger": 1,
+              "whatsapp": 1
+            },
+            "assignmentStats": {
+              "assigned": 1,
+              "unassigned": 1,
+              "assignmentRate": "50.0"
+            },
+            "hourlyDistribution": {
+              "14": 1,
+              "15": 1
+            }
+          }
+        },
+        "success": true
+      },
+      "Search Conversations": {
+        "name": "Search Conversations",
+        "path": "/api/v1/conversations/search",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/conversations/search?q=test"
+        },
+        "success": true
+      }
+    },
+    "products": {
+      "Get Products": {
+        "name": "Get Products",
+        "path": "/api/v1/products",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "data": [
+            {
+              "id": "1",
+              "name": "جهاز لابتوب Dell XPS 13",
+              "description": "جهاز لابتوب عالي الأداء مع معالج Intel Core i7 وذاكرة 16GB",
+              "price": 4500,
+              "comparePrice": 5000,
+              "sku": "DELL-XPS-13-001",
+              "category": "أجهزة كمبيوتر",
+              "stock": 15,
+              "isActive": true
+            },
+            {
+              "id": "2",
+              "name": "هاتف iPhone 15 Pro",
+              "description": "أحدث هاتف من Apple مع كاميرا متطورة ومعالج A17 Pro",
+              "price": 4200,
+              "comparePrice": 4500,
+              "sku": "IPHONE-15-PRO-001",
+              "category": "هواتف ذكية",
+              "stock": 3,
+              "isActive": true
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 2,
+            "pages": 1
+          }
+        },
+        "success": true
+      },
+      "Create Product": {
+        "name": "Create Product",
+        "path": "/api/v1/products",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products"
+        },
+        "success": true
+      },
+      "Get Product by ID": {
+        "name": "Get Product by ID",
+        "path": "/api/v1/products/1",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products/1"
+        },
+        "success": true
+      },
+      "Update Product": {
+        "name": "Update Product",
+        "path": "/api/v1/products/1",
+        "method": "PUT",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products/1"
+        },
+        "success": true
+      },
+      "Search Products": {
+        "name": "Search Products",
+        "path": "/api/v1/products/search",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products/search?q=test"
+        },
+        "success": true
+      },
+      "Get Categories": {
+        "name": "Get Categories",
+        "path": "/api/v1/products/categories",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products/categories"
+        },
+        "success": true
+      },
+      "Featured Products": {
+        "name": "Featured Products",
+        "path": "/api/v1/products/featured",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 1,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/products/featured"
+        },
+        "success": true
+      },
+      "Product Reviews": {
+        "name": "Product Reviews",
+        "path": "/api/v1/products/1/reviews",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "data": {
+            "reviews": [
+              {
+                "id": "REV002",
+                "productId": "1",
+                "productName": "لابتوب HP Pavilion",
+                "customerId": "2",
+                "customerName": "سارة أحمد",
+                "rating": 4,
+                "title": "جيد لكن يحتاج تحسينات",
+                "content": "اللابتوب جيد بشكل عام، لكن المروحة تصدر صوتاً عالياً أحياناً. الأداء مقبول للاستخدام اليومي.",
+                "pros": [
+                  "سعر مناسب",
+                  "تصميم أنيق"
+                ],
+                "cons": [
+                  "صوت المروحة عالي",
+                  "مساحة التخزين قليلة"
+                ],
+                "images": [],
+                "isVerifiedPurchase": true,
+                "isRecommended": true,
+                "helpfulVotes": 8,
+                "notHelpfulVotes": 1,
+                "status": "approved",
+                "moderatorNotes": "",
+                "createdAt": "2024-01-12T00:00:00.000Z",
+                "updatedAt": "2024-01-12T00:00:00.000Z"
+              },
+              {
+                "id": "REV001",
+                "productId": "1",
+                "productName": "لابتوب HP Pavilion",
+                "customerId": "1",
+                "customerName": "أحمد محمد",
+                "rating": 5,
+                "title": "منتج ممتاز وجودة عالية",
+                "content": "اشتريت هذا اللابتوب منذ شهرين وأنا راضي جداً عن الأداء. سرعة المعالج ممتازة وجودة الشاشة واضحة. أنصح بشرائه.",
+                "pros": [
+                  "أداء سريع",
+                  "جودة شاشة ممتازة",
+                  "بطارية تدوم طويلاً"
+                ],
+                "cons": [
+                  "الوزن ثقيل نوعاً ما"
+                ],
+                "images": [
+                  "review1_img1.jpg",
+                  "review1_img2.jpg"
+                ],
+                "isVerifiedPurchase": true,
+                "isRecommended": true,
+                "helpfulVotes": 15,
+                "notHelpfulVotes": 2,
+                "status": "approved",
+                "moderatorNotes": "",
+                "createdAt": "2024-01-10T00:00:00.000Z",
+                "updatedAt": "2024-01-10T00:00:00.000Z"
+              }
+            ],
+            "ratingSummary": {
+              "averageRating": 4.5,
+              "totalReviews": 2,
+              "ratingDistribution": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 1,
+                "5": 1
+              },
+              "recommendationRate": 100
+            },
+            "pagination": {
+              "page": 1,
+              "limit": 10,
+              "total": 2,
+              "pages": 1
+            }
+          }
+        },
+        "success": true
+      }
+    },
+    "orders": {
+      "Get Orders": {
+        "name": "Get Orders",
+        "path": "/api/v1/orders",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": true,
+          "data": [
+            {
+              "id": "ORD-002",
+              "customerId": "2",
+              "customerName": "سارة أحمد",
+              "customerEmail": "sara@example.com",
+              "customerPhone": "+966507654321",
+              "status": "processing",
+              "items": [
+                {
+                  "productId": "2",
+                  "productName": "هاتف iPhone 15 Pro",
+                  "quantity": 1,
+                  "price": 4200,
+                  "total": 4200
+                },
+                {
+                  "productId": "3",
+                  "productName": "سماعات AirPods Pro",
+                  "quantity": 1,
+                  "price": 1500,
+                  "total": 1500
+                }
+              ],
+              "subtotal": 5700,
+              "tax": 855,
+              "shipping": 0,
+              "discount": 570,
+              "total": 5985,
+              "shippingAddress": {
+                "street": "شارع العليا",
+                "city": "الرياض",
+                "state": "الرياض",
+                "zipCode": "11564",
+                "country": "السعودية"
+              },
+              "paymentMethod": "bank_transfer",
+              "paymentStatus": "pending",
+              "orderDate": "2024-01-15T00:00:00.000Z",
+              "deliveryDate": null,
+              "trackingNumber": null,
+              "notes": ""
+            },
+            {
+              "id": "ORD-001",
+              "customerId": "1",
+              "customerName": "أحمد محمد",
+              "customerEmail": "ahmed@example.com",
+              "customerPhone": "+966501234567",
+              "status": "delivered",
+              "items": [
+                {
+                  "productId": "1",
+                  "productName": "جهاز لابتوب Dell XPS 13",
+                  "quantity": 1,
+                  "price": 4500,
+                  "total": 4500
+                }
+              ],
+              "subtotal": 4500,
+              "tax": 675,
+              "shipping": 50,
+              "discount": 0,
+              "total": 5225,
+              "shippingAddress": {
+                "street": "شارع الملك فهد",
+                "city": "الرياض",
+                "state": "الرياض",
+                "zipCode": "12345",
+                "country": "السعودية"
+              },
+              "paymentMethod": "credit_card",
+              "paymentStatus": "paid",
+              "orderDate": "2024-01-10T00:00:00.000Z",
+              "deliveryDate": "2024-01-12T00:00:00.000Z",
+              "trackingNumber": "TRK123456789",
+              "notes": "توصيل سريع"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 2,
+            "pages": 1
+          }
+        },
+        "success": true
+      },
+      "Create Order": {
+        "name": "Create Order",
+        "path": "/api/v1/orders",
+        "method": "POST",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 4,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "السلة فارغة"
+        },
+        "success": true
+      },
+      "Get Order by ID": {
+        "name": "Get Order by ID",
+        "path": "/api/v1/orders/1",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "الطلب غير موجود"
+        },
+        "success": true
+      },
+      "Update Order Status": {
+        "name": "Update Order Status",
+        "path": "/api/v1/orders/1/status",
+        "method": "PUT",
+        "status": "SUCCESS",
+        "statusCode": 400,
+        "responseTime": 3,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "الطلب غير موجود"
+        },
+        "success": true
+      },
+      "Order Stats": {
+        "name": "Order Stats",
+        "path": "/api/v1/orders/stats",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "الطلب غير موجود"
+        },
+        "success": true
+      },
+      "Search Orders": {
+        "name": "Search Orders",
+        "path": "/api/v1/orders/search",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 2,
+        "requiresAuth": true,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "error": "الطلب غير موجود"
+        },
+        "success": true
+      }
+    },
+    "general": {
+      "Health Check": {
+        "name": "Health Check",
+        "path": "/health",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 200,
+        "responseTime": 65,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "status": "OK",
+          "timestamp": "2025-07-16T22:57:16.012Z",
+          "uptime": 2556.9509484,
+          "environment": "development",
+          "version": "1.0.0"
+        },
+        "success": true
+      },
+      "API Health": {
+        "name": "API Health",
+        "path": "/api/v1/health",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/health"
+        },
+        "success": true
+      },
+      "API Status": {
+        "name": "API Status",
+        "path": "/api/v1/status",
+        "method": "GET",
+        "status": "SUCCESS",
+        "statusCode": 404,
+        "responseTime": 3,
+        "requiresAuth": false,
+        "hasAuth": false,
+        "data": {
+          "success": false,
+          "message": "Route not found",
+          "path": "/api/v1/status"
+        },
+        "success": true
+      }
+    },
+    "summary": {
+      "totalEndpoints": 38,
+      "workingEndpoints": 38,
+      "failedEndpoints": 0,
+      "overallStatus": "GOOD"
+    },
+    "issues": []
+  },
+  "summary": {
+    "status": "GOOD",
+    "successRate": 100,
+    "totalEndpoints": 38,
+    "workingEndpoints": 38,
+    "failedEndpoints": 0,
+    "hasAuthToken": false,
+    "totalIssues": 0
+  }
+}

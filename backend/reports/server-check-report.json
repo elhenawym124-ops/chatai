@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-07-16T22:50:15.545Z",
+  "results": {
+    "frontend": {
+      "url": "http://localhost:3000",
+      "status": "ISSUES",
+      "responseTime": 50,
+      "details": {
+        "statusCode": 404,
+        "headers": {
+          "access-control-allow-origin": "*",
+          "date": "Wed, 16 Jul 2025 22:50:15 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "0"
+        },
+        "contentLength": "0"
+      }
+    },
+    "backend": {
+      "url": "http://localhost:3001",
+      "status": "RUNNING",
+      "responseTime": 4,
+      "details": {
+        "statusCode": 200,
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "access-control-allow-credentials": "true",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "121",
+          "etag": "W/\"79-LHbvOQYkEQ+FaXfmG4v4epLQwa4\"",
+          "date": "Wed, 16 Jul 2025 22:50:15 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "data": {
+          "status": "OK",
+          "timestamp": "2025-07-16T22:50:15.515Z",
+          "uptime": 2136.454184,
+          "environment": "development",
+          "version": "1.0.0"
+        }
+      }
+    },
+    "connectivity": {
+      "frontendToBackend": "CONNECTED",
+      "apiEndpoints": [
+        {
+          "name": "Health Check",
+          "path": "/health",
+          "status": "AVAILABLE",
+          "statusCode": 200,
+          "responseTime": 4,
+          "error": null
+        },
+        {
+          "name": "Auth Status",
+          "path": "/api/v1/auth/status",
+          "status": "AVAILABLE",
+          "statusCode": 404,
+          "responseTime": 5,
+          "error": null
+        },
+        {
+          "name": "Customers API",
+          "path": "/api/v1/customers",
+          "status": "AVAILABLE",
+          "statusCode": 200,
+          "responseTime": 2,
+          "error": null
+        },
+        {
+          "name": "Conversations API",
+          "path": "/api/v1/conversations",
+          "status": "AVAILABLE",
+          "statusCode": 404,
+          "responseTime": 3,
+          "error": null
+        },
+        {
+          "name": "Products API",
+          "path": "/api/v1/products",
+          "status": "AVAILABLE",
+          "statusCode": 200,
+          "responseTime": 4,
+          "error": null
+        }
+      ]
+    },
+    "issues": [
+      {
+        "type": "WARNING",
+        "message": "Frontend server returned status 404"
+      }
+    ],
+    "summary": {
+      "overallStatus": "ISSUES",
+      "serversRunning": 1,
+      "totalServers": 2
+    }
+  },
+  "summary": {
+    "status": "ISSUES",
+    "serversRunning": 1,
+    "totalServers": 2,
+    "totalIssues": 1,
+    "criticalIssues": 0
+  }
+}

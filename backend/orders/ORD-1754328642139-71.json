@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754328642139-71",
+  "orderNumber": "ORD-1754328642139-71",
+  "customerName": "24290670277248882 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش اللي بتسألي عليه سعره 349 جنيه. ده كوتشي مميز جداً بنعل طبي ومقاساته مظبوطة",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdxdvkav000iufgk8pp3bp57",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdxdvkav000iufgk8pp3bp57\nطلب تلقائي من المحادثة cmdxdvkav000iufgk8pp3bp57 - ٤‏/٨‏/٢٠٢٥، ٨:٣٠:٤٢ م",
+  "createdAt": "2025-08-04T17:30:42.139Z",
+  "updatedAt": "2025-08-04T17:30:42.139Z"
+}

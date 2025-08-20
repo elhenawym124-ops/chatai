@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754221198085-114",
+  "orderNumber": "ORD-1754221198085-114",
+  "customerName": "24005371099147229 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "القاهرة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "بالظبط.",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "الأسود",
+        "size": "37",
+        "conversationId": "cmdvhqvem001luf90dhunn7tu",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdvhqvem001luf90dhunn7tu\nطلب تلقائي من المحادثة cmdvhqvem001luf90dhunn7tu - ٣‏/٨‏/٢٠٢٥، ٢:٣٩:٥٨ م",
+  "createdAt": "2025-08-03T11:39:58.085Z",
+  "updatedAt": "2025-08-03T11:39:58.085Z"
+}

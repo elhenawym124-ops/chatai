@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1753971701294-981",
+  "orderNumber": "ORD-1753971701294-981",
+  "customerName": "Facebook User",
+  "customerPhone": "01017854018",
+  "customerEmail": "",
+  "total": 125,
+  "subtotal": 50,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "اللي حضرتك محتاجه",
+      "price": 50,
+      "quantity": 1,
+      "total": 50,
+      "metadata": {
+        "color": "ومقاس",
+        "size": "40",
+        "conversationId": "cmdls0luc000sufm84qeerxb2",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdls0luc000sufm84qeerxb2\nطلب تلقائي من المحادثة cmdls0luc000sufm84qeerxb2 - ٣١‏/٧‏/٢٠٢٥، ٥:٢١:٤١ م",
+  "createdAt": "2025-07-31T14:21:41.294Z",
+  "updatedAt": "2025-07-31T14:21:41.294Z"
+}

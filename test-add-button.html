@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار زر إضافة مفتاح API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 اختبار زر إضافة مفتاح API</h1>
+        
+        <div class="test-section">
+            <h3>1. تحميل صفحة إعدادات Gemini</h3>
+            <button onclick="loadGeminiPage()">📥 تحميل الصفحة</button>
+            <div id="pageResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. الصفحة المحملة</h3>
+            <iframe id="geminiFrame" src="about:blank"></iframe>
+        </div>
+
+        <div class="test-section">
+            <h3>3. تعليمات الاختبار اليدوي</h3>
+            <div class="info result">
+                <strong>خطوات الاختبار:</strong><br>
+                1. انظر إلى الصفحة المحملة أعلاه<br>
+                2. ابحث عن زر "إضافة مفتاح" في قسم "مفاتيح API"<br>
+                3. اضغط على الزر<br>
+                4. يجب أن يظهر نافذة منبثقة (Modal) لإضافة مفتاح جديد<br>
+                5. املأ البيانات واضغط "إضافة"<br>
+                6. يجب أن يظهر المفتاح في القائمة<br>
+                7. اضغط "حفظ الإعدادات"<br>
+                8. أعد تحميل الصفحة للتأكد من الحفظ
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. اختبار API مباشر</h3>
+            <button onclick="testDirectAPI()">🧪 اختبار API مباشر</button>
+            <div id="apiResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. فحص حالة الخادم</h3>
+            <button onclick="checkServerStatus()">🔍 فحص الخادم</button>
+            <div id="serverResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            element.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        function loadGeminiPage() {
+            showResult('pageResult', '🔄 جاري تحميل صفحة إعدادات Gemini...', 'info');
+            
+            const iframe = document.getElementById('geminiFrame');
+            iframe.src = 'http://localhost:3000/settings/gemini';
+            
+            iframe.onload = function() {
+                showResult('pageResult', '✅ تم تحميل الصفحة بنجاح! يمكنك الآن اختبار زر "إضافة مفتاح" في الإطار أعلاه.', 'success');
+            };
+            
+            iframe.onerror = function() {
+                showResult('pageResult', '❌ فشل في تحميل الصفحة. تأكد من أن الخادم يعمل على http://localhost:3000', 'error');
+            };
+        }
+
+        async function testDirectAPI() {
+            showResult('apiResult', '🔄 جاري اختبار API مباشرة...', 'info');
+            
+            try {
+                // Test 1: Load current settings
+                const loadResponse = await fetch('http://localhost:3001/api/v1/ai/settings');
+                const loadData = await loadResponse.json();
+                
+                if (!loadData.success) {
+                    throw new Error(`فشل في تحميل الإعدادات: ${loadData.error}`);
+                }
+                
+                const currentApiKeys = loadData.data.modelSettings?.apiKeys || [];
+                
+                // Test 2: Add new API key
+                const testKey = {
+                    key: `AIza_manual_test_${Date.now()}`,
+                    name: `Manual Test Key ${new Date().toLocaleTimeString()}`,
+                    models: ['gemini-1.5-flash', 'gemini-pro'],
+                    priority: currentApiKeys.length + 1,
+                    dailyLimit: 2000,
+                    monthlyLimit: 60000
+                };
+                
+                const newApiKeys = [...currentApiKeys, testKey];
+                
+                const modelSettings = {
+                    primaryModel: 'gemini-1.5-flash',
+                    fallbackModels: ['gemini-pro'],
+                    maxResponseDelay: 30,
+                    enableUsageTracking: true,
+                    enableCostOptimization: true,
+                    apiKeys: newApiKeys
+                };
+                
+                const escalationRules = {
+                    apiKey: newApiKeys.length > 0 ? newApiKeys[0].key : '',
+                    maxResponseDelay: 30
+                };
+                
+                // Test 3: Save settings
+                const saveResponse = await fetch('http://localhost:3001/api/v1/ai/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        autoReplyEnabled: true,
+                        confidenceThreshold: 0.8,
+                        modelSettings: JSON.stringify(modelSettings),
+                        escalationRules: JSON.stringify(escalationRules)
+                    }),
+                });
+                
+                const saveData = await saveResponse.json();
+                
+                if (!saveData.success) {
+                    throw new Error(`فشل في حفظ الإعدادات: ${saveData.error}`);
+                }
+                
+                // Test 4: Verify save
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const verifyResponse = await fetch('http://localhost:3001/api/v1/ai/settings');
+                const verifyData = await verifyResponse.json();
+                
+                if (!verifyData.success) {
+                    throw new Error(`فشل في التحقق من الحفظ: ${verifyData.error}`);
+                }
+                
+                const savedApiKeys = verifyData.data.modelSettings?.apiKeys || [];
+                const foundKey = savedApiKeys.find(key => key.name === testKey.name);
+                
+                if (!foundKey) {
+                    throw new Error(`لم يتم العثور على المفتاح المحفوظ: ${testKey.name}`);
+                }
+                
+                showResult('apiResult', 
+                    `✅ اختبار API نجح بالكامل!\n` +
+                    `🔑 تم إضافة مفتاح: ${foundKey.name}\n` +
+                    `📊 إجمالي المفاتيح: ${savedApiKeys.length}\n` +
+                    `💾 الحفظ والاسترجاع يعملان بشكل مثالي`, 
+                    'success'
+                );
+                
+            } catch (error) {
+                showResult('apiResult', `❌ فشل اختبار API: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkServerStatus() {
+            showResult('serverResult', '🔄 جاري فحص حالة الخادم...', 'info');
+            
+            try {
+                const frontendResponse = await fetch('http://localhost:3000/settings/gemini');
+                const backendResponse = await fetch('http://localhost:3001/api/v1/ai/settings');
+                
+                const frontendStatus = frontendResponse.ok ? '✅ يعمل' : '❌ لا يعمل';
+                const backendStatus = backendResponse.ok ? '✅ يعمل' : '❌ لا يعمل';
+                
+                showResult('serverResult', 
+                    `🌐 الخادم الأمامي (Frontend): ${frontendStatus}\n` +
+                    `🔧 الخادم الخلفي (Backend): ${backendStatus}\n` +
+                    `📡 حالة الاتصال: ${frontendResponse.ok && backendResponse.ok ? '✅ ممتاز' : '⚠️ يحتاج مراجعة'}`,
+                    frontendResponse.ok && backendResponse.ok ? 'success' : 'error'
+                );
+                
+            } catch (error) {
+                showResult('serverResult', `❌ خطأ في فحص الخادم: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-load the page when the document is ready
+        window.onload = function() {
+            loadGeminiPage();
+        };
+    </script>
+</body>
+</html>

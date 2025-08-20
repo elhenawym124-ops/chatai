@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754408830813-758",
+  "orderNumber": "ORD-1754408830813-758",
+  "customerName": "24081202551534123 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "الجيزة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش اللون الأسود ومقاس 38 متوفرين وسعره 349 جنيه.",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "الأسود",
+        "size": "38",
+        "conversationId": "cmdyc3h2j00unufgsyogriv73",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyc3h2j00unufgsyogriv73\nطلب تلقائي من المحادثة cmdyc3h2j00unufgsyogriv73 - ٥‏/٨‏/٢٠٢٥، ٦:٤٧:١٠ م",
+  "createdAt": "2025-08-05T15:47:10.813Z",
+  "updatedAt": "2025-08-05T15:47:10.813Z"
+}

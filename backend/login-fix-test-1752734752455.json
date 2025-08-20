@@ -1,0 +1,41 @@
+{
+  "tests": [
+    {
+      "name": "اختبار تسجيل الدخول بالبيانات الصحيحة",
+      "passed": false,
+      "message": "Backend server غير متصل",
+      "details": {
+        "error": ""
+      }
+    },
+    {
+      "name": "اختبار تسجيل الدخول بالبيانات الخاطئة",
+      "passed": false,
+      "message": "Backend server غير متصل",
+      "details": {
+        "error": ""
+      }
+    },
+    {
+      "name": "اختبار تسجيل الدخول بكلمة مرور خاطئة",
+      "passed": false,
+      "message": "Backend server غير متصل",
+      "details": {
+        "error": ""
+      }
+    },
+    {
+      "name": "اختبار تسجيل الدخول ببريد إلكتروني خاطئ",
+      "passed": false,
+      "message": "Backend server غير متصل",
+      "details": {
+        "error": ""
+      }
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 0,
+    "failed": 4
+  }
+}

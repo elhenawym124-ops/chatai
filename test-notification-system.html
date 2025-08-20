@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام الإشعارات</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-section h3 {
+            color: #555;
+            margin-top: 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error-btn {
+            background: #dc3545;
+        }
+        .error-btn:hover {
+            background: #c82333;
+        }
+        .success-btn {
+            background: #28a745;
+        }
+        .success-btn:hover {
+            background: #218838;
+        }
+        .warning-btn {
+            background: #ffc107;
+            color: #212529;
+        }
+        .warning-btn:hover {
+            background: #e0a800;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #e9ecef;
+            border-left: 4px solid #007bff;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error-status {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 اختبار نظام الإشعارات الصامتة</h1>
+        
+        <div class="test-section">
+            <h3>📊 حالة النظام</h3>
+            <button onclick="checkSystemStatus()">فحص حالة النظام</button>
+            <div id="systemStatus" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🤐 اختبار الأخطاء الصامتة</h3>
+            <p>هذه الاختبارات ستنشئ أخطاء صامتة لا يراها العميل ولكن تظهر في لوحة المراقبة:</p>
+            <button class="error-btn" onclick="testSilentError()">إنشاء خطأ صامت</button>
+            <button class="warning-btn" onclick="testAPIQuotaError()">محاكاة نفاد API</button>
+            <button class="error-btn" onclick="testDatabaseError()">محاكاة خطأ قاعدة بيانات</button>
+            <div id="silentErrorResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔔 اختبار الإشعارات العادية</h3>
+            <p>هذه الاختبارات ستنشئ إشعارات عادية تظهر في الجرس:</p>
+            <button class="success-btn" onclick="testSuccessNotification()">إشعار نجاح</button>
+            <button class="warning-btn" onclick="testWarningNotification()">إشعار تحذير</button>
+            <button onclick="testInfoNotification()">إشعار معلومات</button>
+            <div id="normalNotificationResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📈 إحصائيات الإشعارات</h3>
+            <button onclick="getNotificationStats()">عرض الإحصائيات</button>
+            <div id="statsResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 اختبار شامل</h3>
+            <button onclick="runFullTest()">تشغيل اختبار شامل</button>
+            <div id="fullTestResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div id="overallStatus" class="status">
+            ✅ النظام جاهز للاختبار
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api/v1';
+        
+        // Get auth token from localStorage
+        function getAuthToken() {
+            return localStorage.getItem('token') || 'test-token';
+        }
+
+        // Check system status
+        async function checkSystemStatus() {
+            const result = document.getElementById('systemStatus');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 جاري فحص النظام...';
+
+            try {
+                const response = await fetch(`${API_BASE}/monitor/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        ✅ النظام يعمل بشكل طبيعي<br>
+                        📊 حالة قاعدة البيانات: ${data.database ? '✅ متصلة' : '❌ غير متصلة'}<br>
+                        🔔 نظام الإشعارات: ${data.notifications ? '✅ فعال' : '❌ غير فعال'}
+                    `;
+                } else {
+                    result.innerHTML = `❌ خطأ في فحص النظام: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test silent error
+        async function testSilentError() {
+            const result = document.getElementById('silentErrorResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 إنشاء خطأ صامت...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'error',
+                        title: '🤐 خطأ صامت تجريبي',
+                        message: 'هذا خطأ صامت لا يراه العميل - تم إنشاؤه للاختبار',
+                        metadata: {
+                            silent: true,
+                            errorType: 'test_silent_error',
+                            customerId: 'test-customer-123',
+                            source: 'test_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم إنشاء خطأ صامت بنجاح!<br>
+                        🤐 العميل لن يرى هذا الخطأ<br>
+                        📊 تحقق من لوحة المراقبة لرؤية التفاصيل
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في إنشاء الخطأ الصامت: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test API quota error
+        async function testAPIQuotaError() {
+            const result = document.getElementById('silentErrorResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 محاكاة نفاد API...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'error',
+                        title: '🚫 نفاد حصة API',
+                        message: 'تم استنفاد حصة Gemini API - العميل لن يرى هذا الخطأ',
+                        metadata: {
+                            silent: true,
+                            errorType: 'quota_exceeded',
+                            customerId: 'customer-456',
+                            apiModel: 'gemini-1.5-flash',
+                            source: 'api_quota_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم محاكاة نفاد API بنجاح!<br>
+                        🤐 العميل لن يرى رسالة خطأ<br>
+                        📊 المطورون سيحصلون على إشعار فوري
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في المحاكاة: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test database error
+        async function testDatabaseError() {
+            const result = document.getElementById('silentErrorResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 محاكاة خطأ قاعدة بيانات...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'error',
+                        title: '💾 خطأ قاعدة البيانات',
+                        message: 'فشل في الاتصال بقاعدة البيانات - خطأ صامت',
+                        metadata: {
+                            silent: true,
+                            errorType: 'database_connection_error',
+                            customerId: 'customer-789',
+                            source: 'database_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم محاكاة خطأ قاعدة البيانات!<br>
+                        🤐 النظام الصامت يعمل بشكل صحيح<br>
+                        📊 الخطأ مسجل للمطورين فقط
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في المحاكاة: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test success notification
+        async function testSuccessNotification() {
+            const result = document.getElementById('normalNotificationResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 إنشاء إشعار نجاح...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'success',
+                        title: '✅ عملية ناجحة',
+                        message: 'تم تنفيذ العملية بنجاح',
+                        metadata: {
+                            source: 'test_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم إنشاء إشعار النجاح!<br>
+                        🔔 يجب أن يظهر في الجرس الآن
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في إنشاء الإشعار: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test warning notification
+        async function testWarningNotification() {
+            const result = document.getElementById('normalNotificationResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 إنشاء إشعار تحذير...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'warning',
+                        title: '⚠️ تحذير مهم',
+                        message: 'يرجى الانتباه لهذا التحذير',
+                        metadata: {
+                            source: 'test_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم إنشاء إشعار التحذير!<br>
+                        🔔 يجب أن يظهر في الجرس الآن
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في إنشاء الإشعار: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Test info notification
+        async function testInfoNotification() {
+            const result = document.getElementById('normalNotificationResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 إنشاء إشعار معلومات...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'info',
+                        title: 'ℹ️ معلومة مفيدة',
+                        message: 'هذه معلومة قد تهمك',
+                        metadata: {
+                            source: 'test_system'
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        ✅ تم إنشاء إشعار المعلومات!<br>
+                        🔔 يجب أن يظهر في الجرس الآن
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في إنشاء الإشعار: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Get notification stats
+        async function getNotificationStats() {
+            const result = document.getElementById('statsResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 جاري جلب الإحصائيات...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        📊 إحصائيات الإشعارات:<br>
+                        📈 إجمالي الإشعارات: ${data.stats.total}<br>
+                        🔔 غير مقروءة: ${data.stats.unread}<br>
+                        ❌ أخطاء: ${data.stats.byType.error}<br>
+                        ⚠️ تحذيرات: ${data.stats.byType.warning}<br>
+                        ℹ️ معلومات: ${data.stats.byType.info}<br>
+                        ✅ نجاح: ${data.stats.byType.success}
+                    `;
+                } else {
+                    result.innerHTML = `❌ فشل في جلب الإحصائيات: ${response.status}`;
+                }
+            } catch (error) {
+                result.innerHTML = `❌ خطأ في الاتصال: ${error.message}`;
+            }
+        }
+
+        // Run full test
+        async function runFullTest() {
+            const result = document.getElementById('fullTestResult');
+            result.style.display = 'block';
+            result.innerHTML = '🔄 تشغيل اختبار شامل...';
+
+            let testResults = [];
+
+            // Test 1: Silent error
+            try {
+                const response1 = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'error',
+                        title: '🤐 اختبار شامل - خطأ صامت',
+                        message: 'خطأ صامت من الاختبار الشامل',
+                        metadata: { silent: true, source: 'full_test' }
+                    })
+                });
+                testResults.push(response1.ok ? '✅ خطأ صامت' : '❌ خطأ صامت');
+            } catch (e) {
+                testResults.push('❌ خطأ صامت');
+            }
+
+            // Test 2: Normal notification
+            try {
+                const response2 = await fetch(`${API_BASE}/notifications/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        type: 'info',
+                        title: 'ℹ️ اختبار شامل - إشعار عادي',
+                        message: 'إشعار عادي من الاختبار الشامل',
+                        metadata: { source: 'full_test' }
+                    })
+                });
+                testResults.push(response2.ok ? '✅ إشعار عادي' : '❌ إشعار عادي');
+            } catch (e) {
+                testResults.push('❌ إشعار عادي');
+            }
+
+            // Test 3: Stats
+            try {
+                const response3 = await fetch(`${API_BASE}/notifications/stats`, {
+                    headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+                });
+                testResults.push(response3.ok ? '✅ إحصائيات' : '❌ إحصائيات');
+            } catch (e) {
+                testResults.push('❌ إحصائيات');
+            }
+
+            result.innerHTML = `
+                🎯 نتائج الاختبار الشامل:<br>
+                ${testResults.join('<br>')}
+                <br><br>
+                ${testResults.every(r => r.startsWith('✅')) ? 
+                    '🎉 جميع الاختبارات نجحت!' : 
+                    '⚠️ بعض الاختبارات فشلت'}
+            `;
+        }
+
+        // Update status on page load
+        window.onload = function() {
+            const status = document.getElementById('overallStatus');
+            status.innerHTML = '✅ النظام جاهز للاختبار - تأكد من تسجيل الدخول أولاً';
+        };
+    </script>
+</body>
+</html>

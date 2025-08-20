@@ -1,0 +1,117 @@
+{
+  "id": "ORD-1754430073396-352",
+  "orderNumber": "ORD-1754430073396-352",
+  "customerName": "عميل جديد",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر",
+    "fullAddress": ""
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي حريمي",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdz2cinu001lufbojsncjzmf",
+        "source": "ai_agent",
+        "confidence": 0.5,
+        "extractionMethod": "ai_enhanced"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب تلقائي من المحادثة\nمعرف المحادثة: cmdz2cinu001lufbojsncjzmf\nملاحظات إضافية: طلب تلقائي من المحادثة cmdz2cinu001lufbojsncjzmf - ٦‏/٨‏/٢٠٢٥، ١٢:٤١:١٣ ص\nتاريخ الإنشاء: ٦‏/٨‏/٢٠٢٥، ١٢:٤١:١٣ ص",
+  "createdAt": "2025-08-05T21:41:13.396Z",
+  "updatedAt": "2025-08-05T21:41:13.397Z",
+  "metadata": {
+    "conversationId": "cmdz2cinu001lufbojsncjzmf",
+    "customerId": "cmdtanagm0003ufe0cguva5fr",
+    "companyId": "cmdt8nrjq003vufuss47dqc45",
+    "dataQuality": {
+      "score": "21",
+      "level": "منخفضة",
+      "recommendation": "يحتاج مراجعة شاملة",
+      "details": {
+        "totalScore": 3,
+        "maxScore": 14,
+        "issues": [
+          "productName: قيمة افتراضية أو غير دقيقة",
+          "productColor: قيمة افتراضية أو غير دقيقة",
+          "productSize: قيمة افتراضية أو غير دقيقة",
+          "productPrice: قيمة افتراضية أو غير دقيقة",
+          "customerName: قيمة افتراضية أو غير دقيقة",
+          "customerPhone: قيمة مفقودة",
+          "city: قيمة مفقودة"
+        ],
+        "strengths": [],
+        "checks": [
+          {
+            "field": "productName",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": "كوتشي حريمي"
+          },
+          {
+            "field": "productColor",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 1,
+            "value": "أبيض"
+          },
+          {
+            "field": "productSize",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 1,
+            "value": "37"
+          },
+          {
+            "field": "productPrice",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": 349
+          },
+          {
+            "field": "customerName",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 3,
+            "value": "24174399225553309 "
+          },
+          {
+            "field": "customerPhone",
+            "hasValue": false,
+            "isValid": "",
+            "weight": 3,
+            "value": ""
+          },
+          {
+            "field": "city",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": "غير محدد"
+          }
+        ]
+      }
+    },
+    "extractionTimestamp": "2025-08-05T21:41:13.397Z"
+  }
+}

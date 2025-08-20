@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754147793051-710",
+  "orderNumber": "ORD-1754147793051-710",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 175,
+  "subtotal": 100,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش هي: بيج",
+      "price": 100,
+      "quantity": 1,
+      "total": 100,
+      "metadata": {
+        "color": "أبيض",
+        "size": "39",
+        "conversationId": "cmdu5tdq2004vuf8gwi56ctr4",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdu5tdq2004vuf8gwi56ctr4\nطلب تلقائي من المحادثة cmdu5tdq2004vuf8gwi56ctr4 - ٢‏/٨‏/٢٠٢٥، ٦:١٦:٣٣ م",
+  "createdAt": "2025-08-02T15:16:33.051Z",
+  "updatedAt": "2025-08-02T15:16:33.051Z"
+}

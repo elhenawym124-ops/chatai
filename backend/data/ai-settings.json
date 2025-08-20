@@ -1,0 +1,11 @@
+{
+  "apiKey": "AIzaSyCgrI96CyFIhT6D_RjiWYaghI-hZYUpPQE",
+  "isEnabled": true,
+  "autoReplyEnabled": true,
+  "confidenceThreshold": 0.7,
+  "maxResponseDelay": 30,
+  "model": "gemini-1.5-flash",
+  "temperature": 0.7,
+  "maxTokens": 1000,
+  "updatedAt": "2025-08-13T17:27:52.753Z"
+}

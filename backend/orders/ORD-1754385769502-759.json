@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754385769502-759",
+  "orderNumber": "ORD-1754385769502-759",
+  "customerName": "24297061509946178 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الأسود مقاس 39 سعره 349 جنيه يا فندم. والمقاس واللون اللي طلبتيه متوفرين حالياً. 😊",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "اللي",
+        "size": "39",
+        "conversationId": "cmdybvfwg00sjufgs2gzuw6cs",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdybvfwg00sjufgs2gzuw6cs\nطلب تلقائي من المحادثة cmdybvfwg00sjufgs2gzuw6cs - ٥‏/٨‏/٢٠٢٥، ١٢:٢٢:٤٩ م",
+  "createdAt": "2025-08-05T09:22:49.502Z",
+  "updatedAt": "2025-08-05T09:22:49.502Z"
+}

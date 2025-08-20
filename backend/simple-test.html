@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار بسيط - Simple A42</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        .message {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .new { background: #e7f3ff; border-color: #0066cc; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .clear { background: #dc3545; }
+        .clear:hover { background: #c82333; }
+        #messages { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 اختبار Simple A42 - مبسط</h1>
+        
+        <div id="status" class="status disconnected">
+            🔴 جاري التحقق...
+        </div>
+        
+        <div>
+            <button onclick="testConnection()">🔍 اختبار الاتصال</button>
+            <button onclick="fetchMessages()">📱 جلب الرسائل</button>
+            <button onclick="clearMessages()" class="clear">🗑️ مسح</button>
+        </div>
+        
+        <div id="messages">
+            <div class="message">
+                📱 ابعث رسالة إلى صفحة Simple A42 الآن!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let messageCount = 0;
+        
+        // فحص الاتصال
+        async function checkConnection() {
+            try {
+                const response = await fetch('/health');
+                const status = document.getElementById('status');
+                
+                if (response.ok) {
+                    status.className = 'status connected';
+                    status.innerHTML = '🟢 متصل - الخادم يعمل';
+                } else {
+                    status.className = 'status disconnected';
+                    status.innerHTML = '🟡 مشكلة في الاتصال';
+                }
+            } catch (error) {
+                const status = document.getElementById('status');
+                status.className = 'status disconnected';
+                status.innerHTML = '🔴 غير متصل';
+            }
+        }
+        
+        // اختبار الاتصال بقاعدة البيانات
+        async function testConnection() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '🔄 جاري الاختبار...';
+            
+            try {
+                const response = await fetch('/api/v1/integrations/facebook/debug-db', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageId: '351400718067673' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage(`✅ نجح! الصفحة: ${data.data.facebookPage.pageName} - الحالة: ${data.data.facebookPage.status}`);
+                } else {
+                    addMessage('❌ فشل: ' + (data.error || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                addMessage('❌ خطأ: ' + error.message);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '🔍 اختبار الاتصال';
+        }
+        
+        // جلب الرسائل
+        async function fetchMessages() {
+            try {
+                const response = await fetch('/api/v1/test/recent-messages');
+                const data = await response.json();
+                
+                if (data.success && data.messages.length > 0) {
+                    const container = document.getElementById('messages');
+                    container.innerHTML = '';
+                    
+                    data.messages.forEach(msg => {
+                        const time = new Date(msg.timestamp).toLocaleString('ar-SA');
+                        const isTarget = msg.isFromTarget;
+                        const pageInfo = isTarget ? 'Simple A42 ✅' : `صفحة ${msg.pageId}`;
+                        
+                        addMessage(`${pageInfo} - ${time}<br><strong>من:</strong> ${msg.senderId}<br><strong>المحتوى:</strong> ${msg.content || 'رسالة بدون نص'}`, isTarget);
+                    });
+                    
+                    addMessage(`📊 تم جلب ${data.messages.length} رسالة`);
+                } else {
+                    addMessage('📭 لا توجد رسائل جديدة');
+                }
+            } catch (error) {
+                addMessage('❌ خطأ في جلب الرسائل: ' + error.message);
+            }
+        }
+        
+        // إضافة رسالة
+        function addMessage(content, isNew = false) {
+            const container = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = isNew ? 'message new' : 'message';
+            div.innerHTML = content;
+            container.insertBefore(div, container.firstChild);
+            
+            // الاحتفاظ بآخر 20 رسالة فقط
+            while (container.children.length > 20) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        // مسح الرسائل
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '<div class="message">📱 تم مسح الرسائل - ابعث رسالة جديدة!</div>';
+        }
+        
+        // بدء التطبيق
+        checkConnection();
+        setInterval(checkConnection, 10000); // فحص كل 10 ثوان
+        setInterval(fetchMessages, 5000);    // جلب الرسائل كل 5 ثوان
+    </script>
+</body>
+</html>

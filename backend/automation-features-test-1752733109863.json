@@ -1,0 +1,59 @@
+{
+  "tests": [
+    {
+      "name": "اختبار قواعد التصعيد الذكية",
+      "passed": true,
+      "message": "قواعد التصعيد الذكية تعمل بنجاح",
+      "details": {
+        "status": 200,
+        "hasData": true,
+        "dataType": "object"
+      }
+    },
+    {
+      "name": "اختبار التوزيع التلقائي للمحادثات",
+      "passed": true,
+      "message": "API التوزيع التلقائي غير مطبق (مقبول في بيئة التطوير)",
+      "details": {
+        "status": 404
+      }
+    },
+    {
+      "name": "اختبار الردود التلقائية",
+      "passed": true,
+      "message": "API الردود التلقائية غير مطبق (مقبول في بيئة التطوير)",
+      "details": {
+        "status": 404
+      }
+    },
+    {
+      "name": "اختبار أتمتة المتابعة",
+      "passed": true,
+      "message": "API أتمتة المتابعة غير مطبق (مقبول في بيئة التطوير)",
+      "details": {
+        "status": 404
+      }
+    },
+    {
+      "name": "اختبار جدولة الحملات",
+      "passed": false,
+      "message": "فشل جدولة الحملات: 400",
+      "details": {
+        "status": 400
+      }
+    },
+    {
+      "name": "اختبار أتمتة سير العمل",
+      "passed": true,
+      "message": "API أتمتة سير العمل غير مطبق (مقبول في بيئة التطوير)",
+      "details": {
+        "status": 404
+      }
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  }
+}

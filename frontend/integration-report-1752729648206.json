@@ -1,0 +1,201 @@
+{
+  "apiTests": [
+    {
+      "name": "Health Check",
+      "endpoint": "/health",
+      "method": "GET",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "responseTime": 51,
+      "passed": true,
+      "hasData": true,
+      "dataStructure": {
+        "type": "object",
+        "hasSuccess": false,
+        "hasData": false,
+        "hasError": false,
+        "hasPagination": false,
+        "keys": [
+          "status",
+          "timestamp",
+          "uptime",
+          "environment",
+          "version"
+        ]
+      }
+    },
+    {
+      "name": "قائمة العملاء",
+      "endpoint": "/api/v1/customers",
+      "method": "GET",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "responseTime": 5,
+      "passed": true,
+      "hasData": true,
+      "dataStructure": {
+        "type": "object",
+        "hasSuccess": true,
+        "hasData": true,
+        "hasError": false,
+        "hasPagination": true,
+        "keys": [
+          "success",
+          "data",
+          "pagination"
+        ]
+      }
+    },
+    {
+      "name": "قائمة المنتجات",
+      "endpoint": "/api/v1/products",
+      "method": "GET",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "responseTime": 3,
+      "passed": true,
+      "hasData": true,
+      "dataStructure": {
+        "type": "object",
+        "hasSuccess": true,
+        "hasData": true,
+        "hasError": false,
+        "hasPagination": true,
+        "keys": [
+          "success",
+          "data",
+          "pagination"
+        ]
+      }
+    },
+    {
+      "name": "المحادثات (بدون auth)",
+      "endpoint": "/api/v1/conversations",
+      "method": "GET",
+      "expectedStatus": 401,
+      "actualStatus": 401,
+      "responseTime": 5,
+      "passed": true,
+      "hasData": true,
+      "dataStructure": {
+        "type": "object",
+        "hasSuccess": false,
+        "hasData": false,
+        "hasError": true,
+        "hasPagination": false,
+        "keys": [
+          "error",
+          "message",
+          "code",
+          "timestamp"
+        ]
+      }
+    }
+  ],
+  "errorHandling": [
+    {
+      "name": "بيانات غير صحيحة",
+      "endpoint": "/api/v1/test/customers",
+      "method": "POST",
+      "expectedErrorCode": 422,
+      "actualStatus": 422,
+      "passed": true,
+      "hasErrorMessage": "Validation failed",
+      "errorStructure": {
+        "error": "Validation failed",
+        "message": "The provided data does not meet the required format",
+        "code": "VALIDATION_ERROR",
+        "details": [
+          {
+            "field": "name",
+            "message": "\"name\" is required"
+          }
+        ],
+        "timestamp": "2025-07-17T05:20:48.153Z"
+      }
+    },
+    {
+      "name": "JSON غير صحيح",
+      "endpoint": "/api/v1/customers",
+      "method": "POST",
+      "expectedErrorCode": 400,
+      "actualStatus": 400,
+      "passed": true,
+      "hasErrorMessage": "Invalid JSON format",
+      "errorStructure": {
+        "error": "Invalid JSON format",
+        "message": "The request body contains invalid JSON syntax",
+        "code": "INVALID_JSON",
+        "timestamp": "2025-07-17T05:20:48.164Z"
+      }
+    },
+    {
+      "name": "مورد غير موجود",
+      "endpoint": "/api/v1/customers/999999",
+      "method": "GET",
+      "expectedErrorCode": 404,
+      "actualStatus": 404,
+      "passed": true,
+      "hasErrorMessage": "Customer not found",
+      "errorStructure": {
+        "success": false,
+        "error": "Customer not found",
+        "message": "Customer with ID 999999 does not exist",
+        "code": "CUSTOMER_NOT_FOUND"
+      }
+    },
+    {
+      "name": "SQL Injection",
+      "endpoint": "/api/v1/customers?search='; DROP TABLE users; --",
+      "method": "GET",
+      "expectedErrorCode": 403,
+      "actualStatus": 403,
+      "passed": true,
+      "hasErrorMessage": "Security Violation",
+      "errorStructure": {
+        "error": "Security Violation",
+        "message": "Request blocked due to security policy",
+        "code": "SECURITY_VIOLATION",
+        "timestamp": "2025-07-17T05:20:48.180Z"
+      }
+    }
+  ],
+  "dataFlow": [
+    {
+      "name": "تحميل بيانات العملاء",
+      "description": "فحص بنية البيانات المُرجعة",
+      "passed": true,
+      "details": {
+        "hasSuccess": true,
+        "hasData": true,
+        "isArray": true,
+        "itemCount": 2
+      },
+      "timing": {}
+    },
+    {
+      "name": "تحميل بيانات المنتجات",
+      "description": "فحص بنية بيانات المنتجات",
+      "passed": false,
+      "error": "read ECONNRESET"
+    },
+    {
+      "name": "اختبار Pagination",
+      "description": "فحص نظام الصفحات",
+      "passed": true,
+      "details": {
+        "page": 1,
+        "limit": 10,
+        "total": 2,
+        "pages": 1
+      },
+      "timing": {}
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 10,
+    "failed": 1,
+    "warnings": 0
+  }
+}

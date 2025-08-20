@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754326159940-657",
+  "orderNumber": "ORD-1754326159940-657",
+  "customerName": "24638417499096308 ",
+  "customerPhone": "01029713553",
+  "customerEmail": "",
+  "total": 140,
+  "subtotal": 65,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسك",
+      "price": 65,
+      "quantity": 1,
+      "total": 65,
+      "metadata": {
+        "color": "أبيض",
+        "size": "39",
+        "conversationId": "cmdw67it1004fufb0ng6r2cz0",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdw67it1004fufb0ng6r2cz0\nطلب تلقائي من المحادثة cmdw67it1004fufb0ng6r2cz0 - ٤‏/٨‏/٢٠٢٥، ٧:٤٩:١٩ م",
+  "createdAt": "2025-08-04T16:49:19.940Z",
+  "updatedAt": "2025-08-04T16:49:19.940Z"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754222171963-719",
+  "orderNumber": "ORD-1754222171963-719",
+  "customerName": "24096921689934349 ",
+  "customerPhone": "01091949196",
+  "customerEmail": "",
+  "total": 115,
+  "subtotal": 65,
+  "tax": 0,
+  "shipping": 50,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "القاهرة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش الأبيض والأسود مقاس 38",
+      "price": 65,
+      "quantity": 1,
+      "total": 65,
+      "metadata": {
+        "color": "ين",
+        "size": "38",
+        "conversationId": "cmdujsbig001zuffk3e9tn0wr",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdujsbig001zuffk3e9tn0wr\nطلب تلقائي من المحادثة cmdujsbig001zuffk3e9tn0wr - ٣‏/٨‏/٢٠٢٥، ٢:٥٦:١١ م",
+  "createdAt": "2025-08-03T11:56:11.963Z",
+  "updatedAt": "2025-08-03T11:56:11.963Z"
+}

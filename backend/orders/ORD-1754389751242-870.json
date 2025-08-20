@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754389751242-870",
+  "orderNumber": "ORD-1754389751242-870",
+  "customerName": "24724147047169139 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش باللونين الأسود والأبيض. الاتنين سعرهم 349 جنيه. تحبي أطلبهم لك؟ 😍",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "ين",
+        "size": "39",
+        "conversationId": "cmdyc3srs00uvufgsivlal09b",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyc3srs00uvufgsivlal09b\nطلب تلقائي من المحادثة cmdyc3srs00uvufgsivlal09b - ٥‏/٨‏/٢٠٢٥، ١:٢٩:١١ م",
+  "createdAt": "2025-08-05T10:29:11.242Z",
+  "updatedAt": "2025-08-05T10:29:11.242Z"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754105027744-400",
+  "orderNumber": "ORD-1754105027744-400",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "سعره 349 جنيه يا فندم. ده كوتشي الاسكوتش",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "؟",
+        "size": "37",
+        "conversationId": "cmdtkrvoh001yufrk4yytvhnk",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdtkrvoh001yufrk4yytvhnk\nطلب تلقائي من المحادثة cmdtkrvoh001yufrk4yytvhnk - ٢‏/٨‏/٢٠٢٥، ٦:٢٣:٤٧ ص",
+  "createdAt": "2025-08-02T03:23:47.744Z",
+  "updatedAt": "2025-08-02T03:23:47.744Z"
+}

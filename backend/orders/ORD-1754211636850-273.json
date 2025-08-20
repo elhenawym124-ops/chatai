@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754211636850-273",
+  "orderNumber": "ORD-1754211636850-273",
+  "customerName": "31639533458967119 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "هي من 37 لـ 41 يا فندم.",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "معين",
+        "size": "37",
+        "conversationId": "cmdvg8xzw0003uf90b2hual4r",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdvg8xzw0003uf90b2hual4r\nطلب تلقائي من المحادثة cmdvg8xzw0003uf90b2hual4r - ٣‏/٨‏/٢٠٢٥، ١٢:٠٠:٣٦ م",
+  "createdAt": "2025-08-03T09:00:36.851Z",
+  "updatedAt": "2025-08-03T09:00:36.851Z"
+}

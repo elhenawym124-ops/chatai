@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1753630410343-2",
+  "orderNumber": "ORD-1753630410343-2",
+  "customerName": "عميل نهائي",
+  "customerPhone": "01555666777",
+  "customerEmail": "",
+  "total": 200,
+  "subtotal": 150,
+  "tax": 0,
+  "shipping": 50,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "القاهرة",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي حريمي",
+      "price": 150,
+      "quantity": 1,
+      "total": 150,
+      "metadata": {
+        "color": "أبيض",
+        "size": "40",
+        "conversationId": "final-test-1753630410286",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: final-test-1753630410286\nطلب اختبار نهائي",
+  "createdAt": "2025-07-27T15:33:30.344Z",
+  "updatedAt": "2025-07-27T15:33:30.344Z"
+}

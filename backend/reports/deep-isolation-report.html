@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Isolation Security Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 30px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .metric-value { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .critical { color: #dc3545; }
+        .high { color: #fd7e14; }
+        .medium { color: #ffc107; }
+        .low { color: #20c997; }
+        .success { color: #28a745; }
+        .section { background: white; margin-bottom: 30px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .section-header { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #dee2e6; }
+        .section-content { padding: 20px; }
+        .issue-card { border-left: 4px solid #667eea; background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+        .issue-card.critical { border-left-color: #dc3545; background: #fff5f5; }
+        .issue-card.high { border-left-color: #fd7e14; background: #fff8f0; }
+        .issue-card.medium { border-left-color: #ffc107; background: #fffbf0; }
+        .code { background: #f1f3f4; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; margin: 10px 0; overflow-x: auto; }
+        .file-path { color: #6c757d; font-size: 0.9em; margin-bottom: 8px; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-right: 8px; }
+        .badge.critical { background: #dc3545; color: white; }
+        .badge.high { background: #fd7e14; color: white; }
+        .badge.medium { background: #ffc107; color: black; }
+        .badge.low { background: #20c997; color: white; }
+        .progress-bar { width: 100%; height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; transition: width 0.3s ease; }
+        .tabs { display: flex; border-bottom: 1px solid #dee2e6; }
+        .tab { padding: 15px 25px; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab.active { border-bottom-color: #667eea; background: #f8f9fa; }
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Deep Isolation Security Analysis</h1>
+            <p>Comprehensive Multi-Tenant Security Assessment</p>
+            <p>Generated: 8/16/2025, 6:19:10 AM</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value success">181</div>
+                <div>Files Analyzed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">90,547</div>
+                <div>Lines of Code</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value critical">39</div>
+                <div>Critical Issues</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value success">80%</div>
+                <div>Isolation Coverage</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>📊 Security Metrics Dashboard</h2>
+            </div>
+            <div class="section-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div>
+                        <h4>Isolation Coverage</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%; background: #28a745;"></div>
+                        </div>
+                        <small>80% - Target: 90%+</small>
+                    </div>
+                    <div>
+                        <h4>Risk Score</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 42%; background: #ffc107;"></div>
+                        </div>
+                        <small>42% - Target: <20%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('critical-issues')">Critical Issues (39)</div>
+                <div class="tab" onclick="showTab('all-issues')">All Issues (902)</div>
+                <div class="tab" onclick="showTab('file-analysis')">File Analysis</div>
+                <div class="tab" onclick="showTab('recommendations')">Recommendations</div>
+            </div>
+
+            <div id="critical-issues" class="tab-content active">
+                <h3>🚨 Critical Security Issues</h3>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:45</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$queryRaw`SELECT 1`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:83</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$queryRaw`SELECT 1`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:148</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const tables = await client.$queryRaw<Array<{ TABLE_NAME: string }>>`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:154</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:159</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await client.$executeRawUnsafe(`TRUNCATE TABLE \`${table.TABLE_NAME}\`;`);</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:164</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\index.ts:67</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$queryRaw`SELECT 1 as test`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:72</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:104</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const modelRecord = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:117</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:209</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:234</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:299</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:336</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-backup.js:342</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:147</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:179</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const modelRecord = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:192</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:284</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:309</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:374</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:411</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService-clean.js:417</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2677</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2730</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const modelRecord = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2748</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2779</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const modelRecord = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2795</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2811</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const modelRecord = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2824</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2931</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:2975</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:3055</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">const availableModels = await prisma.$queryRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:3092</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\aiAgentService.js:3098</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await prisma.$executeRaw`</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\inventoryService.js:29</div>
+                    <h4>Prisma findFirst without filters - CRITICAL DATA EXPOSURE</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">DATA_EXPOSURE</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-200</span>
+                        
+                    </div>
+                    <div class="code">const company = await prisma.company.findFirst();</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\inventoryService.js:67</div>
+                    <h4>Prisma findMany without any filters - CRITICAL DATA EXPOSURE</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">DATA_EXPOSURE</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-200</span>
+                        
+                    </div>
+                    <div class="code">const products = await prisma.product.findMany();</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\inventoryService.js:68</div>
+                    <h4>Prisma findMany without any filters - CRITICAL DATA EXPOSURE</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">DATA_EXPOSURE</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-200</span>
+                        
+                    </div>
+                    <div class="code">const warehouses = await prisma.warehouse.findMany();</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\services\patternDetector.js:195</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                        <span class="badge" style="background: #17a2b8; color: white;">CWE-89</span>
+                        
+                    </div>
+                    <div class="code">await this.prisma.$queryRaw`SELECT 1`;</div>
+                    <small><strong>Risk Score:</strong> 10/10</small>
+                </div>
+                
+            </div>
+
+            <div id="all-issues" class="tab-content">
+                <h3>📋 All Security Issues</h3>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:45</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">await prisma.$queryRaw`SELECT 1`;</div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:83</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">await prisma.$queryRaw`SELECT 1`;</div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:148</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">const tables = await client.$queryRaw<Array<{ TABLE_NAME: string }>>`</div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:154</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`;</div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:159</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">await client.$executeRawUnsafe(`TRUNCATE TABLE \`${table.TABLE_NAME}\`;`);</div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <div class="file-path">📁 src\config\database.ts:164</div>
+                    <h4>Raw SQL query without company isolation verification</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span class="badge" style="background: #6c757d; color: white;">SQL_INJECTION</span>
+                    </div>
+                    <div class="code">await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:15</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">env: process.env.NODE_ENV || 'development',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:16</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">port: parseInt(process.env.PORT || '3001', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:20</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">url: process.env.DATABASE_URL || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:25</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">url: process.env.REDIS_URL || 'redis://localhost:6379',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:30</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:31</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">expiresIn: process.env.JWT_EXPIRES_IN || '7d',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:32</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:37</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">secret: process.env.SESSION_SECRET || 'your-session-secret-key',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:38</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxAge: parseInt(process.env.SESSION_MAX_AGE || '86400000', 10), // 24 hours</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:43</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">origin: process.env.CORS_ORIGIN || 'http://localhost:3000',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:48</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">appId: process.env.FACEBOOK_APP_ID || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:49</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">appSecret: process.env.FACEBOOK_APP_SECRET || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:50</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">verifyToken: process.env.FACEBOOK_VERIFY_TOKEN || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:58</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxTokens: parseInt(process.env.AI_MAX_TOKENS || '1000', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:59</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">temperature: parseFloat(process.env.AI_TEMPERATURE || '0.7'),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:60</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">timeout: parseInt(process.env.AI_RESPONSE_TIMEOUT || '30000', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:66</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">host: process.env.SMTP_HOST || 'smtp.gmail.com',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:67</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">port: parseInt(process.env.SMTP_PORT || '587', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:68</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">user: process.env.SMTP_USER || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:69</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">pass: process.env.SMTP_PASS || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:72</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">email: process.env.FROM_EMAIL || 'noreply@example.com',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:73</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">name: process.env.FROM_NAME || 'Communication Platform',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:80</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">accountSid: process.env.TWILIO_ACCOUNT_SID || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:81</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">authToken: process.env.TWILIO_AUTH_TOKEN || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:82</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">phoneNumber: process.env.TWILIO_PHONE_NUMBER || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:89</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">secretKey: process.env.STRIPE_SECRET_KEY || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:90</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:91</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:94</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">clientId: process.env.PAYPAL_CLIENT_ID || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:95</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:96</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">mode: process.env.PAYPAL_MODE || 'sandbox', // sandbox or live</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:102</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:103</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">uploadPath: process.env.UPLOAD_PATH || './uploads',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:104</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">allowedTypes: (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/gif,application/pdf').split(','),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:109</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:110</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000', 10), // زيادة من 100 إلى 1000</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:115</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">level: process.env.LOG_LEVEL || 'info',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:116</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">file: process.env.LOG_FILE || './logs/app.log',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:121</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">sentryDsn: process.env.SENTRY_DSN || '',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:126</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">baseUrl: process.env.WEBHOOK_BASE_URL || 'http://localhost:3001/webhooks',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:131</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">defaultPlan: process.env.DEFAULT_COMPANY_PLAN || 'basic',</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:132</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxUsersPerCompany: parseInt(process.env.MAX_USERS_PER_COMPANY || '10', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:133</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">maxConversationsPerMonth: parseInt(process.env.MAX_CONVERSATIONS_PER_MONTH || '1000', 10),</div>
+                </div>
+                
+                <div class="issue-card low">
+                    <div class="file-path">📁 src\config\index.ts:138</div>
+                    <h4>Environment variable usage - verify no secrets in logs</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge low">LOW</span>
+                        <span class="badge" style="background: #6c757d; color: white;">CONFIGURATION</span>
+                    </div>
+                    <div class="code">enableAI: process.env.ENABLE_AI_FEATURES === 'true',</div>
+                </div>
+                
+                <p><em>... and 852 more issues</em></p>
+            </div>
+
+            <div id="file-analysis" class="tab-content">
+                <h3>📁 File Risk Analysis</h3>
+                
+                <div class="issue-card critical">
+                    <h4>📄 src\config\database.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span>Isolation Score: 0%</span>
+                        <span>Issues: 6</span>
+                        <span>Lines: 188</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 0</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <h4>📄 src\services\aiAgentService-backup.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span>Isolation Score: 0%</span>
+                        <span>Issues: 12</span>
+                        <span>Lines: 357</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 5</small>
+                        <small>API Routes: 0</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <h4>📄 src\services\aiAgentService-clean.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span>Isolation Score: 0%</span>
+                        <span>Issues: 12</span>
+                        <span>Lines: 432</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 5</small>
+                        <small>API Routes: 0</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <h4>📄 src\services\aiAgentService.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span>Isolation Score: 0%</span>
+                        <span>Issues: 40</span>
+                        <span>Lines: 4055</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 23</small>
+                        <small>API Routes: 0</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 95</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card critical">
+                    <h4>📄 src\services\inventoryService.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge critical">CRITICAL</span>
+                        <span>Isolation Score: 10%</span>
+                        <span>Issues: 4</span>
+                        <span>Lines: 709</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 21</small>
+                        <small>API Routes: 0</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 2</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\ai\routes\aiRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 32</span>
+                        <span>Lines: 87</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 32</small>
+                        <small>Auth Checks: 3</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\broadcast\routes\broadcastRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 13</span>
+                        <span>Lines: 29</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 13</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\conversations\routes\conversationRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 6</span>
+                        <span>Lines: 319</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 6</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\customers\routes\customerRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 12</span>
+                        <span>Lines: 43</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 12</small>
+                        <small>Auth Checks: 3</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\integrations\routes\facebookRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 10</span>
+                        <span>Lines: 39</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 10</small>
+                        <small>Auth Checks: 3</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\domains\upload\routes\uploadRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 4</span>
+                        <span>Lines: 26</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 4</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\aiCapabilitiesRoutes.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 8</span>
+                        <span>Lines: 498</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 8</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\aiQualityRoutes.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 11</span>
+                        <span>Lines: 533</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 11</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\authRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 6</span>
+                        <span>Lines: 38</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 8</small>
+                        <small>Auth Checks: 6</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\autoPatternRoutes.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 9</span>
+                        <span>Lines: 267</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 9</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 11</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\broadcastRoutes.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 8</span>
+                        <span>Lines: 311</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 8</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\companiesRoutes.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 9</span>
+                        <span>Lines: 351</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 11</small>
+                        <small>API Routes: 4</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 7</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\enhancedOrders.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 20</span>
+                        <span>Lines: 653</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 10</small>
+                        <small>API Routes: 10</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 13</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\index.ts</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 19</span>
+                        <span>Lines: 570</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 5</small>
+                        <small>API Routes: 11</small>
+                        <small>Auth Checks: 10</small>
+                        <small>Company Filters: 9</small>
+                    </div>
+                </div>
+                
+                <div class="issue-card high">
+                    <h4>📄 src\routes\intelligentChatRoutes.js</h4>
+                    <div style="margin: 10px 0;">
+                        <span class="badge high">HIGH</span>
+                        <span>Isolation Score: 20%</span>
+                        <span>Issues: 6</span>
+                        <span>Lines: 83</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                        <small>Prisma Queries: 0</small>
+                        <small>API Routes: 6</small>
+                        <small>Auth Checks: 0</small>
+                        <small>Company Filters: 0</small>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div id="recommendations" class="tab-content">
+                <h3>💡 Security Recommendations</h3>
+                
+                <div class="issue-card">
+                    <h4>Fix Critical Security Issues Immediately</h4>
+                    <p>Found 39 critical security issues that could lead to data breaches.</p>
+                    <h5>Action Items:</h5>
+                    <ul>
+                        <li>Review all Prisma queries without companyId filters</li><li>Add company isolation to bulk operations</li><li>Secure raw SQL queries with proper filtering</li><li>Implement authentication middleware on unprotected routes</li>
+                    </ul>
+                </div>
+                
+                <div class="issue-card">
+                    <h4>Strengthen Authentication & Authorization</h4>
+                    <p>Found 295 high-risk authentication issues.</p>
+                    <h5>Action Items:</h5>
+                    <ul>
+                        <li>Add authentication middleware to all API routes</li><li>Remove hardcoded company IDs</li><li>Implement proper user context validation</li><li>Add role-based access control</li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1011 @@
+{
+  "pages": [
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "منصة التواصل",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "لوحة التحكم",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "إحصائيات",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/customers",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "العملاء",
+          "found": true,
+          "type": "content"
+        },
+        {
+          "element": "إدارة العملاء",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "قائمة العملاء",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 59.09090909090909,
+      "totalElements": 22,
+      "foundElements": 13,
+      "passed": true
+    },
+    {
+      "path": "/conversations",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "المحادثات",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "رسائل",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "محادثة",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/products",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "المنتجات",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "منتج",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "كتالوج",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/orders",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "الطلبات",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "طلب",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "أوردر",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/reports",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "التقارير",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "تقرير",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "إحصائيات",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/analytics",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "التحليلات",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "تحليل",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "بيانات",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    },
+    {
+      "path": "/settings",
+      "status": 200,
+      "accessible": true,
+      "elements": [
+        {
+          "element": "الإعدادات",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "إعداد",
+          "found": false,
+          "type": "content"
+        },
+        {
+          "element": "تكوين",
+          "found": false,
+          "type": "content"
+        }
+      ],
+      "reactElements": [
+        {
+          "element": "id=\"root\"",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "class=",
+          "found": true,
+          "type": "react"
+        },
+        {
+          "element": "onclick",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "data-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "aria-",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "role=",
+          "found": false,
+          "type": "react"
+        },
+        {
+          "element": "vite",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "module",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "import",
+          "found": true,
+          "type": "pattern"
+        },
+        {
+          "element": "export",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "component",
+          "found": false,
+          "type": "pattern"
+        },
+        {
+          "element": "props",
+          "found": false,
+          "type": "pattern"
+        }
+      ],
+      "basicElements": [
+        {
+          "element": "react",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "div",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "script",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "html",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "body",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "head",
+          "found": true,
+          "type": "basic"
+        },
+        {
+          "element": "title",
+          "found": true,
+          "type": "basic"
+        }
+      ],
+      "successRate": 54.54545454545454,
+      "totalElements": 22,
+      "foundElements": 12,
+      "passed": true
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "totalElements": 176,
+    "foundElements": 97
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754160225226-648",
+  "orderNumber": "ORD-1754160225226-648",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "سعره 349 جنيه",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "الأسود",
+        "size": "40",
+        "conversationId": "cmdtanaxx0005ufe01nd8gpnj",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdtanaxx0005ufe01nd8gpnj\nطلب تلقائي من المحادثة cmdtanaxx0005ufe01nd8gpnj - ٢‏/٨‏/٢٠٢٥، ٩:٤٣:٤٥ م",
+  "createdAt": "2025-08-02T18:43:45.227Z",
+  "updatedAt": "2025-08-02T18:43:45.227Z"
+}

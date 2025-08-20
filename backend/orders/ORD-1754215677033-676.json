@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754215677033-676",
+  "orderNumber": "ORD-1754215677033-676",
+  "customerName": "24096921689934349 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 175,
+  "subtotal": 100,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش متوفر منه اللون الأبيض.",
+      "price": 100,
+      "quantity": 1,
+      "total": 100,
+      "metadata": {
+        "color": "الأبيض.",
+        "size": "37",
+        "conversationId": "cmdujsbig001zuffk3e9tn0wr",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdujsbig001zuffk3e9tn0wr\nطلب تلقائي من المحادثة cmdujsbig001zuffk3e9tn0wr - ٣‏/٨‏/٢٠٢٥، ١:٠٧:٥٧ م",
+  "createdAt": "2025-08-03T10:07:57.033Z",
+  "updatedAt": "2025-08-03T10:07:57.033Z"
+}

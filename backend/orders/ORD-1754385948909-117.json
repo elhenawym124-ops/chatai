@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754385948909-117",
+  "orderNumber": "ORD-1754385948909-117",
+  "customerName": "30792754713704558 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 145,
+  "subtotal": 70,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "ده القالب بتاعه مظبوط ومريح جداً عشان نعله طبي 😊.",
+      "price": 70,
+      "quantity": 1,
+      "total": 70,
+      "metadata": {
+        "color": "منهم؟",
+        "size": "37",
+        "conversationId": "cmdybfxb700quufgsvyp6idj4",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdybfxb700quufgsvyp6idj4\nطلب تلقائي من المحادثة cmdybfxb700quufgsvyp6idj4 - ٥‏/٨‏/٢٠٢٥، ١٢:٢٥:٤٨ م",
+  "createdAt": "2025-08-05T09:25:48.909Z",
+  "updatedAt": "2025-08-05T09:25:48.909Z"
+}

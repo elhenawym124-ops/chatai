@@ -1,0 +1,134 @@
+{
+  "timestamp": "2025-08-17T09:01:13.892Z",
+  "totalFiles": 9,
+  "existingFiles": 9,
+  "totalIssues": 16,
+  "files": [
+    {
+      "file": "src/domains/integrations/services/FacebookService.ts",
+      "issues": [
+        {
+          "line": 506,
+          "description": "Add company isolation to message update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 535,
+          "description": "Add company isolation to message update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 587,
+          "description": "Add company isolation to integration update",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/routes/enhancedOrders.js",
+      "issues": [
+        {
+          "line": 479,
+          "description": "Add company isolation to orderItem delete",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/routes/productRoutes.js",
+      "issues": [
+        {
+          "line": 400,
+          "description": "Add company isolation to product update",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/routes/successLearning.js",
+      "issues": [
+        {
+          "line": 1175,
+          "description": "Add company isolation to pattern update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 1245,
+          "description": "Add company isolation to pattern update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 1262,
+          "description": "Add company isolation to pattern update",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/services/billingNotificationService.js",
+      "issues": [
+        {
+          "line": 237,
+          "description": "Add company isolation to invoice update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 340,
+          "description": "Add company isolation to subscription update",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/services/inventoryService.js",
+      "issues": [
+        {
+          "line": 666,
+          "description": "Add company isolation to stockAlert delete",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/services/patternApplicationService.js",
+      "issues": [
+        {
+          "line": 289,
+          "description": "Add company isolation to pattern performance update",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/services/patternCleanupService.js",
+      "issues": [
+        {
+          "line": 145,
+          "description": "Add company isolation to pattern delete",
+          "fix": "Add companyId filter"
+        }
+      ]
+    },
+    {
+      "file": "src/services/scheduledPatternMaintenanceService.js",
+      "issues": [
+        {
+          "line": 200,
+          "description": "Add company isolation to pattern update",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 268,
+          "description": "Add company isolation to pattern delete",
+          "fix": "Add companyId filter"
+        },
+        {
+          "line": 346,
+          "description": "Add company isolation to pattern usage delete",
+          "fix": "Add companyId filter"
+        }
+      ]
+    }
+  ],
+  "status": "READY_TO_FIX"
+}

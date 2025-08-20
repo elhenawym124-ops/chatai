@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1753549758928-935",
+  "orderNumber": "ORD-1753549758928-935",
+  "customerName": "???? ????",
+  "customerPhone": "01012345678",
+  "customerEmail": "",
+  "total": 280,
+  "subtotal": 280,
+  "tax": 0,
+  "shipping": 0,
+  "status": "delivered",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "???????",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "????? ?????",
+      "price": 280,
+      "quantity": 1,
+      "total": 280,
+      "metadata": {
+        "color": "????",
+        "size": "38",
+        "conversationId": "test-conversation-2",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: test-conversation-2\n\n\nتحديث: ?? ????? ????? ?? ??????\n\nتحديث: بدء معالجة الطلب\n\nتحديث: تم الشحن\n\nتحديث: تم تسليم الطلب بنجاح",
+  "createdAt": "2025-07-26T17:09:18.928Z",
+  "updatedAt": "2025-07-26T17:30:46.573Z"
+}

@@ -1,0 +1,253 @@
+# Alert Rules for Communication Platform
+
+groups:
+  # System Health Alerts
+  - name: system_health
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is below 10% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+
+      - alert: SystemDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "System is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute"
+
+  # Application Health Alerts
+  - name: application_health
+    rules:
+      - alert: BackendDown
+        expr: up{job="backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Backend service is down"
+          description: "Backend service has been down for more than 1 minute"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High response time"
+          description: "95th percentile response time is above 2 seconds for more than 5 minutes"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is above 5% for more than 5 minutes"
+
+      - alert: TooManyRequests
+        expr: rate(http_requests_total[1m]) > 1000
+        for: 2m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High request rate"
+          description: "Request rate is above 1000 requests per minute"
+
+  # Database Alerts
+  - name: database_health
+    rules:
+      - alert: MySQLDown
+        expr: mysql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: mysql
+        annotations:
+          summary: "MySQL is down"
+          description: "MySQL database has been down for more than 1 minute"
+
+      - alert: MySQLSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: mysql
+        annotations:
+          summary: "High number of slow queries"
+          description: "MySQL slow queries rate is above 10 per second"
+
+      - alert: MySQLConnections
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: mysql
+        annotations:
+          summary: "High MySQL connections"
+          description: "MySQL connections usage is above 80%"
+
+      - alert: MySQLReplication
+        expr: mysql_slave_sql_running == 0 or mysql_slave_io_running == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: mysql
+        annotations:
+          summary: "MySQL replication is broken"
+          description: "MySQL replication has stopped"
+
+  # Redis Alerts
+  - name: redis_health
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute"
+
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is above 90%"
+
+      - alert: RedisConnectionsHigh
+        expr: redis_connected_clients > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "High Redis connections"
+          description: "Redis has more than 1000 connected clients"
+
+  # SSL Certificate Alerts
+  - name: ssl_certificates
+    rules:
+      - alert: SSLCertificateExpiringSoon
+        expr: ssl_cert_not_after - time() < 7 * 24 * 3600
+        for: 1h
+        labels:
+          severity: warning
+          service: ssl
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in less than 7 days"
+
+      - alert: SSLCertificateExpired
+        expr: ssl_cert_not_after - time() <= 0
+        for: 1m
+        labels:
+          severity: critical
+          service: ssl
+        annotations:
+          summary: "SSL certificate expired"
+          description: "SSL certificate for {{ $labels.instance }} has expired"
+
+  # Business Logic Alerts
+  - name: business_metrics
+    rules:
+      - alert: LowConversionRate
+        expr: (rate(orders_total[1h]) / rate(visitors_total[1h])) * 100 < 1
+        for: 30m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Low conversion rate"
+          description: "Conversion rate is below 1% for the last 30 minutes"
+
+      - alert: HighCartAbandonmentRate
+        expr: (rate(cart_abandoned_total[1h]) / rate(cart_created_total[1h])) * 100 > 70
+        for: 30m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "High cart abandonment rate"
+          description: "Cart abandonment rate is above 70% for the last 30 minutes"
+
+      - alert: PaymentFailureRate
+        expr: (rate(payment_failed_total[5m]) / rate(payment_attempts_total[5m])) * 100 > 10
+        for: 10m
+        labels:
+          severity: critical
+          service: payment
+        annotations:
+          summary: "High payment failure rate"
+          description: "Payment failure rate is above 10% for the last 10 minutes"
+
+  # Security Alerts
+  - name: security
+    rules:
+      - alert: TooManyFailedLogins
+        expr: rate(failed_login_attempts_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High failed login attempts"
+          description: "More than 10 failed login attempts per minute detected"
+
+      - alert: SuspiciousActivity
+        expr: rate(suspicious_requests_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Suspicious activity detected"
+          description: "More than 5 suspicious requests per minute detected"
+
+      - alert: DDoSAttack
+        expr: rate(http_requests_total[1m]) > 10000
+        for: 2m
+        labels:
+          severity: critical
+          service: security
+        annotations:
+          summary: "Possible DDoS attack"
+          description: "Request rate is extremely high (>10000 req/min), possible DDoS attack"

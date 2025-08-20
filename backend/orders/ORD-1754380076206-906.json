@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754380076206-906",
+  "orderNumber": "ORD-1754380076206-906",
+  "customerName": "23900252716326959 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش سعره 349 جنيه",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdy8bfuc00m0ufgsmmss4fvf",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdy8bfuc00m0ufgsmmss4fvf\nطلب تلقائي من المحادثة cmdy8bfuc00m0ufgsmmss4fvf - ٥‏/٨‏/٢٠٢٥، ١٠:٤٧:٥٦ ص",
+  "createdAt": "2025-08-05T07:47:56.206Z",
+  "updatedAt": "2025-08-05T07:47:56.206Z"
+}

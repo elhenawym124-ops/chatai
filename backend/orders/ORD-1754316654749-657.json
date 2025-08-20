@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754316654749-657",
+  "orderNumber": "ORD-1754316654749-657",
+  "customerName": "24100282839636878 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش اللي موجود",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "الأبيض.",
+        "size": "37",
+        "conversationId": "cmdx59yff000euf3oe1f88y5m",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdx59yff000euf3oe1f88y5m\nطلب تلقائي من المحادثة cmdx59yff000euf3oe1f88y5m - ٤‏/٨‏/٢٠٢٥، ٥:١٠:٥٤ م",
+  "createdAt": "2025-08-04T14:10:54.749Z",
+  "updatedAt": "2025-08-04T14:10:54.749Z"
+}

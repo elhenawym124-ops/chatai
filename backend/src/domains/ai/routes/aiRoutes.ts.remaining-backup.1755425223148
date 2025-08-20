@@ -1,0 +1,86 @@
+import { Router } from 'express';
+import { AIController } from '../controllers/AIController';
+import { authMiddleware, requireRole } from '../../auth/middleware/authMiddleware';
+import { rateLimitMiddleware } from '../../auth/middleware/rateLimitMiddleware';
+
+/**
+ * AI Routes
+ * 
+ * Defines all AI-related routes with appropriate middleware
+ */
+
+const router = Router();
+const aiController = new AIController();
+
+// Apply authentication middleware to all routes
+router.use(authMiddleware);
+
+// AI response generation
+router.post('/generate-response', requireAuth, aiController.generateResponse);
+
+// Analysis endpoints
+router.post('/analyze-sentiment', requireAuth, aiController.analyzeSentiment);
+router.post('/recommend-products', requireAuth, aiController.recommendProducts);
+router.get('/insights/:conversationId', requireAuth, aiController.getConversationInsights);
+
+// Analytics (managers and admins only)
+router.get('/analytics', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAnalytics);
+
+// Settings management (managers and admins only)
+router.get('/settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getSettings);
+router.put('/settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateSettings);
+
+// Testing (managers and admins only)
+router.post('/test', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.testResponse);
+
+// ==================== ADVANCED AI ROUTES ====================
+
+// Model management
+router.get('/models', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAvailableModels);
+router.get('/usage-stats', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getUsageStats);
+
+// Advanced response generation
+router.post('/generate-advanced-response', aiController.generateAdvancedResponse);
+
+// ==================== PROMPT MANAGEMENT ROUTES ====================
+
+// Prompt templates
+router.get('/prompt-templates', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getPromptTemplates);
+
+// Company prompts
+router.get('/prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getCompanyPrompts);
+router.put('/prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateCompanyPrompts);
+router.post('/prompts/apply-template', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.applyTemplate);
+
+// ==================== NEW PROMPT MANAGEMENT ROUTES ====================
+
+// Static prompts management
+router.get('/static-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getStaticPrompts);
+router.post('/static-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.createStaticPrompt);
+router.put('/static-prompts/:id', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateStaticPrompt);
+router.delete('/static-prompts/:id', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.deleteStaticPrompt);
+
+// Business templates management
+router.get('/business-templates', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getBusinessTemplates);
+router.get('/business-types', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getBusinessTypes);
+router.post('/business-templates/apply/:templateId', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.applyBusinessTemplate);
+
+// Advanced services management
+router.get('/advanced-services/company-prompts', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAdvancedCompanyPrompts);
+router.get('/advanced-services/active-services', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getActiveServices);
+router.get('/advanced-services/configuration', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getAdvancedConfiguration);
+router.put('/advanced-services/configuration', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateAdvancedConfiguration);
+
+// ==================== PRODUCT AI ROUTES ====================
+
+// Product AI settings
+router.get('/product-settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.getProductAiSettings);
+router.put('/product-settings', requireRole(['COMPANY_ADMIN', 'MANAGER']), aiController.updateProductAiSettings);
+
+// Product recommendations and analysis
+router.post('/recommend-products-advanced', aiController.recommendProducts);
+router.post('/analyze-image', aiController.analyzeCustomerImage);
+router.post('/create-order', aiController.createOrderFromConversation);
+router.get('/product-image/:productId', aiController.getProductImage);
+
+export { router as aiRoutes };

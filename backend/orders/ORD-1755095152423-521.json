@@ -1,0 +1,117 @@
+{
+  "id": "ORD-1755095152423-521",
+  "orderNumber": "ORD-1755095152423-521",
+  "customerName": "عميل فيسبوك 5912",
+  "customerPhone": "01208722304",
+  "customerEmail": "",
+  "total": 419,
+  "subtotal": 419,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "أسوان",
+    "country": "مصر",
+    "fullAddress": ""
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي ",
+      "price": 419,
+      "quantity": 1,
+      "total": 419,
+      "metadata": {
+        "color": "أسود",
+        "size": "39",
+        "conversationId": "cmea1hxsq0013ufk0x0sxs9mj",
+        "source": "ai_agent",
+        "confidence": 0.5,
+        "extractionMethod": "ai_enhanced"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب تلقائي من المحادثة\nمعرف المحادثة: cmea1hxsq0013ufk0x0sxs9mj\nملاحظات إضافية: طلب تلقائي من المحادثة cmea1hxsq0013ufk0x0sxs9mj - ١٣‏/٨‏/٢٠٢٥، ٥:٢٥:٥٢ م\nتاريخ الإنشاء: ١٣‏/٨‏/٢٠٢٥، ٥:٢٥:٥٢ م",
+  "createdAt": "2025-08-13T14:25:52.424Z",
+  "updatedAt": "2025-08-13T14:25:52.424Z",
+  "metadata": {
+    "conversationId": "cmea1hxsq0013ufk0x0sxs9mj",
+    "customerId": "cmea1hxdk0011ufk0hj5d0i1x",
+    "companyId": "cme8oj1fo000cufdcg2fquia9",
+    "dataQuality": {
+      "score": "100",
+      "level": "ممتازة",
+      "recommendation": "جاهز للمعالجة",
+      "details": {
+        "totalScore": 14,
+        "maxScore": 14,
+        "issues": [],
+        "strengths": [
+          "productName: قيمة صحيحة ومحددة",
+          "productColor: قيمة صحيحة ومحددة",
+          "productSize: قيمة صحيحة ومحددة",
+          "productPrice: قيمة صحيحة ومحددة",
+          "customerName: قيمة صحيحة ومحددة",
+          "customerPhone: قيمة صحيحة ومحددة",
+          "city: قيمة صحيحة ومحددة"
+        ],
+        "checks": [
+          {
+            "field": "productName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "كوتشي "
+          },
+          {
+            "field": "productColor",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 1,
+            "value": "أسود"
+          },
+          {
+            "field": "productSize",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 1,
+            "value": "39"
+          },
+          {
+            "field": "productPrice",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": 419
+          },
+          {
+            "field": "customerName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 3,
+            "value": "عميل فيسبوك 5912"
+          },
+          {
+            "field": "customerPhone",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 3,
+            "value": "01208722304"
+          },
+          {
+            "field": "city",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "أسوان"
+          }
+        ]
+      }
+    },
+    "extractionTimestamp": "2025-08-13T14:25:52.425Z"
+  }
+}

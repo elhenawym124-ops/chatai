@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الـ Webhook - صفحة Simple A42</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .messages-container {
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message.new {
+            background: #e7f3ff;
+            border-color: #0066cc;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .message-content {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .page-info {
+            background: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .timestamp {
+            font-family: monospace;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn.clear {
+            background: #dc3545;
+        }
+        
+        .btn.clear:hover {
+            background: #c82333;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 اختبار الـ Webhook - صفحة Simple A42</h1>
+            <p>مراقبة الرسائل الواردة في الوقت الفعلي</p>
+        </div>
+        
+        <div id="status" class="status disconnected">
+            🔴 غير متصل - جاري التحقق من الاتصال...
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div id="totalMessages" class="stat-number">0</div>
+                <div class="stat-label">إجمالي الرسائل</div>
+            </div>
+            <div class="stat-card">
+                <div id="messagesFromTarget" class="stat-number">0</div>
+                <div class="stat-label">رسائل من Simple A42</div>
+            </div>
+            <div class="stat-card">
+                <div id="lastMessageTime" class="stat-number">--</div>
+                <div class="stat-label">آخر رسالة</div>
+            </div>
+        </div>
+        
+        <div class="messages-container">
+            <div id="messages">
+                <div class="message">
+                    <div class="message-header">
+                        <span class="page-info">نظام الاختبار</span>
+                        <span class="timestamp" id="startTime"></span>
+                    </div>
+                    <div class="message-content">
+                        🚀 تم بدء مراقبة الـ Webhook... ابعث رسالة إلى صفحة Simple A42 الآن!
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="refreshBtn">🔄 تحديث</button>
+            <button class="btn clear" id="clearBtn">🗑️ مسح الرسائل</button>
+            <button class="btn" id="testBtn">🔍 اختبار الاتصال</button>
+        </div>
+    </div>
+
+    <script>
+        let totalMessages = 0;
+        let messagesFromTarget = 0;
+        const targetPageId = '351400718067673'; // Simple A42
+
+        // تحديث وقت البداية
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('startTime').textContent = new Date().toLocaleString('ar-SA');
+
+            // إضافة event listeners للأزرار
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
+            document.getElementById('clearBtn').addEventListener('click', clearMessages);
+            document.getElementById('testBtn').addEventListener('click', testConnection);
+
+            // فحص الاتصال كل 5 ثوان
+            setInterval(checkConnection, 5000);
+
+            // تحديث البيانات كل 3 ثوان
+            setInterval(fetchMessages, 3000);
+
+            // بدء فحص الاتصال
+            checkConnection();
+
+            // محاكاة رسالة اختبار بعد 2 ثانية
+            setTimeout(() => {
+                addMessage('system', 'system', '📱 الصفحة جاهزة لاستقبال الرسائل من Simple A42', Date.now());
+            }, 2000);
+        });
+
+        async function checkConnection() {
+            try {
+                const response = await fetch('/health');
+                const status = document.getElementById('status');
+
+                if (response.ok) {
+                    status.className = 'status connected';
+                    status.innerHTML = '🟢 متصل - الخادم يعمل بشكل طبيعي';
+                } else {
+                    status.className = 'status disconnected';
+                    status.innerHTML = '🟡 مشكلة في الاتصال - كود الاستجابة: ' + response.status;
+                }
+            } catch (error) {
+                const status = document.getElementById('status');
+                status.className = 'status disconnected';
+                status.innerHTML = '🔴 غير متصل - خطأ في الشبكة';
+            }
+        }
+
+        async function fetchMessages() {
+            try {
+                const response = await fetch('/api/v1/test/recent-messages');
+                const data = await response.json();
+
+                if (data.success && data.messages.length > 0) {
+                    // تحديث العداد
+                    totalMessages = data.messages.length;
+                    messagesFromTarget = data.messages.filter(msg => msg.isFromTarget).length;
+
+                    // مسح الرسائل القديمة
+                    const messagesContainer = document.getElementById('messages');
+                    messagesContainer.innerHTML = '';
+
+                    // إضافة الرسائل الجديدة
+                    data.messages.forEach(msg => {
+                        addMessageFromAPI(msg);
+                    });
+
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+
+        function addMessageFromAPI(msg) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = msg.isFromTarget ? 'message new' : 'message';
+
+            const time = new Date(msg.timestamp).toLocaleString('ar-SA');
+            const pageInfo = msg.isFromTarget ? 'Simple A42 ✅' : `صفحة ${msg.pageId}`;
+
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="page-info">${pageInfo}</span>
+                    <span class="timestamp">${time}</span>
+                </div>
+                <div class="message-content">
+                    <strong>من:</strong> ${msg.senderId}<br>
+                    <strong>المحتوى:</strong> ${msg.content || 'رسالة بدون نص'}
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+        }
+
+        function addMessage(pageId, senderId, content, timestamp, isFromTarget = false) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isFromTarget ? 'message new' : 'message';
+
+            const time = new Date(timestamp).toLocaleString('ar-SA');
+            const pageInfo = isFromTarget ? 'Simple A42 ✅' : `صفحة ${pageId}`;
+
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="page-info">${pageInfo}</span>
+                    <span class="timestamp">${time}</span>
+                </div>
+                <div class="message-content">
+                    <strong>من:</strong> ${senderId}<br>
+                    <strong>المحتوى:</strong> ${content || 'رسالة بدون نص'}
+                </div>
+            `;
+
+            messagesContainer.insertBefore(messageDiv, messagesContainer.firstChild);
+
+            // تحديث الإحصائيات
+            totalMessages++;
+            if (isFromTarget) {
+                messagesFromTarget++;
+            }
+
+            updateStats(time);
+
+            // إزالة الرسائل القديمة (الاحتفاظ بآخر 50 رسالة)
+            const messages = messagesContainer.children;
+            if (messages.length > 50) {
+                messagesContainer.removeChild(messages[messages.length - 1]);
+            }
+        }
+
+        function updateStats(lastTime) {
+            document.getElementById('totalMessages').textContent = totalMessages;
+            document.getElementById('messagesFromTarget').textContent = messagesFromTarget;
+            if (lastTime) {
+                document.getElementById('lastMessageTime').textContent = lastTime;
+            }
+        }
+
+        function clearMessages() {
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '';
+            totalMessages = 0;
+            messagesFromTarget = 0;
+            updateStats();
+
+            // إضافة رسالة البداية مرة أخرى
+            addMessage('system', 'system', '🚀 تم مسح الرسائل... ابعث رسالة جديدة إلى صفحة Simple A42!', Date.now());
+        }
+
+        function refreshData() {
+            location.reload();
+        }
+
+        async function testConnection(event) {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '🔄 جاري الاختبار...';
+
+            try {
+                const response = await fetch('/api/v1/integrations/facebook/debug-db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ pageId: targetPageId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addMessage('system', 'system',
+                        `✅ اختبار الاتصال نجح!<br>
+                         📄 الصفحة: ${data.data.facebookPage.pageName}<br>
+                         🔗 الحالة: ${data.data.facebookPage.status}<br>
+                         ⚡ Integration: ${data.data.integration ? 'موجود' : 'غير موجود'}`,
+                        Date.now());
+                } else {
+                    addMessage('system', 'system', '❌ فشل اختبار الاتصال: ' + (data.error || 'خطأ غير معروف'), Date.now());
+                }
+            } catch (error) {
+                addMessage('system', 'system', '❌ خطأ في اختبار الاتصال: ' + error.message, Date.now());
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🔍 اختبار الاتصال';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1123 @@
+{
+  "timestamp": "2025-08-17T09:49:45.085Z",
+  "summary": {
+    "safetyPercentage": 100,
+    "unsafeOperations": 0,
+    "totalOperations": 91,
+    "recommendation": "PERFECT"
+  },
+  "details": {
+    "totalFiles": 179,
+    "safeOperations": 91,
+    "unsafeOperations": 0,
+    "protectedOperations": 89,
+    "details": [
+      {
+        "file": "src\\config\\database.ts",
+        "operations": [
+          {
+            "line": 46,
+            "content": "await prisma.$queryRaw`SELECT 1 as connection_test`;",
+            "operation": "$queryRaw`SELECT 1 as connection_test`",
+            "safety": {
+              "safe": true,
+              "type": "إعدادات قاعدة البيانات",
+              "description": "إعدادات قاعدة البيانات (آمنة)"
+            },
+            "context": "/**\n * Initialize database connection\n */\nexport const initializeDatabase = async (): Promise<void> => {\n  try {\n    if (!prisma) {\n      prisma = createPrismaClient();\n    }\n\n    // Test the connection\n    await prisma.$connect();\n    \n    // SECURITY: Safe connection test query - no user data or c"
+          },
+          {
+            "line": 86,
+            "content": "await prisma.$queryRaw`SELECT 1 as health_check`;",
+            "operation": "$queryRaw`SELECT 1 as health_check`",
+            "safety": {
+              "safe": true,
+              "type": "إعدادات قاعدة البيانات",
+              "description": "إعدادات قاعدة البيانات (آمنة)"
+            },
+            "context": "  }\n};\n\n/**\n * Database health check\n */\nexport const checkDatabaseHealth = async (): Promise<boolean> => {\n  try {\n    if (!prisma) {\n      return false;\n    }\n\n    // SECURITY: Safe health check query - no user data or company isolation needed\n    // This is a simple database health check that doe"
+          },
+          {
+            "line": 161,
+            "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0`;",
+            "operation": "$executeRaw`SET FOREIGN_KEY_CHECKS = 0`",
+            "safety": {
+              "safe": true,
+              "type": "إعدادات قاعدة البيانات",
+              "description": "إعدادات قاعدة البيانات (آمنة)"
+            },
+            "context": "\n  const client = getPrismaClient();\n  \n  // SECURITY: Safe admin operation for testing - queries system tables only\n  // This queries information_schema which is safe and doesn't contain user data\n  const tables = await client.$queryRaw<Array<{ TABLE_NAME: string }>>`\n    SELECT TABLE_NAME FROM inf"
+          },
+          {
+            "line": 172,
+            "content": "await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 1`;",
+            "operation": "$executeRaw`SET FOREIGN_KEY_CHECKS = 1`",
+            "safety": {
+              "safe": true,
+              "type": "إعدادات قاعدة البيانات",
+              "description": "إعدادات قاعدة البيانات (آمنة)"
+            },
+            "context": "  // These operations are safe as they're used for test database cleanup\n\n  // Disable foreign key checks (MySQL) - Admin operation for testing\n  await client.$executeRaw`SET FOREIGN_KEY_CHECKS = 0`;\n\n  // Truncate all tables - Admin operation for testing\n  for (const table of tables) {\n    if (tabl"
+          }
+        ]
+      },
+      {
+        "file": "src\\controllers\\continuousLearningController_old.js",
+        "operations": [
+          {
+            "line": 27,
+            "content": "const totalInteractions = await prisma.learningData.count({",
+            "operation": "await prisma.learningData.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\nclass ContinuousLearningController {\n  \n  /**\n   * الحصول على لوحة تحكم التعلم المستمر\n   * GET /api/learning/dashboard\n   */\n  async getDashboard(req, res) {\n    try {\n      const { companyId } = req.user || { companyId: 'cmdkj6coz0000uf0cyscco6lr' };\n\n      console.log('🔍 [Dashboard] Getting das"
+          },
+          {
+            "line": 31,
+            "content": "const discoveredPatterns = await prisma.discoveredPattern.count({",
+            "operation": "await prisma.discoveredPattern.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "   * الحصول على لوحة تحكم التعلم المستمر\n   * GET /api/learning/dashboard\n   */\n  async getDashboard(req, res) {\n    try {\n      const { companyId } = req.user || { companyId: 'cmdkj6coz0000uf0cyscco6lr' };\n\n      console.log('🔍 [Dashboard] Getting dashboard data for company:', companyId);\n\n      /"
+          },
+          {
+            "line": 35,
+            "content": "const appliedImprovements = await prisma.appliedImprovement.count({",
+            "operation": "await prisma.appliedImprovement.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    try {\n      const { companyId } = req.user || { companyId: 'cmdkj6coz0000uf0cyscco6lr' };\n\n      console.log('🔍 [Dashboard] Getting dashboard data for company:', companyId);\n\n      // الحصول على البيانات الأساسية من قاعدة البيانات مباشرة\n      const totalInteractions = await prisma.learningData"
+          },
+          {
+            "line": 40,
+            "content": "const successfulInteractions = await prisma.learningData.count({",
+            "operation": "await prisma.learningData.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      // الحصول على البيانات الأساسية من قاعدة البيانات مباشرة\n      const totalInteractions = await prisma.learningData.count({\n        where: { companyId }\n      });\n\n      const discoveredPatterns = await prisma.discoveredPattern.count({\n        where: { companyId }\n      });\n\n      const applied"
+          },
+          {
+            "line": 52,
+            "content": "const recentActivity = await prisma.learningData.findMany({",
+            "operation": "await prisma.learningData.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n      // حساب معدل النجاح\n      const successfulInteractions = await prisma.learningData.count({\n        where: {\n          companyId,\n          outcome: { in: ['satisfied', 'resolved', 'purchase_intent'] }\n        }\n      });\n\n      const successRate = totalInteractions > 0\n        ? Math.round((s"
+          },
+          {
+            "line": 198,
+            "content": "const patterns = await prisma.discoveredPattern.findMany({",
+            "operation": "await prisma.discoveredPattern.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n      // بناء شروط البحث\n      const whereClause = {\n        companyId: companyId,\n        confidence: {\n          gte: parseFloat(minConfidence)\n        }\n      };\n\n      if (type) {\n        whereClause.patternType = type;\n      }\n\n      // جلب الأنماط من قاعدة البيانات\n      const patterns = awai"
+          },
+          {
+            "line": 267,
+            "content": "const improvements = await prisma.appliedImprovement.findMany({",
+            "operation": "await prisma.appliedImprovement.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      const { status, type } = req.query;\n\n      // بناء شروط البحث\n      const whereClause = { companyId: companyId };\n      \n      if (status) {\n        whereClause.status = status;\n      }\n      \n      if (type) {\n        whereClause.type = type;\n      }\n\n      // جلب التحسينات من قاعدة البيانات\n"
+          }
+        ]
+      },
+      {
+        "file": "src\\index.ts",
+        "operations": [
+          {
+            "line": 121,
+            "content": "const conversations = await prisma.conversation.findMany({",
+            "operation": "await prisma.conversation.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    const prisma = getPrismaClient();\n\n    // التحقق من المصادقة والشركة\n    const companyId = (req as any).user?.companyId;\n    if (!companyId) {\n      return res.status(403).json({\n        success: false,\n        message: 'غير مصرح بالوصول - معرف الشركة مطلوب'\n      });\n    }\n\n    console.log('📞 "
+          },
+          {
+            "line": 205,
+            "content": "const messages = await prisma.message.findMany({",
+            "operation": "await prisma.message.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      message: error instanceof Error ? error.message : 'Unknown error'\n    });\n  }\n});\n\n// Real messages endpoint\napp.get('/api/v1/conversations/:id/messages', async (req, res) => {\n  try {\n    const prisma = getPrismaClient();\n    const { id } = req.params;\n\n    console.log(`📨 Fetching real messa"
+          },
+          {
+            "line": 68,
+            "content": "await prisma.$queryRaw`SELECT 1 as connection_test`;",
+            "operation": "$queryRaw`SELECT 1 as connection_test`",
+            "safety": {
+              "safe": true,
+              "type": "استعلام آمن",
+              "description": "استعلام آمن بطبيعته"
+            },
+            "context": "      conversations: '/api/v1/conversations',\n      products: '/api/v1/products',\n      orders: '/api/v1/orders',\n    },\n  });\n});\n\n// Database test endpoint\napp.get('/api/v1/test-db', async (req, res) => {\n  try {\n    const prisma = getPrismaClient();\n\n    // SECURITY: Safe connection test query - "
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\adminAnalyticsRoutes.js",
+        "operations": [
+          {
+            "line": 21,
+            "content": "const companies = await prisma.company.findMany({",
+            "operation": "await prisma.company.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n/**\n * Get advanced analytics for Super Admin\n */\n\n// Growth Analytics - نمو النظام\nrouter.get('/growth', authenticateToken, requireSuperAdmin, async (req, res) => {\n  try {\n    const { period = '30' } = req.query; // days\n    const days = parseInt(period);\n    const startDate = new Date();\n    sta"
+          },
+          {
+            "line": 26,
+            "content": "const users = await prisma.user.findMany({",
+            "operation": "await prisma.user.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "// Growth Analytics - نمو النظام\nrouter.get('/growth', authenticateToken, requireSuperAdmin, async (req, res) => {\n  try {\n    const { period = '30' } = req.query; // days\n    const days = parseInt(period);\n    const startDate = new Date();\n    startDate.setDate(startDate.getDate() - days);\n\n    // "
+          },
+          {
+            "line": 32,
+            "content": "const customers = await prisma.customer.findMany({",
+            "operation": "await prisma.customer.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    startDate.setDate(startDate.getDate() - days);\n\n    // Get daily growth data using separate queries (safer approach)\n    const companies = await prisma.company.findMany({\n      where: { createdAt: { gte: startDate } },\n      select: { createdAt: true }\n    });\n\n    const users = await prisma.use"
+          },
+          {
+            "line": 38,
+            "content": "const conversations = await prisma.conversation.findMany({",
+            "operation": "await prisma.conversation.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    });\n\n    const users = await prisma.user.findMany({\n      where: { companyId: req.user?.companyId },\n      where: { createdAt: { gte: startDate } },\n      select: { createdAt: true }\n    });\n\n    const customers = await prisma.customer.findMany({\n      where: { companyId: req.user?.companyId },\n"
+          },
+          {
+            "line": 157,
+            "content": "const companies = await prisma.company.findMany({",
+            "operation": "await prisma.company.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "فلتر أمان",
+              "description": "يحتوي على فلتر أمان"
+            },
+            "context": "\n  } catch (error) {\n    console.error('Error fetching growth analytics:', error);\n    res.status(500).json({\n      success: false,\n      message: 'فشل في جلب بيانات النمو',\n      error: error.message\n    });\n  }\n});\n\n// Company Performance Analytics\nrouter.get('/company-performance', authenticateTo"
+          },
+          {
+            "line": 200,
+            "content": "const totalMessages = await prisma.message.count({",
+            "operation": "await prisma.message.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "            where: {\n              conversation: { companyId: company.id },\n              createdAt: { gte: thirtyDaysAgo }\n            }\n          }),\n          prisma.customer.count({\n            where: {\n              companyId: company.id,\n              createdAt: { gte: thirtyDaysAgo }\n        "
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\adminPlansRoutes.js",
+        "operations": [
+          {
+            "line": 117,
+            "content": "const customPlans = await prisma.planConfiguration.findMany({",
+            "operation": "await prisma.planConfiguration.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "فلتر أمان",
+              "description": "يحتوي على فلتر أمان"
+            },
+            "context": "      dedicatedSupport: true,\n      customDevelopment: true,\n      onPremiseDeployment: true,\n      sla: '99.9%'\n    },\n    description: 'للمؤسسات الكبيرة مع احتياجات مخصصة',\n    descriptionEn: 'For large enterprises with custom requirements'\n  }\n};\n\n// Get all plans with current pricing\nrouter.get("
+          },
+          {
+            "line": 143,
+            "content": "const companiesCount = await prisma.company.count({",
+            "operation": "await prisma.company.count(",
+            "safety": {
+              "safe": true,
+              "type": "فلتر أمان",
+              "description": "يحتوي على فلتر أمان"
+            },
+            "context": "        ...(customConfig ? {\n          price: customConfig.price,\n          currency: customConfig.currency,\n          billingCycle: customConfig.billingCycle,\n          features: { ...defaultConfig.features, ...customConfig.features },\n          isCustom: true,\n          lastUpdated: customConfig.u"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\index.ts",
+        "operations": [
+          {
+            "line": 391,
+            "content": "const customers = await prisma.customer.findMany({",
+            "operation": "await prisma.customer.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      const prisma = new PrismaClient();\n\n      // التحقق من المصادقة والشركة\n      const companyId = (req as any).user?.companyId;\n      if (!companyId) {\n        return res.status(403).json({\n          success: false,\n          message: 'غير مصرح بالوصول - معرف الشركة مطلوب'\n        });\n      }\n\n "
+          },
+          {
+            "line": 447,
+            "content": "const conversations = await prisma.conversation.findMany({",
+            "operation": "await prisma.conversation.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      const prisma = new PrismaClient();\n\n      // التحقق من المصادقة والشركة\n      const companyId = (req as any).user?.companyId;\n      if (!companyId) {\n        return res.status(403).json({\n          success: false,\n          message: 'غير مصرح بالوصول - معرف الشركة مطلوب'\n        });\n      }\n\n "
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\notifications.js",
+        "operations": [
+          {
+            "line": 53,
+            "content": "const notifications = await prisma.notification.findMany({",
+            "operation": "await prisma.notification.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    // إذا لم يكن المستخدم مسجل دخول، أرجع قائمة فارغة\n    if (!req.user) {\n      return res.json({\n        success: true,\n        notifications: [],\n        unreadCount: 0,\n        message: 'User not authenticated'\n      });\n    }\n\n    const { userId, companyId } = req.user;\n    const limit = parse"
+          },
+          {
+            "line": 105,
+            "content": "await prisma.notification.updateMany({",
+            "operation": "await prisma.notification.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      error: 'Failed to fetch notifications'\n    });\n  }\n});\n\n/**\n * Mark notification as read\n */\nrouter.post('/:notificationId/read', requireAuth, async (req, res) => {\n  try {\n    const { notificationId } = req.params;\n    const { userId } = req.user;\n\n    // FIXED: Add company isolation for secu"
+          },
+          {
+            "line": 142,
+            "content": "await prisma.notification.updateMany({",
+            "operation": "await prisma.notification.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      success: false,\n      error: 'Failed to mark notification as read'\n    });\n  }\n});\n\n/**\n * Mark all notifications as read\n */\nrouter.post('/mark-all-read', requireAuth, async (req, res) => {\n  try {\n    const { userId, companyId } = req.user;\n\n    // FIXED: Ensure company isolation in all cond"
+          },
+          {
+            "line": 180,
+            "content": "await prisma.notification.deleteMany({",
+            "operation": "await prisma.notification.deleteMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      error: 'Failed to mark all notifications as read'\n    });\n  }\n});\n\n/**\n * Delete notification\n */\nrouter.delete('/:notificationId', requireAuth, async (req, res) => {\n  try {\n    const { notificationId } = req.params;\n    const { userId } = req.user;\n\n    // FIXED: Add company isolation for se"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\orders.js",
+        "operations": [
+          {
+            "line": 100,
+            "content": "const orders = await prisma.order.findMany({",
+            "operation": "await prisma.order.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n    // التأكد من وجود companyId من المستخدم المصادق عليه\n    const companyId = req.user?.companyId;\n    if (!companyId) {\n      return res.status(403).json({\n        success: false,\n        message: 'غير مصرح بالوصول - معرف الشركة مطلوب'\n      });\n    }\n\n    const where = { companyId }; // فلترة بـ"
+          },
+          {
+            "line": 138,
+            "content": "const total = await prisma.order.count({ where });",
+            "operation": "await prisma.order.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "            id: true,\n            channel: true\n          }\n        }\n      },\n      orderBy: { createdAt: 'desc' },\n      skip: parseInt(skip),\n      take: parseInt(limit)\n    });\n\n    // Ensure where clause includes companyId for security\n    if (!where.companyId && req.user?.companyId) {\n      wh"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\prioritySettingsRoutes.js",
+        "operations": [
+          {
+            "line": 209,
+            "content": "const reports = await prisma.conflictReports.findMany({",
+            "operation": "await prisma.conflictReports.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    const { page = 1, limit = 10, severity, resolved } = req.query;\n    \n    console.log(`📊 [API] Getting conflict reports for company: ${companyId}`);\n    \n    const whereClause = { companyId };\n    \n    if (severity) {\n      whereClause.severity = severity;\n    }\n    \n    if (resolved !== undefin"
+          },
+          {
+            "line": 216,
+            "content": "const totalReports = await prisma.conflictReports.count({",
+            "operation": "await prisma.conflictReports.count(",
+            "safety": {
+              "safe": true,
+              "type": "whereClause متغير",
+              "description": "يستخدم whereClause محدد مسبقاً"
+            },
+            "context": "      whereClause.severity = severity;\n    }\n    \n    if (resolved !== undefined) {\n      whereClause.resolved = resolved === 'true';\n    }\n    \n    const reports = await prisma.conflictReports.findMany({\n      where: whereClause,\n      orderBy: { createdAt: 'desc' },\n      skip: (parseInt(page) - 1"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\productRoutes.js",
+        "operations": [
+          {
+            "line": 62,
+            "content": "const products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n      if (!companyId) {\n        return res.status(403).json({\n          success: false,\n          message: 'غير مصرح بالوصول - معرف الشركة مطلوب'\n        });\n      }\n\n      console.log('Fetching products from database for company:', companyId);\n\n      // بناء where clause مع فلترة companyId الإجبار"
+          },
+          {
+            "line": 211,
+            "content": "const categories = await prisma.category.findMany({",
+            "operation": "await prisma.category.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n  },\n\n  getCategories: async (req, res) => {\n    try {\n      console.log('🔍 Getting categories from database...');\n\n      // Get user from auth middleware\n      const user = req.user || { companyId: 'cmd5c0c9y0000ymzdd7wtv7ib' };\n\n      // Get categories from database\n      const { PrismaClie"
+          },
+          {
+            "line": 365,
+            "content": "const categories = await prisma.category.findMany({",
+            "operation": "await prisma.category.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "        success: false,\n        error: 'Failed to update category'\n      });\n    }\n  },\n\n  cleanupCategories: async (req, res) => {\n    try {\n      const { PrismaClient } = require('@prisma/client');\n      const prisma = new PrismaClient();\n\n      console.log('🧹 Starting categories cleanup...');\n\n "
+          },
+          {
+            "line": 401,
+            "content": "await prisma.product.updateMany({",
+            "operation": "await prisma.product.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "        }\n      });\n\n      console.log(`🔍 Found ${duplicates.length} duplicate categories`);\n\n      let cleanedCount = 0;\n      const cleanupResults = [];\n\n      // Process each duplicate\n      for (const { original, duplicate } of duplicates) {\n        try {\n          // Move products from duplica"
+          },
+          {
+            "line": 775,
+            "content": "const variants = await prisma.productVariant.findMany({",
+            "operation": "await prisma.productVariant.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n  },\n\n  // Product Variants Controllers\n  getProductVariants: async (req, res) => {\n    try {\n      const { PrismaClient } = require('@prisma/client');\n      const prisma = new PrismaClient();\n\n      const productId = req.params.id;\n\n      console.log('Fetching variants for product:', productI"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\successLearning.js",
+        "operations": [
+          {
+            "line": 508,
+            "content": "const responses = await prisma.responseEffectiveness.findMany({",
+            "operation": "await prisma.responseEffectiveness.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n\n    const {\n      conversationId,\n      responseType,\n      minEffectiveness = 0,\n      limit = 100\n    } = req.query;\n\n    const where = { companyId };\n    if (conversationId) where.conversationId = conversationId;\n    if (responseType) where.responseType = responseType;\n    if (minEffective"
+          },
+          {
+            "line": 619,
+            "content": "const patterns = await prisma.successPattern.findMany({",
+            "operation": "await prisma.successPattern.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      return res.status(400).json({\n        success: false,\n        message: 'معرف الشركة مطلوب'\n      });\n    }\n\n    const {\n      format = 'csv',\n      timeRange = 30\n    } = req.query;\n\n    console.log(`📤 [API] Exporting data for company: ${companyId}, format: ${format}`);\n\n    // جلب الأنماط\n  "
+          },
+          {
+            "line": 679,
+            "content": "const performance = await prisma.patternPerformance.findMany({",
+            "operation": "await prisma.patternPerformance.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "  try {\n    // استخدام companyId من المستخدم المصادق عليه\n    const companyId = req.user?.companyId || req.companyId;\n\n    if (!companyId) {\n      return res.status(400).json({\n        success: false,\n        message: 'معرف الشركة مطلوب'\n      });\n    }\n\n    console.log(`📊 [API] Getting pattern per"
+          },
+          {
+            "line": 763,
+            "content": "const usage = await prisma.patternUsage.findMany({",
+            "operation": "await prisma.patternUsage.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n    const startDate = new Date();\n    startDate.setDate(startDate.getDate() - parseInt(days));\n\n    let whereClause = {\n      companyId,\n      createdAt: { gte: startDate }\n    };\n\n    if (patternId) {\n      whereClause.patternId = patternId;\n    }\n\n    // جلب بيانات الاستخدام\n    const usage = awa"
+          },
+          {
+            "line": 1175,
+            "content": "const enabledPatterns = await prisma.successPattern.updateMany({",
+            "operation": "await prisma.successPattern.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "  try {\n    // استخدام companyId من المستخدم المصادق عليه\n    const companyId = req.user?.companyId || req.companyId;\n\n    if (!companyId) {\n      return res.status(400).json({\n        success: false,\n        message: 'معرف الشركة مطلوب'\n      });\n    }\n\n    console.log(`🚀 [API] Enabling pattern ma"
+          },
+          {
+            "line": 1245,
+            "content": "const disabledPatterns = await prisma.successPattern.updateMany({",
+            "operation": "await prisma.successPattern.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    const companyId = req.user?.companyId || req.companyId;\n\n    if (!companyId) {\n      return res.status(400).json({\n        success: false,\n        message: 'معرف الشركة مطلوب'\n      });\n    }\n\n    const { reason = 'تم الإيقاف يدوياً' } = req.body;\n\n    console.log(`🛑 [API] Disabling pattern man"
+          },
+          {
+            "line": 1251,
+            "content": "const stillActiveCount = await prisma.successPattern.count({",
+            "operation": "await prisma.successPattern.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      });\n    }\n\n    const { reason = 'تم الإيقاف يدوياً' } = req.body;\n\n    console.log(`🛑 [API] Disabling pattern management system for company: ${companyId}`);\n\n    // إيقاف جميع الأنماط\n    const disabledPatterns = await prisma.successPattern.updateMany({\n      where: { companyId },\n      data:"
+          },
+          {
+            "line": 1262,
+            "content": "await prisma.successPattern.updateMany({",
+            "operation": "await prisma.successPattern.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    });\n\n    // التحقق من أن جميع الأنماط تم إيقافها فعلاً\n    const stillActiveCount = await prisma.successPattern.count({\n      where: {\n        companyId,\n        isActive: true\n      }\n    });\n\n    if (stillActiveCount > 0) {\n      console.warn(`⚠️ [API] تحذير: لا يزال هناك ${stillActiveCount} ن"
+          },
+          {
+            "line": 1348,
+            "content": "const totalPatterns = await prisma.successPattern.count({",
+            "operation": "await prisma.successPattern.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    // جلب معلومات الشركة\n    const company = await prisma.company.findUnique({\n      where: { id: companyId },\n      select: { settings: true }\n    });\n\n    let systemSettings = {};\n    try {\n      systemSettings = company?.settings ? JSON.parse(company.settings) : {};\n    } catch (e) {\n      syste"
+          },
+          {
+            "line": 1352,
+            "content": "const activePatterns = await prisma.successPattern.count({",
+            "operation": "await prisma.successPattern.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    });\n\n    let systemSettings = {};\n    try {\n      systemSettings = company?.settings ? JSON.parse(company.settings) : {};\n    } catch (e) {\n      systemSettings = {};\n    }\n\n    // إحصائيات الأنماط\n    const totalPatterns = await prisma.successPattern.count({\n      where: { companyId }\n    });\n\n"
+          },
+          {
+            "line": 1359,
+            "content": "const approvedPatterns = await prisma.successPattern.count({",
+            "operation": "await prisma.successPattern.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n\n    // إحصائيات الأنماط\n    const totalPatterns = await prisma.successPattern.count({\n      where: { companyId }\n    });\n\n    const activePatterns = await prisma.successPattern.count({\n      where: {\n        companyId,\n        isActive: true\n      }\n    });\n\n    const approvedPatterns = await"
+          },
+          {
+            "line": 1434,
+            "content": "const patterns = await prisma.detectedPattern.findMany({",
+            "operation": "await prisma.detectedPattern.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "            gt: 1\n          }\n        }\n      },\n      _count: {\n        id: true\n      }\n    });\n\n    let patternsDeleted = 0;\n\n    if (!dryRun && duplicatePatterns.length > 0) {\n      // حذف الأنماط المكررة (الاحتفاظ بالأحدث)\n      for (const duplicate of duplicatePatterns) {\n        const pattern"
+          }
+        ]
+      },
+      {
+        "file": "src\\routes\\walletPayment.js",
+        "operations": [
+          {
+            "line": 42,
+            "content": "const walletNumbers = await prisma.walletNumber.findMany({",
+            "operation": "await prisma.walletNumber.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    fileSize: 5 * 1024 * 1024 // 5MB\n  },\n  fileFilter: function (req, file, cb) {\n    if (file.mimetype.startsWith('image/')) {\n      cb(null, true);\n    } else {\n      cb(new Error('يجب أن يكون الملف صورة'), false);\n    }\n  }\n});\n\n// جلب أرقام المحافظ النشطة\nrouter.get('/wallet-numbers', async (re"
+          },
+          {
+            "line": 183,
+            "content": "const walletNumbers = await prisma.walletNumber.findMany({",
+            "operation": "await prisma.walletNumber.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "  } catch (error) {\n    console.error('خطأ في رفع الإيصال:', error);\n    res.status(500).json({\n      success: false,\n      message: 'خطأ في رفع الإيصال'\n    });\n  }\n});\n\n// === APIs الإدارة ===\n\n// جلب جميع أرقام المحافظ (للإدارة)\nrouter.get('/admin/wallet-numbers', async (req, res) => {\n  try {\n  "
+          },
+          {
+            "line": 289,
+            "content": "const receipts = await prisma.paymentReceipt.findMany({",
+            "operation": "await prisma.paymentReceipt.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    console.error('خطأ في حذف رقم المحفظة:', error);\n    res.status(500).json({\n      success: false,\n      message: 'خطأ في حذف رقم المحفظة'\n    });\n  }\n});\n\n// جلب الإيصالات في الانتظار\nrouter.get('/admin/pending-receipts', async (req, res) => {\n  try {\n    const { page = 1, limit = 10 } = req.que"
+          },
+          {
+            "line": 310,
+            "content": "const total = await prisma.paymentReceipt.count({",
+            "operation": "await prisma.paymentReceipt.count(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "              select: {\n                name: true,\n                email: true\n              }\n            }\n          }\n        },\n        walletNumber: true\n      },\n      orderBy: { submittedAt: 'desc' },\n      skip: parseInt(skip),\n      take: parseInt(limit)\n    });\n\n    const total = await pr"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\billingNotificationService.js",
+        "operations": [
+          {
+            "line": 125,
+            "content": "const renewalsIn7Days = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n  }\n\n  /**\n   * Check for upcoming subscription renewals (7 days, 3 days, 1 day)\n   */\n  async checkUpcomingRenewals() {\n    try {\n      const now = new Date();\n      const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);\n      const in3Days = new Date(now.getTime() + 3 * 24 * 60 *"
+          },
+          {
+            "line": 147,
+            "content": "const renewalsIn3Days = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "          }\n        },\n        include: {\n          company: {\n            select: {\n              id: true,\n              name: true,\n              email: true\n            }\n          }\n        }\n      });\n\n      // Check for renewals in 3 days\n      const renewalsIn3Days = await prisma.subscriptio"
+          },
+          {
+            "line": 169,
+            "content": "const renewalsIn1Day = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "          }\n        },\n        include: {\n          company: {\n            select: {\n              id: true,\n              name: true,\n              email: true\n            }\n          }\n        }\n      });\n\n      // Check for renewals in 1 day\n      const renewalsIn1Day = await prisma.subscription."
+          },
+          {
+            "line": 218,
+            "content": "const overdueInvoices = await prisma.invoice.findMany({",
+            "operation": "await prisma.invoice.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      }\n\n    } catch (error) {\n      console.error('❌ Error checking upcoming renewals:', error);\n    }\n  }\n\n  /**\n   * Check for overdue invoices\n   */\n  async checkOverdueInvoices() {\n    try {\n      const now = new Date();\n      \n      const overdueInvoices = await prisma.invoice.findMany({\n     "
+          },
+          {
+            "line": 241,
+            "content": "await prisma.invoice.updateMany({",
+            "operation": "await prisma.invoice.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "          company: {\n            select: {\n              id: true,\n              name: true,\n              email: true\n            }\n          }\n        }\n      });\n\n      if (overdueInvoices.length > 0) {\n        console.log(`⚠️ Found ${overdueInvoices.length} overdue invoices`);\n        \n        /"
+          },
+          {
+            "line": 276,
+            "content": "const trialsExpiring3Days = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      console.error('❌ Error checking overdue invoices:', error);\n    }\n  }\n\n  /**\n   * Check for trial expirations\n   */\n  async checkTrialExpirations() {\n    try {\n      const now = new Date();\n      const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);\n      const in1Day = new Date(n"
+          },
+          {
+            "line": 297,
+            "content": "const trialsExpiring1Day = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "          }\n        },\n        include: {\n          company: {\n            select: {\n              id: true,\n              name: true,\n              email: true\n            }\n          }\n        }\n      });\n\n      // Check for trials expiring in 1 day\n      const trialsExpiring1Day = await prisma.su"
+          },
+          {
+            "line": 318,
+            "content": "const expiredTrials = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "          }\n        },\n        include: {\n          company: {\n            select: {\n              id: true,\n              name: true,\n              email: true\n            }\n          }\n        }\n      });\n\n      // Check for expired trials\n      const expiredTrials = await prisma.subscription.find"
+          },
+          {
+            "line": 352,
+            "content": "await prisma.subscription.updateMany({",
+            "operation": "await prisma.subscription.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      if (trialsExpiring3Days.length > 0) {\n        console.log(`📧 Sending 3-day trial expiration reminders to ${trialsExpiring3Days.length} companies`);\n        await this.sendTrialExpirationReminders(trialsExpiring3Days, 3);\n      }\n\n      if (trialsExpiring1Day.length > 0) {\n        console.log("
+          },
+          {
+            "line": 381,
+            "content": "const failedPayments = await prisma.payment.findMany({",
+            "operation": "await prisma.payment.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n        await this.sendTrialExpiredNotifications(expiredTrials);\n      }\n\n    } catch (error) {\n      console.error('❌ Error checking trial expirations:', error);\n    }\n  }\n\n  /**\n   * Check for failed payments\n   */\n  async checkFailedPayments() {\n    try {\n      const failedPayments = await prism"
+          },
+          {
+            "line": 630,
+            "content": "const inactiveSubscriptions = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      // TODO: Send weekly report to admin email\n      \n    } catch (error) {\n      console.error('❌ Error generating weekly reports:', error);\n    }\n  }\n\n  /**\n   * Check for inactive subscriptions\n   */\n  async checkInactiveSubscriptions() {\n    try {\n      const thirtyDaysAgo = new Date(Date.now("
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\inventoryService.js",
+        "operations": [
+          {
+            "line": 21,
+            "content": "warehouseCount = await prisma.warehouse.count();",
+            "operation": "await prisma.warehouse.count(",
+            "safety": {
+              "safe": true,
+              "type": "select محدود",
+              "description": "يحدد حقول محددة فقط (آمن)"
+            },
+            "context": " */\nclass InventoryService {\n  constructor() {\n    this.initializeDefaultData();\n  }\n\n  /**\n   * Initialize default warehouses and inventory data if not exists\n   */\n  async initializeDefaultData() {\n    try {\n      // Check if warehouses table exists and count warehouses\n      let warehouseCount = "
+          },
+          {
+            "line": 73,
+            "content": "const products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      }\n    } catch (error) {\n      console.error('Error initializing default data:', error);\n    }\n  }\n\n  /**\n   * Initialize inventory for existing products\n   */\n  async initializeProductInventory(companyId = null) {\n    try {\n      // FIXED: Add company isolation\n      const whereClause = compan"
+          },
+          {
+            "line": 76,
+            "content": "const warehouses = await prisma.warehouse.findMany({",
+            "operation": "await prisma.warehouse.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n  }\n\n  /**\n   * Initialize inventory for existing products\n   */\n  async initializeProductInventory(companyId = null) {\n    try {\n      // FIXED: Add company isolation\n      const whereClause = companyId ? { companyId } : {};\n\n      const products = await prisma.product.findMany({\n        wher"
+          },
+          {
+            "line": 136,
+            "content": "const inventory = await prisma.inventory.findMany({",
+            "operation": "await prisma.inventory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "   * Get inventory for all products\n   */\n  async getInventory(filters = {}) {\n    try {\n      const whereClause = {};\n      \n      if (filters.productId) {\n        whereClause.productId = filters.productId;\n      }\n      \n      if (filters.warehouseId) {\n        whereClause.warehouseId = filters.wa"
+          },
+          {
+            "line": 219,
+            "content": "const inventory = await prisma.inventory.findMany({",
+            "operation": "await prisma.inventory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    } catch (error) {\n      console.error('Error getting inventory:', error);\n      return {\n        success: false,\n        error: 'فشل في جلب بيانات المخزون'\n      };\n    }\n  }\n\n  /**\n   * Get inventory for specific product\n   */\n  async getProductInventory(productId) {\n    try {\n      const inven"
+          },
+          {
+            "line": 532,
+            "content": "const movements = await prisma.stockMovement.findMany({",
+            "operation": "await prisma.stockMovement.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "whereClause متغير",
+              "description": "يستخدم whereClause محدد مسبقاً"
+            },
+            "context": "      }\n      \n      if (filters.warehouseId) {\n        whereClause.warehouseId = filters.warehouseId;\n      }\n      \n      if (filters.type) {\n        whereClause.type = filters.type.toUpperCase();\n      }\n      \n      if (filters.reason) {\n        whereClause.reason = filters.reason.toUpperCase();"
+          },
+          {
+            "line": 605,
+            "content": "const alerts = await prisma.stockAlert.findMany({",
+            "operation": "await prisma.stockAlert.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    } catch (error) {\n      console.error('Error getting stock movements:', error);\n      return {\n        success: false,\n        error: 'فشل في جلب حركات المخزون'\n      };\n    }\n  }\n\n  /**\n   * Get stock alerts\n   */\n  async getStockAlerts() {\n    try {\n      const alerts = await prisma.stockAlert"
+          },
+          {
+            "line": 671,
+            "content": "await prisma.stockAlert.deleteMany({",
+            "operation": "await prisma.stockAlert.deleteMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "            }\n          },\n          warehouse: {\n            select: {\n              name: true\n            }\n          }\n        }\n      });\n\n      if (!inventory) return;\n\n      // FIXED: Add company isolation for security\n      // Remove existing alerts for this product/warehouse\n      await pri"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\memoryService.js",
+        "operations": [
+          {
+            "line": 93,
+            "content": "const interactions = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n    try {\n      // محاولة الحصول على البيانات من الذاكرة قصيرة المدى أولاً\n      if (this.shortTermMemory.has(memoryKey)) {\n        const shortTermData = this.shortTermMemory.get(memoryKey);\n        if (shortTermData.length > 0) {\n          console.log(`🧠 Retrieved ${shortTermData.length} interact"
+          },
+          {
+            "line": 146,
+            "content": "const interactions = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    } catch (error) {\n      console.error('❌ Error retrieving conversation memory:', error);\n      return [];\n    }\n  }\n\n  async getCustomerProfile(senderId, companyId) {\n    // ✅ التحقق من وجود companyId للعزل الأمني\n    if (!companyId) {\n      throw new Error('companyId is required for memory isol"
+          },
+          {
+            "line": 242,
+            "content": "const interactions = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    } else if (totalInteractions >= 5) {\n      return 'returning_customer'; // عميل عائد\n    } else {\n      return 'new_customer'; // عميل جديد\n    }\n  }\n\n  async getConversationSummary(conversationId, senderId, companyId) {\n    // ✅ التحقق من وجود companyId للعزل الأمني\n    if (!companyId) {\n      "
+          },
+          {
+            "line": 347,
+            "content": "const deletedMemoryCount = await prisma.conversationMemory.deleteMany({",
+            "operation": "await prisma.conversationMemory.deleteMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      const cutoffDate = new Date(Date.now() - (this.memoryRetentionDays * 24 * 60 * 60 * 1000));\n\n      // تنظيف ذاكرة المحادثات القديمة\n      const memoryWhere = {\n        timestamp: {\n          lt: cutoffDate\n        }\n      };\n\n      // إضافة العزل إذا تم تحديد شركة معينة\n      if (companyId) {\n"
+          },
+          {
+            "line": 453,
+            "content": "const deletedMemoryCount = await prisma.conversationMemory.deleteMany({",
+            "operation": "await prisma.conversationMemory.deleteMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      console.error('❌ Error getting memory stats:', error);\n      return null;\n    }\n  }\n\n  // مسح ذاكرة عميل معين مع العزل الأمني\n  async clearCustomerMemory(senderId, companyId) {\n    // ✅ التحقق من وجود companyId للعزل الأمني\n    if (!companyId) {\n      throw new Error('companyId is required for"
+          },
+          {
+            "line": 499,
+            "content": "const memories = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    }\n\n    try {\n      const memoryKey = `${companyId}_${conversationId}_${senderId}`;\n\n      // محاولة الحصول من الذاكرة قصيرة المدى أولاً\n      if (this.shortTermMemory.has(memoryKey)) {\n        const shortTermData = this.shortTermMemory.get(memoryKey);\n        if (shortTermData.length > 0) {\n    "
+          },
+          {
+            "line": 556,
+            "content": "const memories = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      return null;\n    }\n  }\n\n  /**\n   * البحث في الذكريات\n   */\n  async searchMemories(conversationId, senderId, searchTerm, limit = 5, companyId) {\n    // ✅ التحقق من وجود companyId للعزل الأمني\n    if (!companyId) {\n      throw new Error('companyId is required for memory isolation');\n    }\n\n    t"
+          },
+          {
+            "line": 611,
+            "content": "const allRecords = await prisma.conversationMemory.findMany({",
+            "operation": "await prisma.conversationMemory.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "select محدود",
+              "description": "يحدد حقول محددة فقط (آمن)"
+            },
+            "context": "          recordCount: Array.isArray(value) ? value.length : 0\n        });\n\n        // فحص إذا كان المفتاح لا يحتوي على companyId\n        if (key.split('_').length < 3) {\n          auditResults.isolationViolations.push({\n            type: 'SHORT_TERM_KEY_WITHOUT_COMPANY_ID',\n            key,\n       "
+          },
+          {
+            "line": 670,
+            "content": "const updatedRecords = await prisma.conversationMemory.updateMany({",
+            "operation": "await prisma.conversationMemory.updateMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "    try {\n      console.log('🔧 [MEMORY-FIX] بدء إصلاح انتهاكات العزل...');\n\n      if (!defaultCompanyId) {\n        throw new Error('defaultCompanyId is required for fixing isolation violations');\n      }\n\n      const fixResults = {\n        shortTermKeysFixed: 0,\n        databaseRecordsFixed: 0,\n   "
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\multimodalService.js",
+        "operations": [
+          {
+            "line": 55,
+            "content": "const products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "  }\n\n  async getAvailableProducts(companyId = null) {\n    try {\n      const { PrismaClient } = require('@prisma/client');\n      const prisma = new PrismaClient();\n\n      // 🔐 فلترة المنتجات حسب الشركة\n      const whereClause = { isActive: true };\n      if (companyId) {\n        whereClause.companyId"
+          },
+          {
+            "line": 101,
+            "content": "const products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n  // دالة للحصول على المنتجات كـ array للمقارنة\n  async getProductsArray(companyId = null) {\n    try {\n      const { PrismaClient } = require('@prisma/client');\n      const prisma = new PrismaClient();\n\n      // 🔐 فلترة المنتجات حسب الشركة\n      const whereClause = { isActive: true };\n      if (co"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\orderService.js",
+        "operations": [
+          {
+            "line": 171,
+            "content": "const orders = await prisma.order.findMany({",
+            "operation": "await prisma.order.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "            totalSpent: { increment: parseFloat(orderTotal) },\n            lastOrderAt: new Date()\n          }\n        });\n        console.log('📊 Customer stats updated');\n      }\n    } catch (error) {\n      console.error('❌ Error updating customer stats:', error);\n    }\n  }\n\n  // الحصول على طلبات "
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\patternDetector.js",
+        "operations": [
+          {
+            "line": 196,
+            "content": "await this.prisma.$queryRaw`SELECT 1 as connection_test`;",
+            "operation": "$queryRaw`SELECT 1 as connection_test`",
+            "safety": {
+              "safe": true,
+              "type": "استعلام آمن",
+              "description": "استعلام آمن بطبيعته"
+            },
+            "context": "    }\n  }\n\n  /**\n   * فحص حالة الاتصال بقاعدة البيانات\n   */\n  async checkDatabaseConnection() {\n    try {\n      if (!this.prisma) {\n        throw new Error('Prisma client is not initialized');\n      }\n\n      // SECURITY: Safe connection test query - no user data or company isolation needed\n      //"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\productsPromptBuilder.js",
+        "operations": [
+          {
+            "line": 49,
+            "content": "const products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      \n      // fallback: جلب من قاعدة البيانات مباشرة\n      return await this.fetchProductsDirectly(companyId);\n    }\n  }\n\n  /**\n   * جلب المنتجات مباشرة من قاعدة البيانات (fallback)\n   */\n  async fetchProductsDirectly(companyId) {\n    try {\n      const { PrismaClient } = require('@prisma/client');"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\ragService.js",
+        "operations": [
+          {
+            "line": 146,
+            "content": "products = await prisma.product.findMany({",
+            "operation": "await prisma.product.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "\n    while (retryCount < maxRetries) {\n      try {\n        console.log(`🔄 [RAG] محاولة الاتصال بقاعدة البيانات (${retryCount + 1}/${maxRetries})...`);\n\n        // 🔐 إضافة العزل حسب الشركة\n        const whereClause = { isActive: true };\n        if (companyId) {\n          whereClause.companyId = com"
+          },
+          {
+            "line": 327,
+            "content": "// const faqs = await prisma.faq.findMany({ where: { companyId } });",
+            "operation": "await prisma.faq.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "              stock: v.stock,\n              images: variantImages, // ✅ إضافة صور المتغير\n              hasImages: variantImages.length > 0\n            };\n          }) || []\n        }\n      });\n    }\n\n    console.log(`📦 Loaded ${products.length} products with variants to knowledge base`);\n  }\n\n  as"
+          },
+          {
+            "line": 365,
+            "content": "// const policies = await prisma.policy.findMany({ where: { companyId } });",
+            "operation": "await prisma.policy.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "        type: 'faq',\n        content: `السؤال: ${faq.question}\\nالإجابة: ${faq.answer}`,\n        metadata: {\n          question: faq.question,\n          answer: faq.answer\n        }\n      });\n    });\n\n    console.log(`❓ Loaded ${faqs.length} FAQs to knowledge base`);\n  }\n\n  async loadPolicies(compan"
+          },
+          {
+            "line": 763,
+            "content": "const orders = await prisma.order.findMany({",
+            "operation": "await prisma.order.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "companyId في where",
+              "description": "يحتوي على companyId في where clause"
+            },
+            "context": "      }\n    }\n\n    // بونص للمنتجات المتوفرة\n    if (item.metadata?.stock > 0 ||\n        item.metadata?.variants?.some(v => v.stock > 0)) {\n      semanticScore += 2;\n    }\n\n    return semanticScore;\n  }\n\n  async getCustomerOrders(customerId) {\n    try {\n      const orders = await prisma.order.findMa"
+          }
+        ]
+      },
+      {
+        "file": "src\\services\\subscriptionRenewalService.js",
+        "operations": [
+          {
+            "line": 28,
+            "content": "const subscriptionsDue = await prisma.subscription.findMany({",
+            "operation": "await prisma.subscription.findMany(",
+            "safety": {
+              "safe": true,
+              "type": "فلتر أمان",
+              "description": "يحتوي على فلتر أمان"
+            },
+            "context": "    if (this.isProcessing) {\n      console.log('⚠️ Renewal process already running');\n      return;\n    }\n\n    try {\n      this.isProcessing = true;\n      console.log('🔄 Starting automatic renewal process...');\n\n      const today = new Date();\n      const startOfDay = new Date(today.getFullYear(), "
+          }
+        ]
+      }
+    ]
+  }
+}

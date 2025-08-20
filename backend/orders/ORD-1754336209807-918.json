@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754336209807-918",
+  "orderNumber": "ORD-1754336209807-918",
+  "customerName": "30990556017255556 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "عجبك",
+        "size": "37",
+        "conversationId": "cmdxic9au001tufgsgn7txpav",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdxic9au001tufgsgn7txpav\nطلب تلقائي من المحادثة cmdxic9au001tufgsgn7txpav - ٤‏/٨‏/٢٠٢٥، ١٠:٣٦:٤٩ م",
+  "createdAt": "2025-08-04T19:36:49.808Z",
+  "updatedAt": "2025-08-04T19:36:49.808Z"
+}

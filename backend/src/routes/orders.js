@@ -1,0 +1,407 @@
+const express = require('express');
+const router = express.Router();
+const orderService = require('../services/orderService');
+const simpleOrderService = require('../services/simpleOrderService');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
+// الحصول على الطلبات البسيطة
+router.get('/simple', async (req, res) => {
+  try {
+    const orders = await simpleOrderService.getAllOrdersFromFiles();
+
+    res.json({
+      success: true,
+      data: orders,
+      total: orders.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching simple orders:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب الطلبات',
+      error: error.message
+    });
+  }
+});
+
+// إحصائيات الطلبات البسيطة
+router.get('/simple/stats', async (req, res) => {
+  try {
+    const stats = await simpleOrderService.getSimpleStats();
+
+    res.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching simple stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب الإحصائيات',
+      error: error.message
+    });
+  }
+});
+
+// تحديث حالة الطلب البسيط
+router.post('/simple/:orderNumber/status', async (req, res) => {
+  try {
+    const { orderNumber } = req.params;
+    const { status, notes } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'حالة الطلب مطلوبة'
+      });
+    }
+
+    const order = await simpleOrderService.updateOrderStatus(orderNumber, status, notes);
+
+    res.json({
+      success: true,
+      message: 'تم تحديث حالة الطلب بنجاح',
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error updating simple order status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في تحديث حالة الطلب',
+      error: error.message
+    });
+  }
+});
+
+// الحصول على جميع الطلبات
+router.get('/', async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status, customerId } = req.query;
+    const skip = (page - 1) * limit;
+
+    // التأكد من وجود companyId من المستخدم المصادق عليه
+    const companyId = req.user?.companyId;
+    if (!companyId) {
+      return res.status(403).json({
+        success: false,
+        message: 'غير مصرح بالوصول - معرف الشركة مطلوب'
+      });
+    }
+
+    const where = { companyId }; // فلترة بـ companyId
+    if (status) where.status = status;
+    if (customerId) where.customerId = customerId;
+
+    const orders = await prisma.order.findMany({
+      where,
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            email: true
+          }
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                images: true
+              }
+            }
+          }
+        },
+        conversation: {
+          select: {
+            id: true,
+            channel: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: parseInt(skip),
+      take: parseInt(limit)
+    });
+
+    // Ensure where clause includes companyId for security
+    if (!where.companyId && req.user?.companyId) {
+      where.companyId = req.user.companyId;
+    }
+            // Security: Ensure company isolation for order count
+    if (!where.companyId) {
+      if (!req.user?.companyId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      where.companyId = req.user.companyId;
+    }
+    const total = await prisma.order.count({ where });
+
+    res.json({
+      success: true,
+      data: orders,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching orders:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب الطلبات',
+      error: error.message
+    });
+  }
+});
+
+// الحصول على طلب محدد
+router.get('/:orderNumber', async (req, res) => {
+  try {
+    const { orderNumber } = req.params;
+    
+    const order = await orderService.getOrderByNumber(orderNumber);
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'الطلب غير موجود'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب الطلب',
+      error: error.message
+    });
+  }
+});
+
+// تحديث حالة الطلب
+router.patch('/:orderNumber/status', async (req, res) => {
+  try {
+    const { orderNumber } = req.params;
+    const { status, notes } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'حالة الطلب مطلوبة'
+      });
+    }
+
+    const validStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'حالة الطلب غير صحيحة'
+      });
+    }
+
+    const order = await orderService.updateOrderStatus(orderNumber, status, notes);
+
+    res.json({
+      success: true,
+      message: 'تم تحديث حالة الطلب بنجاح',
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error updating order status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في تحديث حالة الطلب',
+      error: error.message
+    });
+  }
+});
+
+// تأكيد الطلب
+router.post('/:orderNumber/confirm', async (req, res) => {
+  try {
+    const { orderNumber } = req.params;
+    const { shippingAddress } = req.body;
+
+    const order = await orderService.confirmOrder(orderNumber, shippingAddress);
+
+    res.json({
+      success: true,
+      message: 'تم تأكيد الطلب بنجاح',
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error confirming order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في تأكيد الطلب',
+      error: error.message
+    });
+  }
+});
+
+// إلغاء الطلب
+router.post('/:orderNumber/cancel', async (req, res) => {
+  try {
+    const { orderNumber } = req.params;
+    const { reason } = req.body;
+
+    const order = await orderService.cancelOrder(orderNumber, reason);
+
+    res.json({
+      success: true,
+      message: 'تم إلغاء الطلب بنجاح',
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error cancelling order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في إلغاء الطلب',
+      error: error.message
+    });
+  }
+});
+
+// إحصائيات الطلبات
+router.get('/stats/summary', async (req, res) => {
+  try {
+    const { days = 30, companyId } = req.query;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: 'معرف الشركة مطلوب'
+      });
+    }
+
+    const stats = await orderService.getOrderStats(companyId, parseInt(days));
+
+    res.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching order stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب إحصائيات الطلبات',
+      error: error.message
+    });
+  }
+});
+
+// طلبات العميل
+router.get('/customer/:customerId', async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    const { limit = 10 } = req.query;
+
+    const orders = await orderService.getCustomerOrders(customerId, parseInt(limit));
+
+    res.json({
+      success: true,
+      data: orders
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching customer orders:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب طلبات العميل',
+      error: error.message
+    });
+  }
+});
+
+// إنشاء طلب بسيط (للاختبار)
+router.post('/create-simple', async (req, res) => {
+  try {
+    const orderData = req.body;
+
+    // التحقق من البيانات المطلوبة
+    const requiredFields = ['productName', 'productPrice'];
+    for (const field of requiredFields) {
+      if (!orderData[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `${field} مطلوب`
+        });
+      }
+    }
+
+    const result = await simpleOrderService.createSimpleOrder(orderData);
+
+    // حفظ الطلب في ملف
+    await simpleOrderService.saveOrderToFile(result.order);
+
+    res.status(201).json({
+      success: true,
+      message: 'تم إنشاء الطلب بنجاح',
+      data: result.order
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating simple order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في إنشاء الطلب',
+      error: error.message
+    });
+  }
+});
+
+// إنشاء طلب يدوي (للاختبار)
+router.post('/create', async (req, res) => {
+  try {
+    const orderData = req.body;
+
+    // التحقق من البيانات المطلوبة
+    const requiredFields = ['customerId', 'companyId', 'productName', 'productPrice'];
+    for (const field of requiredFields) {
+      if (!orderData[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `${field} مطلوب`
+        });
+      }
+    }
+
+    const order = await orderService.createOrderFromConversation(orderData);
+
+    res.status(201).json({
+      success: true,
+      message: 'تم إنشاء الطلب بنجاح',
+      data: order
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في إنشاء الطلب',
+      error: error.message
+    });
+  }
+});
+
+module.exports = router;

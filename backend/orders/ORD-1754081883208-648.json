@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754081883208-648",
+  "orderNumber": "ORD-1754081883208-648",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 125,
+  "subtotal": 50,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الإسكوتش علشان أقدر أقول لحضرتك إذا كا",
+      "price": 50,
+      "quantity": 1,
+      "total": 50,
+      "metadata": {
+        "color": "عجبك؟",
+        "size": "38",
+        "conversationId": "cmdtanaxx0005ufe01nd8gpnj",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdtanaxx0005ufe01nd8gpnj\nطلب تلقائي من المحادثة cmdtanaxx0005ufe01nd8gpnj - ١‏/٨‏/٢٠٢٥، ١١:٥٨:٠٣ م",
+  "createdAt": "2025-08-01T20:58:03.208Z",
+  "updatedAt": "2025-08-01T20:58:03.208Z"
+}

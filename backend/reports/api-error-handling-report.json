@@ -1,0 +1,179 @@
+{
+  "timestamp": "2025-07-17T04:39:51.435Z",
+  "results": {
+    "errorHandling": {
+      "Invalid JSON": {
+        "error": "",
+        "passed": false
+      },
+      "Missing Required Fields": {
+        "error": "",
+        "passed": false
+      },
+      "Invalid Data Types": {
+        "error": "",
+        "passed": false
+      },
+      "Non-existent Resources": {
+        "error": "",
+        "passed": false
+      },
+      "Unauthorized Access": {
+        "error": "",
+        "passed": false
+      },
+      "Method Not Allowed": {
+        "error": "",
+        "passed": false
+      },
+      "Large Payload": {
+        "error": "",
+        "passed": false
+      }
+    },
+    "edgeCases": {
+      "Empty Strings": {
+        "error": "",
+        "passed": false
+      },
+      "Very Long Strings": {
+        "error": "",
+        "passed": false
+      },
+      "Special Characters": {
+        "error": "",
+        "passed": false
+      },
+      "Unicode Characters": {
+        "error": "",
+        "passed": false
+      },
+      "Null Values": {
+        "error": "",
+        "passed": false
+      },
+      "Negative Numbers": {
+        "error": "",
+        "passed": false
+      },
+      "Zero Values": {
+        "error": "",
+        "passed": false
+      }
+    },
+    "security": {
+      "SQL Injection Attempt": {
+        "error": "",
+        "passed": false
+      },
+      "XSS Attempt": {
+        "error": "",
+        "passed": false
+      },
+      "Invalid Token": {
+        "error": "",
+        "passed": false
+      },
+      "Expired Token": {
+        "error": "",
+        "passed": false
+      },
+      "Rate Limiting": {
+        "error": "",
+        "passed": false
+      }
+    },
+    "summary": {
+      "totalTests": 19,
+      "passedTests": 0,
+      "failedTests": 19,
+      "overallStatus": "POOR"
+    },
+    "issues": [
+      {
+        "type": "HIGH",
+        "message": "Invalid JSON test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Missing Required Fields test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Invalid Data Types test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Non-existent Resources test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Unauthorized Access test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Method Not Allowed test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Large Payload test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Empty Strings test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Very Long Strings test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Special Characters test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Unicode Characters test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Null Values test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Negative Numbers test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Zero Values test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "SQL Injection Attempt test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "XSS Attempt test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Invalid Token test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Expired Token test failed: "
+      },
+      {
+        "type": "HIGH",
+        "message": "Rate Limiting test failed: "
+      }
+    ]
+  },
+  "summary": {
+    "status": "POOR",
+    "successRate": 0,
+    "totalTests": 19,
+    "passedTests": 0,
+    "failedTests": 19,
+    "totalIssues": 19
+  }
+}

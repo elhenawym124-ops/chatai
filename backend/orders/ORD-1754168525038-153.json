@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754168525038-153",
+  "orderNumber": "ORD-1754168525038-153",
+  "customerName": "24464722843164049 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 175,
+  "subtotal": 100,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش المتاحة هي: الأسود والبيج والأبيض. 🎨",
+      "price": 100,
+      "quantity": 1,
+      "total": 100,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmduqlww9003eufio2e6e2ryf",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmduqlww9003eufio2e6e2ryf\nطلب تلقائي من المحادثة cmduqlww9003eufio2e6e2ryf - ٣‏/٨‏/٢٠٢٥، ١٢:٠٢:٠٥ ص",
+  "createdAt": "2025-08-02T21:02:05.038Z",
+  "updatedAt": "2025-08-02T21:02:05.039Z"
+}

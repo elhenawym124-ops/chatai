@@ -1,0 +1,61 @@
+{
+  "tests": [
+    {
+      "name": "اختبار جلب المحادثات بدون token",
+      "passed": true,
+      "message": "جلب المحادثات بدون token نجح",
+      "details": {
+        "status": 200,
+        "hasData": true,
+        "conversationsCount": 2,
+        "hasPagination": true
+      }
+    },
+    {
+      "name": "اختبار جلب المحادثات مع token وهمي",
+      "passed": true,
+      "message": "جلب المحادثات مع token وهمي نجح",
+      "details": {
+        "status": 200,
+        "hasData": true,
+        "conversationsCount": 2
+      }
+    },
+    {
+      "name": "اختبار إنشاء محادثة بدون token",
+      "passed": true,
+      "message": "إنشاء محادثة بدون token نجح",
+      "details": {
+        "status": 201,
+        "hasData": true,
+        "conversationId": "1752735114264"
+      }
+    },
+    {
+      "name": "اختبار هيكل بيانات المحادثات",
+      "passed": true,
+      "message": "هيكل بيانات المحادثات صحيح",
+      "details": {
+        "conversationsCount": 2,
+        "firstConversationFields": [
+          "id",
+          "customerId",
+          "customerName",
+          "status",
+          "lastMessage",
+          "lastMessageTime",
+          "unreadCount",
+          "assignedAgent",
+          "priority",
+          "tags"
+        ],
+        "hasRequiredFields": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  }
+}

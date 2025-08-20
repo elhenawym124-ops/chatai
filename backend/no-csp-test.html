@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار بدون CSP - منصة التواصل</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+        }
+        
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 2px solid #f44336;
+        }
+        
+        .info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 2px solid #2196F3;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .messages {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .timestamp {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+        
+        .auto-refresh {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        
+        .countdown {
+            font-weight: bold;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 اختبار بدون CSP - منصة التواصل</h1>
+        
+        <div id="status" class="status info">
+            ⏳ جاري التحميل...
+        </div>
+        
+        <div class="controls">
+            <button onclick="testConnection()">🔗 اختبار الاتصال</button>
+            <button onclick="loadMessages()">📨 تحديث الرسائل</button>
+            <button onclick="clearMessages()">🗑️ مسح الرسائل</button>
+            <button onclick="toggleAutoRefresh()">⏰ تبديل التحديث التلقائي</button>
+        </div>
+        
+        <div class="auto-refresh">
+            <span id="autoRefreshStatus">التحديث التلقائي: مفعل</span>
+            <br>
+            <span>التحديث التالي خلال: <span id="countdown" class="countdown">5</span> ثانية</span>
+        </div>
+        
+        <div class="messages" id="messages">
+            <div class="message">
+                <div class="timestamp">جاري التحميل...</div>
+                <div>في انتظار البيانات...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎉 JavaScript يعمل بدون مشاكل CSP!');
+        
+        let autoRefreshEnabled = true;
+        let countdownTimer;
+        let refreshTimer;
+        let countdownValue = 5;
+        
+        // تحديث الحالة
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        // اختبار الاتصال
+        async function testConnection() {
+            updateStatus('🔄 جاري اختبار الاتصال...', 'info');
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateStatus('✅ الاتصال ناجح! الخادم يعمل بشكل طبيعي', 'success');
+                    console.log('بيانات الخادم:', data);
+                } else {
+                    updateStatus('⚠️ مشكلة في الاتصال', 'error');
+                }
+            } catch (error) {
+                updateStatus('❌ فشل الاتصال: ' + error.message, 'error');
+                console.error('خطأ في الاتصال:', error);
+            }
+        }
+        
+        // تحميل الرسائل
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/v1/test/recent-messages');
+                const data = await response.json();
+                
+                const messagesEl = document.getElementById('messages');
+                
+                if (data.success && data.messages.length > 0) {
+                    messagesEl.innerHTML = data.messages.map(msg => `
+                        <div class="message">
+                            <div class="timestamp">${new Date(msg.timestamp).toLocaleString('ar-SA')}</div>
+                            <div><strong>المرسل:</strong> ${msg.senderId || 'غير محدد'}</div>
+                            <div><strong>المحتوى:</strong> ${msg.content}</div>
+                            <div><strong>الصفحة:</strong> ${msg.pageName || 'غير محدد'} (${msg.pageId || 'غير محدد'})</div>
+                            ${msg.isFromTarget ? '<div style="color: #FFD700;">⭐ من الصفحة المستهدفة</div>' : ''}
+                        </div>
+                    `).join('');
+                    
+                    updateStatus(`✅ تم تحميل ${data.messages.length} رسالة`, 'success');
+                } else {
+                    messagesEl.innerHTML = '<div class="message"><div>لا توجد رسائل حديثة</div></div>';
+                    updateStatus('ℹ️ لا توجد رسائل حديثة', 'info');
+                }
+            } catch (error) {
+                updateStatus('❌ فشل تحميل الرسائل: ' + error.message, 'error');
+                console.error('خطأ في تحميل الرسائل:', error);
+            }
+        }
+        
+        // مسح الرسائل
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '<div class="message"><div>تم مسح الرسائل</div></div>';
+            updateStatus('🗑️ تم مسح الرسائل', 'info');
+        }
+        
+        // تبديل التحديث التلقائي
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const statusEl = document.getElementById('autoRefreshStatus');
+            statusEl.textContent = `التحديث التلقائي: ${autoRefreshEnabled ? 'مفعل' : 'معطل'}`;
+            
+            if (autoRefreshEnabled) {
+                startAutoRefresh();
+                updateStatus('⏰ تم تفعيل التحديث التلقائي', 'success');
+            } else {
+                stopAutoRefresh();
+                updateStatus('⏸️ تم إيقاف التحديث التلقائي', 'info');
+            }
+        }
+        
+        // بدء التحديث التلقائي
+        function startAutoRefresh() {
+            if (!autoRefreshEnabled) return;
+            
+            countdownValue = 5;
+            updateCountdown();
+            
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                updateCountdown();
+                
+                if (countdownValue <= 0) {
+                    loadMessages();
+                    countdownValue = 5;
+                }
+            }, 1000);
+        }
+        
+        // إيقاف التحديث التلقائي
+        function stopAutoRefresh() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            document.getElementById('countdown').textContent = '--';
+        }
+        
+        // تحديث العد التنازلي
+        function updateCountdown() {
+            document.getElementById('countdown').textContent = countdownValue;
+        }
+        
+        // التهيئة عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            updateStatus('🎉 تم تحميل الصفحة بنجاح! JavaScript يعمل بدون مشاكل CSP', 'success');
+            testConnection();
+            loadMessages();
+            startAutoRefresh();
+        });
+        
+        console.log('✅ تم تحميل جميع الوظائف بنجاح!');
+    </script>
+</body>
+</html>

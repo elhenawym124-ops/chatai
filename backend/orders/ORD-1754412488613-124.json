@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754412488613-124",
+  "orderNumber": "ORD-1754412488613-124",
+  "customerName": "24255331900822605 ",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 225,
+  "subtotal": 150,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "غير محدد",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "الاسكوتش مش متوفر منه مقاس 32. المقاسات المتاحة فيه بتبدأ من 37 لحد 41.",
+      "price": 150,
+      "quantity": 1,
+      "total": 150,
+      "metadata": {
+        "color": "الأبيض",
+        "size": "32",
+        "conversationId": "cmdyqya3u01s8ufgs95t24p4w",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdyqya3u01s8ufgs95t24p4w\nطلب تلقائي من المحادثة cmdyqya3u01s8ufgs95t24p4w - ٥‏/٨‏/٢٠٢٥، ٧:٤٨:٠٨ م",
+  "createdAt": "2025-08-05T16:48:08.613Z",
+  "updatedAt": "2025-08-05T16:48:08.613Z"
+}

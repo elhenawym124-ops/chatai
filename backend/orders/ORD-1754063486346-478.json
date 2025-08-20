@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754063486346-478",
+  "orderNumber": "ORD-1754063486346-478",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 125,
+  "subtotal": 50,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "لمسة من سوان مش متوفر عندي دلوقتي",
+      "price": 50,
+      "quantity": 1,
+      "total": 50,
+      "metadata": {
+        "color": "أبيض",
+        "size": "39",
+        "conversationId": "cmdsu252l0001uf203uwqgoyi",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdsu252l0001uf203uwqgoyi\nطلب تلقائي من المحادثة cmdsu252l0001uf203uwqgoyi - ١‏/٨‏/٢٠٢٥، ٦:٥١:٢٦ م",
+  "createdAt": "2025-08-01T15:51:26.346Z",
+  "updatedAt": "2025-08-01T15:51:26.346Z"
+}

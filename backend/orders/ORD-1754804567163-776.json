@@ -1,0 +1,118 @@
+{
+  "id": "ORD-1754804567163-776",
+  "orderNumber": "ORD-1754804567163-776",
+  "customerName": "Facebook User",
+  "customerPhone": "01223087745",
+  "customerEmail": "",
+  "total": 349,
+  "subtotal": 349,
+  "tax": 0,
+  "shipping": 0,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "الإسكندرية",
+    "country": "مصر",
+    "fullAddress": ""
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "كوتشي الاسكوتش",
+      "price": 349,
+      "quantity": 1,
+      "total": 349,
+      "metadata": {
+        "color": "أسود",
+        "size": "38",
+        "conversationId": "cme5029fa0014ufuwzbmsppfr",
+        "source": "ai_agent",
+        "confidence": 0.5,
+        "extractionMethod": "ai_enhanced"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب تلقائي من المحادثة\nمعرف المحادثة: cme5029fa0014ufuwzbmsppfr\nملاحظات إضافية: طلب تلقائي من المحادثة cme5029fa0014ufuwzbmsppfr - ١٠‏/٨‏/٢٠٢٥، ٨:٤٢:٤٧ ص\nتاريخ الإنشاء: ١٠‏/٨‏/٢٠٢٥، ٨:٤٢:٤٧ ص",
+  "createdAt": "2025-08-10T05:42:47.165Z",
+  "updatedAt": "2025-08-10T05:42:47.165Z",
+  "metadata": {
+    "conversationId": "cme5029fa0014ufuwzbmsppfr",
+    "customerId": "cme4zhwe40003ufnc3ij0zybq",
+    "companyId": "cmdt8nrjq003vufuss47dqc45",
+    "dataQuality": {
+      "score": "93",
+      "level": "ممتازة",
+      "recommendation": "جاهز للمعالجة",
+      "details": {
+        "totalScore": 13,
+        "maxScore": 14,
+        "issues": [
+          "productPrice: قيمة افتراضية أو غير دقيقة"
+        ],
+        "strengths": [
+          "productName: قيمة صحيحة ومحددة",
+          "productColor: قيمة صحيحة ومحددة",
+          "productSize: قيمة صحيحة ومحددة",
+          "customerName: قيمة صحيحة ومحددة",
+          "customerPhone: قيمة صحيحة ومحددة",
+          "city: قيمة صحيحة ومحددة"
+        ],
+        "checks": [
+          {
+            "field": "productName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "كوتشي الاسكوتش"
+          },
+          {
+            "field": "productColor",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 1,
+            "value": "أسود"
+          },
+          {
+            "field": "productSize",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 1,
+            "value": "38"
+          },
+          {
+            "field": "productPrice",
+            "hasValue": true,
+            "isValid": false,
+            "weight": 2,
+            "value": 349
+          },
+          {
+            "field": "customerName",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 3,
+            "value": "Facebook User"
+          },
+          {
+            "field": "customerPhone",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 3,
+            "value": "01223087745"
+          },
+          {
+            "field": "city",
+            "hasValue": true,
+            "isValid": true,
+            "weight": 2,
+            "value": "الإسكندرية"
+          }
+        ]
+      }
+    },
+    "extractionTimestamp": "2025-08-10T05:42:47.167Z"
+  }
+}

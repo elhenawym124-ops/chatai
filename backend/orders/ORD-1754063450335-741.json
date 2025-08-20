@@ -1,0 +1,38 @@
+{
+  "id": "ORD-1754063450335-741",
+  "orderNumber": "ORD-1754063450335-741",
+  "customerName": "Facebook User",
+  "customerPhone": "",
+  "customerEmail": "",
+  "total": 125,
+  "subtotal": 50,
+  "tax": 0,
+  "shipping": 75,
+  "status": "pending",
+  "paymentStatus": "pending",
+  "paymentMethod": "cash_on_delivery",
+  "shippingAddress": {
+    "city": "إسكندرية",
+    "country": "مصر"
+  },
+  "items": [
+    {
+      "id": "1",
+      "productId": "ai-generated",
+      "name": "لمسة من سوان [السعر غير متوفر في المعلومات]",
+      "price": 50,
+      "quantity": 1,
+      "total": 50,
+      "metadata": {
+        "color": "أبيض",
+        "size": "37",
+        "conversationId": "cmdsu252l0001uf203uwqgoyi",
+        "source": "ai_agent"
+      }
+    }
+  ],
+  "trackingNumber": null,
+  "notes": "طلب من المحادثة\nالمحادثة: cmdsu252l0001uf203uwqgoyi\nطلب تلقائي من المحادثة cmdsu252l0001uf203uwqgoyi - ١‏/٨‏/٢٠٢٥، ٦:٥٠:٥٠ م",
+  "createdAt": "2025-08-01T15:50:50.335Z",
+  "updatedAt": "2025-08-01T15:50:50.335Z"
+}
