@@ -13,20 +13,24 @@ const PUBLIC_ROUTES = [
   'POST /api/v1/auth/register',
   'POST /api/v1/auth/login',
   'GET /api/v1/auth/verify-email',
-  
+
   // Health and system routes
   'GET /health',
   'GET /',
   'OPTIONS *',
-  
+
   // Webhook routes (تحتاج مصادقة خاصة)
   'GET /webhook',
   'POST /webhook',
-  
+
   // Public invitation routes
   'GET /api/v1/invitations/verify/*',
   'POST /api/v1/invitations/accept/*',
-  
+
+  // Public monitoring routes (للمراقبة بدون مصادقة)
+  'GET /api/v1/success-learning/public/*',
+  'POST /api/v1/auto-patterns/public/*',
+
   // Development routes (في بيئة التطوير فقط)
   'POST /api/v1/dev/create-test-user'
 ];

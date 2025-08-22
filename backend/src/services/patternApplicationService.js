@@ -20,6 +20,13 @@ class PatternApplicationService {
    */
   async getApprovedPatterns(companyId) {
     try {
+      // فحص حالة نظام الأنماط للشركة أولاً
+      const isSystemEnabled = await this.isPatternSystemEnabledForCompany(companyId);
+      if (!isSystemEnabled) {
+        console.log(`⏸️ [PatternApplication] Pattern system disabled for company: ${companyId}`);
+        return [];
+      }
+
       // فحص التخزين المؤقت
       const cacheKey = `patterns_${companyId}`;
       const lastUpdate = this.lastCacheUpdate.get(cacheKey) || 0;
@@ -64,6 +71,44 @@ class PatternApplicationService {
     } catch (error) {
       console.error('❌ [PatternApplication] Error getting approved patterns:', error);
       return [];
+    }
+  }
+
+  /**
+   * فحص ما إذا كان نظام الأنماط مفعل للشركة
+   */
+  async isPatternSystemEnabledForCompany(companyId) {
+    try {
+      // جلب إعدادات الشركة
+      const company = await this.prisma.company.findUnique({
+        where: { id: companyId },
+        select: { settings: true }
+      });
+
+      if (!company) {
+        console.log(`⚠️ [PatternApplication] Company ${companyId} not found`);
+        return false;
+      }
+
+      // فحص الإعدادات
+      let systemSettings = {};
+      try {
+        systemSettings = company.settings ? JSON.parse(company.settings) : {};
+      } catch (e) {
+        console.log(`⚠️ [PatternApplication] Error parsing settings for company ${companyId}`);
+        systemSettings = {};
+      }
+
+      // افتراضياً النظام مفعل إذا لم تكن هناك إعدادات
+      const isEnabled = systemSettings.patternSystemEnabled !== false;
+
+      console.log(`🔍 [PatternApplication] Pattern system for company ${companyId}: ${isEnabled ? 'ENABLED' : 'DISABLED'}`);
+
+      return isEnabled;
+    } catch (error) {
+      console.error(`❌ [PatternApplication] Error checking pattern system status for company ${companyId}:`, error.message);
+      // في حالة الخطأ، افتراضياً النظام مفعل
+      return true;
     }
   }
 

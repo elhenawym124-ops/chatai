@@ -22,6 +22,72 @@ const patternApplication = new PatternApplicationService();
 const patternCleanup = new PatternCleanupService();
 
 /**
+ * حالة النظام العامة (بدون مصادقة للمراقبة)
+ * GET /api/v1/success-learning/public/system-status
+ */
+router.get('/public/system-status', async (req, res) => {
+  try {
+    // إحصائيات عامة بدون معلومات حساسة
+    const totalPatterns = await prisma.successPattern.count();
+    const activePatterns = await prisma.successPattern.count({
+      where: { isActive: true }
+    });
+    const approvedPatterns = await prisma.successPattern.count({
+      where: { isApproved: true }
+    });
+
+    // إحصائيات الاستخدام
+    const totalUsage = await prisma.patternUsage.count();
+    const recentUsage = await prisma.patternUsage.count({
+      where: {
+        createdAt: {
+          gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // آخر 24 ساعة
+        }
+      }
+    });
+
+    // حالة الخدمات
+    const autoPatternService = require('../services/autoPatternDetectionService');
+    const serviceStatus = autoPatternService.getStatus();
+
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      system: {
+        status: 'operational',
+        version: '2.0',
+        uptime: Math.floor(process.uptime())
+      },
+      patterns: {
+        total: totalPatterns,
+        active: activePatterns,
+        approved: approvedPatterns,
+        approvalRate: totalPatterns > 0 ? (approvedPatterns / totalPatterns * 100).toFixed(1) : 0
+      },
+      usage: {
+        total: totalUsage,
+        last24h: recentUsage
+      },
+      services: {
+        autoDetection: {
+          isRunning: serviceStatus.isRunning,
+          lastDetection: serviceStatus.lastDetection,
+          companiesMonitored: serviceStatus.companies?.length || 0
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [API] Error getting public system status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في الحصول على حالة النظام',
+      error: error.message
+    });
+  }
+});
+
+/**
  * تحليل أنماط النجاح
  * GET /api/v1/success-learning/analyze-patterns
  */
@@ -395,6 +461,83 @@ router.put('/patterns/:id/unapprove', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'خطأ في إيقاف اعتماد النمط',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * حذف نمط نهائياً
+ * DELETE /api/v1/success-learning/patterns/:id
+ */
+router.delete('/patterns/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason = 'تم الحذف يدوياً' } = req.body;
+
+    // استخدام companyId من المستخدم المصادق عليه
+    const companyId = req.user?.companyId || req.companyId;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: 'معرف الشركة مطلوب'
+      });
+    }
+
+    // التحقق من وجود النمط وأنه ينتمي للشركة
+    const existingPattern = await prisma.successPattern.findFirst({
+      where: {
+        id,
+        companyId
+      },
+      select: {
+        id: true,
+        description: true,
+        patternType: true,
+        isApproved: true,
+        isActive: true
+      }
+    });
+
+    if (!existingPattern) {
+      return res.status(404).json({
+        success: false,
+        message: 'النمط غير موجود أو لا تملك صلاحية حذفه'
+      });
+    }
+
+    // حذف سجلات الاستخدام المرتبطة بالنمط أولاً
+    const deletedUsageCount = await prisma.patternUsage.deleteMany({
+      where: {
+        patternId: id,
+        companyId
+      }
+    });
+
+    // حذف النمط نهائياً
+    await prisma.successPattern.delete({
+      where: { id }
+    });
+
+    console.log(`🗑️ [API] Pattern deleted permanently: ${id} - ${existingPattern.description.substring(0, 50)}...`);
+    console.log(`🗑️ [API] Deleted ${deletedUsageCount.count} usage records for pattern: ${id}`);
+
+    res.json({
+      success: true,
+      message: 'تم حذف النمط نهائياً',
+      data: {
+        deletedPattern: existingPattern,
+        deletedUsageRecords: deletedUsageCount.count,
+        reason
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [API] Error deleting pattern:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في حذف النمط',
       error: error.message
     });
   }
@@ -1195,10 +1338,19 @@ router.post('/system/enable', async (req, res) => {
         settings: JSON.stringify({
           patternSystemEnabled: true,
           lastSystemChange: new Date().toISOString(),
-          systemChangeBy: 'admin'
+          systemChangeBy: req.user?.email || 'admin'
         })
       }
     });
+
+    // إشعار خدمة الاكتشاف التلقائي
+    try {
+      const autoPatternService = require('../services/autoPatternDetectionService');
+      await autoPatternService.enablePatternSystemForCompany(companyId);
+      console.log(`🔔 [API] Auto pattern service notified of system enable for company: ${companyId}`);
+    } catch (serviceError) {
+      console.warn(`⚠️ [API] Failed to notify auto pattern service:`, serviceError.message);
+    }
 
     console.log(`✅ [API] Pattern system enabled - ${enabledPatterns.count} patterns activated`);
 
@@ -1286,11 +1438,20 @@ router.post('/system/disable', async (req, res) => {
         settings: JSON.stringify({
           patternSystemEnabled: false,
           lastSystemChange: new Date().toISOString(),
-          systemChangeBy: 'admin',
+          systemChangeBy: req.user?.email || 'admin',
           disableReason: reason
         })
       }
     });
+
+    // إشعار خدمة الاكتشاف التلقائي
+    try {
+      const autoPatternService = require('../services/autoPatternDetectionService');
+      await autoPatternService.disablePatternSystemForCompany(companyId);
+      console.log(`🔔 [API] Auto pattern service notified of system disable for company: ${companyId}`);
+    } catch (serviceError) {
+      console.warn(`⚠️ [API] Failed to notify auto pattern service:`, serviceError.message);
+    }
 
     console.log(`✅ [API] Pattern system disabled - ${disabledPatterns.count} patterns deactivated`);
 
@@ -1308,6 +1469,217 @@ router.post('/system/disable', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'خطأ في إيقاف نظام الأنماط',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/v1/success-learning/system/companies-status
+ * الحصول على حالة نظام الأنماط لجميع الشركات (للمدراء العامين)
+ */
+router.get('/system/companies-status', async (req, res) => {
+  try {
+    // التحقق من صلاحيات المدير العام
+    if (req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'غير مصرح لك بالوصول لهذه المعلومات'
+      });
+    }
+
+    console.log('📊 [API] Getting pattern system status for all companies');
+
+    // جلب جميع الشركات مع إعداداتها
+    const companies = await prisma.company.findMany({
+      select: {
+        id: true,
+        name: true,
+        settings: true,
+        createdAt: true
+      }
+    });
+
+    const companiesStatus = [];
+
+    for (const company of companies) {
+      let systemSettings = {};
+      try {
+        systemSettings = company.settings ? JSON.parse(company.settings) : {};
+      } catch (e) {
+        systemSettings = {};
+      }
+
+      // عد الأنماط
+      const patternsCount = await prisma.successPattern.count({
+        where: { companyId: company.id }
+      });
+
+      const activePatternsCount = await prisma.successPattern.count({
+        where: {
+          companyId: company.id,
+          isActive: true
+        }
+      });
+
+      companiesStatus.push({
+        companyId: company.id,
+        companyName: company.name,
+        systemEnabled: systemSettings.patternSystemEnabled !== false,
+        totalPatterns: patternsCount,
+        activePatterns: activePatternsCount,
+        lastSystemChange: systemSettings.lastSystemChange,
+        systemChangeBy: systemSettings.systemChangeBy,
+        disableReason: systemSettings.disableReason
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        totalCompanies: companies.length,
+        enabledCompanies: companiesStatus.filter(c => c.systemEnabled).length,
+        disabledCompanies: companiesStatus.filter(c => !c.systemEnabled).length,
+        companies: companiesStatus
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [API] Error getting companies pattern status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في جلب حالة الأنماط للشركات',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/v1/success-learning/system/bulk-control
+ * التحكم الجماعي في نظام الأنماط للشركات (للمدراء العامين)
+ */
+router.post('/system/bulk-control', async (req, res) => {
+  try {
+    // التحقق من صلاحيات المدير العام
+    if (req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'غير مصرح لك بالوصول لهذه المعلومات'
+      });
+    }
+
+    const { action, companyIds, reason = 'تحكم جماعي' } = req.body;
+
+    if (!action || !['enable', 'disable'].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: 'يجب تحديد العملية: enable أو disable'
+      });
+    }
+
+    if (!companyIds || !Array.isArray(companyIds) || companyIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'يجب تحديد معرفات الشركات'
+      });
+    }
+
+    console.log(`🔧 [API] Bulk ${action} pattern system for ${companyIds.length} companies`);
+
+    const results = [];
+    const autoPatternService = require('../services/autoPatternDetectionService');
+
+    for (const companyId of companyIds) {
+      try {
+        if (action === 'enable') {
+          // تفعيل الأنماط
+          const enabledPatterns = await prisma.successPattern.updateMany({
+            where: { companyId },
+            data: { isActive: true }
+          });
+
+          // تحديث الإعدادات
+          await prisma.company.update({
+            where: { id: companyId },
+            data: {
+              settings: JSON.stringify({
+                patternSystemEnabled: true,
+                lastSystemChange: new Date().toISOString(),
+                systemChangeBy: req.user?.email || 'super-admin',
+                enableReason: reason
+              })
+            }
+          });
+
+          await autoPatternService.enablePatternSystemForCompany(companyId);
+
+          results.push({
+            companyId,
+            success: true,
+            action: 'enabled',
+            patternsAffected: enabledPatterns.count
+          });
+
+        } else {
+          // إيقاف الأنماط
+          const disabledPatterns = await prisma.successPattern.updateMany({
+            where: { companyId },
+            data: { isActive: false }
+          });
+
+          // تحديث الإعدادات
+          await prisma.company.update({
+            where: { id: companyId },
+            data: {
+              settings: JSON.stringify({
+                patternSystemEnabled: false,
+                lastSystemChange: new Date().toISOString(),
+                systemChangeBy: req.user?.email || 'super-admin',
+                disableReason: reason
+              })
+            }
+          });
+
+          await autoPatternService.disablePatternSystemForCompany(companyId);
+
+          results.push({
+            companyId,
+            success: true,
+            action: 'disabled',
+            patternsAffected: disabledPatterns.count
+          });
+        }
+
+      } catch (error) {
+        console.error(`❌ [API] Error ${action} pattern system for company ${companyId}:`, error);
+        results.push({
+          companyId,
+          success: false,
+          action: action,
+          error: error.message
+        });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    const failureCount = results.filter(r => !r.success).length;
+
+    res.json({
+      success: true,
+      message: `تم ${action === 'enable' ? 'تفعيل' : 'إيقاف'} النظام بنجاح`,
+      data: {
+        totalProcessed: companyIds.length,
+        successful: successCount,
+        failed: failureCount,
+        results
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [API] Error in bulk pattern system control:', error);
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في التحكم الجماعي بنظام الأنماط',
       error: error.message
     });
   }
@@ -1410,59 +1782,36 @@ router.post('/cleanup-patterns', async (req, res) => {
 
     console.log(`🧹 [API] Cleaning up duplicate patterns for company: ${companyId}`);
 
-    // البحث عن الأنماط المكررة
-    const duplicatePatterns = await prisma.detectedPattern.groupBy({
-      by: ['patternType', 'companyId'],
-      where: { companyId },
-      having: {
-        id: {
-          _count: {
-            gt: 1
-          }
-        }
-      },
-      _count: {
-        id: true
-      }
-    });
+    // استخدام خدمة تنظيف الأنماط المتخصصة
+    let result;
 
-    let patternsDeleted = 0;
-
-    if (!dryRun && duplicatePatterns.length > 0) {
-      // حذف الأنماط المكررة (الاحتفاظ بالأحدث)
-      for (const duplicate of duplicatePatterns) {
-        const patterns = await prisma.detectedPattern.findMany({
-          where: {
-            companyId: duplicate.companyId,
-            patternType: duplicate.patternType
-          },
-          orderBy: { createdAt: 'desc' }
-        });
-
-        // حذف جميع الأنماط عدا الأول (الأحدث)
-        const toDelete = patterns.slice(1);
-
-        for (const pattern of toDelete) {
-          await prisma.detectedPattern.delete({
-            where: { id: pattern.id }
-          });
-          patternsDeleted++;
-        }
-      }
+    if (dryRun) {
+      // في حالة الفحص فقط، نحصل على الإحصائيات
+      const stats = await patternCleanup.getCleanupStats(companyId);
+      result = {
+        success: true,
+        duplicateGroupsFound: stats?.potentialDuplicates || 0,
+        patternsProcessed: 0,
+        patternsDeleted: 0,
+        patternsMerged: 0,
+        dryRun: true
+      };
     } else {
-      // حساب عدد الأنماط التي ستحذف
-      for (const duplicate of duplicatePatterns) {
-        patternsDeleted += duplicate._count.id - 1;
-      }
+      // تنظيف فعلي
+      result = await patternCleanup.cleanupDuplicatePatterns(companyId);
     }
 
     res.json({
-      success: true,
+      success: result.success,
       message: dryRun ? 'تم فحص الأنماط المكررة' : 'تم تنظيف الأنماط المكررة بنجاح',
       data: {
-        duplicateGroups: duplicatePatterns.length,
-        patternsDeleted,
-        dryRun
+        duplicateGroups: result.duplicateGroupsFound || 0,
+        patternsDeleted: result.patternsDeleted || 0,
+        patternsMerged: result.patternsMerged || 0,
+        patternsProcessed: result.patternsProcessed || 0,
+        timeTaken: result.timeTaken || 0,
+        dryRun,
+        error: result.error || null
       }
     });
 

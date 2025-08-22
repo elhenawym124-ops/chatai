@@ -144,7 +144,6 @@ class RAGService {
         }
 
         products = await prisma.product.findMany({
-        where: { companyId: companyId },
           where: whereClause,
           include: {
             category: true,

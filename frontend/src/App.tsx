@@ -13,6 +13,7 @@ import SuperAdminLayout from './components/layout/SuperAdminLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import Login from './pages/auth/Login';
 import SimpleLogin from './pages/auth/SimpleLogin';
+import ModernLogin from './pages/auth/ModernLogin';
 
 
 import Register from './pages/auth/Register';
@@ -116,7 +117,8 @@ const App: React.FC = () => {
       <div className="App">
         <Routes>
         {/* Public Routes */}
-        <Route path="/auth/login" element={<AuthLayout><SimpleLogin /></AuthLayout>} />
+        <Route path="/auth/login" element={<AuthLayout><ModernLogin /></AuthLayout>} />
+        <Route path="/auth/login-simple" element={<AuthLayout><SimpleLogin /></AuthLayout>} />
         <Route path="/auth/login-old" element={<AuthLayout><Login /></AuthLayout>} />
         <Route path="/auth/register" element={<AuthLayout><Register /></AuthLayout>} />
         <Route path="/auth/forgot-password" element={<AuthLayout><ForgotPassword /></AuthLayout>} />

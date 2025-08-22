@@ -139,16 +139,44 @@ class SuccessAnalyticsAPI {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       const data = await response.json();
-      
+
       if (!data.success) {
         throw new Error(data.message || 'فشل في رفض النمط');
       }
-      
+
       return data.data;
     } catch (error) {
       console.error('خطأ في رفض النمط:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * حذف نمط نهائياً
+   */
+  async deletePattern(patternId, reason = 'تم الحذف يدوياً') {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/patterns/${patternId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ reason })
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'فشل في حذف النمط');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('خطأ في حذف النمط:', error);
       throw error;
     }
   }

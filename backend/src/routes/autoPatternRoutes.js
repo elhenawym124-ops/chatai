@@ -212,7 +212,7 @@ router.delete('/companies/:companyId', async (req, res) => {
 router.get('/history', async (req, res) => {
   try {
     const status = autoPatternService.getStatus();
-    
+
     res.json({
       success: true,
       data: {
@@ -228,6 +228,32 @@ router.get('/history', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'فشل في الحصول على تاريخ الاكتشافات',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/v1/auto-patterns/public/detect-now
+ * تشغيل اكتشاف فوري للأنماط (عام للاختبار)
+ */
+router.post('/public/detect-now', async (req, res) => {
+  try {
+    console.log('⚡ [AutoPatternAPI] Running immediate detection (public)...');
+
+    // تشغيل اكتشاف لجميع الشركات
+    const result = await autoPatternService.runImmediateDetection();
+
+    res.json({
+      success: true,
+      message: 'تم تشغيل الاكتشاف الفوري بنجاح',
+      data: result
+    });
+  } catch (error) {
+    console.error('❌ Error running immediate detection:', error);
+    res.status(500).json({
+      success: false,
+      message: 'فشل في تشغيل الاكتشاف الفوري',
       error: error.message
     });
   }

@@ -820,7 +820,7 @@ class PatternDetector {
     console.log(`✅ [PatternDetector] Successfully processed ${patterns.length} AI patterns`);
 
     // حفظ الأنماط في قاعدة البيانات
-    const savedPatterns = await this.savePatternsToDatabase(patterns, 'cme4yvrco002kuftceydlrwdi');
+    const savedPatterns = await this.savePatternsToDatabase(patterns, this.companyId || companyId);
     console.log(`💾 [PatternDetector] Saved ${savedPatterns.length} patterns to database`);
 
     return savedPatterns;

@@ -249,7 +249,8 @@ class AIAgentService {
         ragData,
         conversationMemory,
         hasImages,
-        smartResponse
+        smartResponse,
+        messageData
       );
 
       console.log('🧠 Using advanced prompt with RAG data');
@@ -609,7 +610,7 @@ class AIAgentService {
       }
 
       // إنشاء الـ prompt المتقدم
-      const prompt = this.buildPrompt(content, companyPrompts, conversationMemory, ragData, messageData.customerData);
+      const prompt = this.buildPrompt(content, companyPrompts, conversationMemory, ragData, messageData.customerData, messageData);
 
       // تحضير سياق الرسالة للأنماط
       const messageContext = {
@@ -675,13 +676,14 @@ class AIAgentService {
   /**
    * بناء الـ prompt للذكاء الاصطناعي
    */
-  buildPrompt(customerMessage, companyPrompts, conversationMemory, ragData, customerData) {
+  buildPrompt(customerMessage, companyPrompts, conversationMemory, ragData, customerData, messageData = null) {
     let prompt = '';
 
     console.log('🔍 Building prompt with companyPrompts:', {
       hasPersonalityPrompt: !!companyPrompts.personalityPrompt,
       source: companyPrompts.source,
-      promptLength: companyPrompts.personalityPrompt?.length || 0
+      promptLength: companyPrompts.personalityPrompt?.length || 0,
+      hasReplyContext: !!(messageData?.replyContext?.isReply)
     });
 
     // التحقق من وجود personality prompt مخصص
@@ -709,6 +711,28 @@ class AIAgentService {
 - الاسم: ${customerData?.name || 'عميل جديد'}
 - الهاتف: ${customerData?.phone || 'غير محدد'}
 - عدد الطلبات السابقة: ${customerData?.orderCount || 0}\n\n`;
+
+    // 🔄 إضافة معلومات الرد إذا كان العميل يرد على رسالة سابقة
+    if (messageData?.replyContext?.isReply) {
+      console.log('🔄 [REPLY-CONTEXT] العميل يرد على رسالة سابقة');
+      prompt += `🔄 سياق الرد - العميل يرد على رسالة سابقة:\n`;
+      prompt += `=====================================\n`;
+
+      if (messageData.replyContext.originalMessage?.content) {
+        prompt += `📝 الرسالة الأصلية التي يرد عليها العميل:\n`;
+        prompt += `"${messageData.replyContext.originalMessage.content}"\n\n`;
+
+        const originalDate = new Date(messageData.replyContext.originalMessage.createdAt);
+        const timeAgo = this.getTimeAgo(originalDate);
+        prompt += `⏰ تم إرسال الرسالة الأصلية منذ: ${timeAgo}\n\n`;
+      } else {
+        prompt += `📝 العميل يرد على رسالة سابقة (المحتوى غير متوفر)\n\n`;
+      }
+
+      prompt += `💬 رد العميل الحالي: "${customerMessage}"\n`;
+      prompt += `=====================================\n`;
+      prompt += `💡 مهم: اربطي ردك بالرسالة الأصلية وتأكدي من الاستمرارية في السياق.\n\n`;
+    }
 
     // Add conversation memory if available
     if (conversationMemory && conversationMemory.length > 0) {
@@ -891,7 +915,7 @@ class AIAgentService {
   /**
    * Build advanced prompt with RAG data, company settings, and conversation memory
    */
-  async buildAdvancedPrompt(customerMessage, customerData, companyPrompts, ragData, conversationMemory = [], hasImages = false, smartResponseInfo = null) {
+  async buildAdvancedPrompt(customerMessage, customerData, companyPrompts, ragData, conversationMemory = [], hasImages = false, smartResponseInfo = null, messageData = null) {
     let prompt = '';
 
     console.log('🔍 Building prompt with companyPrompts:', {
@@ -927,6 +951,28 @@ class AIAgentService {
 - الاسم: ${customerData?.name || 'عميل جديد'}
 - الهاتف: ${customerData?.phone || 'غير محدد'}
 - عدد الطلبات السابقة: ${customerData?.orderCount || 0}\n\n`;
+
+    // 🔄 إضافة معلومات الرد إذا كان العميل يرد على رسالة سابقة
+    if (messageData?.replyContext?.isReply) {
+      console.log('🔄 [REPLY-CONTEXT] العميل يرد على رسالة سابقة في buildAdvancedPrompt');
+      prompt += `🔄 سياق الرد - العميل يرد على رسالة سابقة:\n`;
+      prompt += `=====================================\n`;
+
+      if (messageData.replyContext.originalMessage?.content) {
+        prompt += `📝 الرسالة الأصلية التي يرد عليها العميل:\n`;
+        prompt += `"${messageData.replyContext.originalMessage.content}"\n\n`;
+
+        const originalDate = new Date(messageData.replyContext.originalMessage.createdAt);
+        const timeAgo = this.getTimeAgo(originalDate);
+        prompt += `⏰ تم إرسال الرسالة الأصلية منذ: ${timeAgo}\n\n`;
+      } else {
+        prompt += `📝 العميل يرد على رسالة سابقة (المحتوى غير متوفر)\n\n`;
+      }
+
+      prompt += `💬 رد العميل الحالي: "${customerMessage}"\n`;
+      prompt += `=====================================\n`;
+      prompt += `💡 مهم: اربطي ردك بالرسالة الأصلية وتأكدي من الاستمرارية في السياق.\n\n`;
+    }
 
     // Add conversation memory if available
     if (conversationMemory && conversationMemory.length > 0) {

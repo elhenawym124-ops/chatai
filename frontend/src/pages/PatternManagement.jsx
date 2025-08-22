@@ -290,6 +290,30 @@ const PatternManagement = () => {
     }
   };
 
+  const handleDeletePattern = async (patternId, patternDescription) => {
+    // تأكيد الحذف
+    const confirmDelete = window.confirm(
+      `هل أنت متأكد من حذف هذا النمط نهائياً؟\n\n"${patternDescription.substring(0, 100)}..."\n\nلا يمكن التراجع عن هذا الإجراء.`
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      await successAnalyticsAPI.deletePattern(patternId, 'تم الحذف من واجهة الإدارة');
+      await fetchPatterns();
+      setModalOpen(false);
+
+      // إظهار رسالة نجاح
+      setError(null);
+      // يمكن إضافة toast notification هنا
+
+    } catch (err) {
+      setError('فشل في حذف النمط: ' + err.message);
+    }
+  };
+
   const handleTestPattern = async (pattern) => {
     if (!testMessage.trim()) {
       setError('يرجى إدخال رسالة للاختبار');
@@ -1306,6 +1330,20 @@ const PatternManagement = () => {
                           </IconButton>
                         </Tooltip>
                       )}
+
+                      <Tooltip title="حذف نهائي">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePattern(pattern.id, pattern.description);
+                          }}
+                          sx={{ ml: 0.5 }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}

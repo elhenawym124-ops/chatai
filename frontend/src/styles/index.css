@@ -337,8 +337,40 @@ body {
   .backdrop-blur {
     background-color: rgba(255, 255, 255, 0.9);
   }
-  
+
   .dark .backdrop-blur {
     background-color: rgba(0, 0, 0, 0.9);
   }
+}
+
+/* Custom animations for Modern Login */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }

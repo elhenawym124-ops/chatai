@@ -144,6 +144,22 @@ class AutoPatternDetectionService {
    */
   async detectPatternsForCompany(companyId) {
     try {
+      console.log(`📊 [AutoPatternService] Processing company: ${companyId}`);
+
+      // فحص إعدادات الشركة أولاً
+      const isEnabled = await this.isPatternSystemEnabledForCompany(companyId);
+      if (!isEnabled) {
+        console.log(`⏸️ [AutoPatternService] Pattern system disabled for company: ${companyId}`);
+        return {
+          companyId,
+          success: true,
+          newPatterns: 0,
+          timeRange: 0,
+          skipped: true,
+          reason: 'Pattern system disabled for this company'
+        };
+      }
+
       // فحص آخر مرة تم اكتشاف أنماط فيها
       const lastPattern = await this.prisma.successPattern.findFirst({
         where: { companyId },
@@ -165,6 +181,7 @@ class AutoPatternDetectionService {
       const result = await this.detector.detectNewPatterns(companyId, timeRange);
 
       return {
+        companyId,
         success: result.success,
         newPatterns: result.patterns?.length || 0,
         timeRange: timeRange,
@@ -174,10 +191,50 @@ class AutoPatternDetectionService {
     } catch (error) {
       console.error(`❌ [AutoPatternService] Error detecting patterns for ${companyId}:`, error.message);
       return {
+        companyId,
         success: false,
         newPatterns: 0,
-        error: error.message
+        error: error.message,
+        timeRange: 0
       };
+    }
+  }
+
+  /**
+   * فحص ما إذا كان نظام الأنماط مفعل للشركة
+   */
+  async isPatternSystemEnabledForCompany(companyId) {
+    try {
+      // جلب إعدادات الشركة
+      const company = await this.prisma.company.findUnique({
+        where: { id: companyId },
+        select: { settings: true }
+      });
+
+      if (!company) {
+        console.log(`⚠️ [AutoPatternService] Company ${companyId} not found`);
+        return false;
+      }
+
+      // فحص الإعدادات
+      let systemSettings = {};
+      try {
+        systemSettings = company.settings ? JSON.parse(company.settings) : {};
+      } catch (e) {
+        console.log(`⚠️ [AutoPatternService] Error parsing settings for company ${companyId}`);
+        systemSettings = {};
+      }
+
+      // افتراضياً النظام مفعل إذا لم تكن هناك إعدادات
+      const isEnabled = systemSettings.patternSystemEnabled !== false;
+
+      console.log(`🔍 [AutoPatternService] Pattern system for company ${companyId}: ${isEnabled ? 'ENABLED' : 'DISABLED'}`);
+
+      return isEnabled;
+    } catch (error) {
+      console.error(`❌ [AutoPatternService] Error checking pattern system status for company ${companyId}:`, error.message);
+      // في حالة الخطأ، افتراضياً النظام مفعل
+      return true;
     }
   }
 
@@ -186,7 +243,7 @@ class AutoPatternDetectionService {
    */
   async notifyNewPatterns(totalPatterns, results) {
     console.log(`\n📢 [AutoPatternService] NOTIFICATION: ${totalPatterns} new patterns detected!`);
-    
+
     try {
       // حفظ الإشعار في قاعدة البيانات
       await this.saveNotification({
@@ -304,12 +361,122 @@ class AutoPatternDetectionService {
    */
   async runImmediateDetection(companyId = null) {
     console.log('⚡ [AutoPatternService] Running immediate detection...');
-    
+
     if (companyId) {
       return await this.detectPatternsForCompany(companyId);
     } else {
       await this.runDetectionCycle();
       return this.lastDetection;
+    }
+  }
+
+  /**
+   * تفعيل نظام الأنماط لشركة معينة
+   */
+  async enablePatternSystemForCompany(companyId) {
+    try {
+      console.log(`🟢 [AutoPatternService] Enabling pattern system for company: ${companyId}`);
+
+      // جلب الإعدادات الحالية
+      const company = await this.prisma.company.findUnique({
+        where: { id: companyId },
+        select: { settings: true }
+      });
+
+      let currentSettings = {};
+      try {
+        currentSettings = company?.settings ? JSON.parse(company.settings) : {};
+      } catch (e) {
+        currentSettings = {};
+      }
+
+      // تحديث الإعدادات
+      const updatedSettings = {
+        ...currentSettings,
+        patternSystemEnabled: true,
+        lastSystemChange: new Date().toISOString(),
+        systemChangeBy: 'auto-service'
+      };
+
+      // حفظ الإعدادات
+      await this.prisma.company.update({
+        where: { id: companyId },
+        data: {
+          settings: JSON.stringify(updatedSettings)
+        }
+      });
+
+      console.log(`✅ [AutoPatternService] Pattern system enabled for company: ${companyId}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ [AutoPatternService] Error enabling pattern system for company ${companyId}:`, error.message);
+      return false;
+    }
+  }
+
+  /**
+   * إيقاف نظام الأنماط لشركة معينة
+   */
+  async disablePatternSystemForCompany(companyId) {
+    try {
+      console.log(`🔴 [AutoPatternService] Disabling pattern system for company: ${companyId}`);
+
+      // جلب الإعدادات الحالية
+      const company = await this.prisma.company.findUnique({
+        where: { id: companyId },
+        select: { settings: true }
+      });
+
+      let currentSettings = {};
+      try {
+        currentSettings = company?.settings ? JSON.parse(company.settings) : {};
+      } catch (e) {
+        currentSettings = {};
+      }
+
+      // تحديث الإعدادات
+      const updatedSettings = {
+        ...currentSettings,
+        patternSystemEnabled: false,
+        lastSystemChange: new Date().toISOString(),
+        systemChangeBy: 'auto-service'
+      };
+
+      // حفظ الإعدادات
+      await this.prisma.company.update({
+        where: { id: companyId },
+        data: {
+          settings: JSON.stringify(updatedSettings)
+        }
+      });
+
+      console.log(`✅ [AutoPatternService] Pattern system disabled for company: ${companyId}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ [AutoPatternService] Error disabling pattern system for company ${companyId}:`, error.message);
+      return false;
+    }
+  }
+
+  /**
+   * الحصول على قائمة الشركات المفعلة
+   */
+  async getEnabledCompanies() {
+    try {
+      const enabledCompanies = [];
+
+      for (const companyId of this.companies) {
+        const isEnabled = await this.isPatternSystemEnabledForCompany(companyId);
+        if (isEnabled) {
+          enabledCompanies.push(companyId);
+        }
+      }
+
+      console.log(`📊 [AutoPatternService] Found ${enabledCompanies.length}/${this.companies.length} enabled companies`);
+      return enabledCompanies;
+    } catch (error) {
+      console.error(`❌ [AutoPatternService] Error getting enabled companies:`, error.message);
+      return this.companies; // في حالة الخطأ، ارجع جميع الشركات
     }
   }
 }
