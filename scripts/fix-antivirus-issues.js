@@ -82,7 +82,7 @@ function main() {
   
   console.log('\n✅ All fixes completed!');
   console.log('💡 Tip: Add your project folder to antivirus exclusions for best results');
-  console.log('📁 Folder to exclude: E:\\new chat bot\\test-chat\\x4\\x5.5\\x');
+  console.log('📁 Folder to exclude: ' + path.resolve(__dirname, '..'));
 }
 
 // Run if called directly
