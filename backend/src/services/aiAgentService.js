@@ -36,13 +36,9 @@ class AIAgentService {
       return await this.getActiveGeminiKey(companyId);
     }
 
-    if (this.currentActiveModel) {
-      return this.currentActiveModel;
-    }
-
-    // إذا لم يكن هناك نموذج محفوظ، احصل على واحد جديد
-    this.currentActiveModel = await this.getActiveGeminiKey();
-    return this.currentActiveModel;
+    // إذا لم يتم تمرير companyId، يجب رفض الطلب للأمان
+    console.error('❌ [SECURITY] getCurrentActiveModel called without companyId - request denied');
+    return null;
   }
 
   /**
@@ -139,11 +135,19 @@ class AIAgentService {
               const imageContext = imageResult.processedContent;
               const customerMessage = messageData.content || 'العميل أرسل صورة';
 
-              // معالجة الرسالة مع الـ AI Agent
-              const aiResponse = await this.processWithAI(
-                `${customerMessage}\n\nمعلومات الصورة: ${imageContext}`,
+              // معالجة الصورة بدون استخدام الذاكرة لضمان الاستقلالية
+              const aiResponse = await this.processImageWithAI(
+                imageContext,
                 messageData,
-                intent
+                intent,
+                imageResult.productMatch
+              );
+
+              // حفظ الرد النهائي في الذاكرة بدلاً من التحليل الخام
+              await this.saveImageResponseToMemory(
+                messageData,
+                aiResponse.content,
+                imageResult.productMatch
               );
 
               return {
@@ -156,17 +160,20 @@ class AIAgentService {
               // معالجة أخطاء الصور مع الـ AI Agent للرد بشخصية ساره
               console.log('❌ [IMAGE-ERROR] Processing image error with AI Agent...');
               console.log('🔍 [IMAGE-ERROR] Error type:', imageResult.errorType);
+              console.log('📝 [IMAGE-ERROR] Error context:', imageResult.processedContent);
 
               // تحديد نوع الاستعلام بناءً على نوع الخطأ
               const intent = imageResult.errorType === 'general_error' ? 'product_inquiry' : 'general_inquiry';
 
-              // إنشاء رسالة للـ AI Agent
+              // إنشاء رسالة واضحة للـ AI Agent
               const imageContext = imageResult.processedContent;
               const customerMessage = messageData.content || 'العميل أرسل صورة';
 
+              console.log('🤖 [IMAGE-ERROR] Sending to AI:', `${customerMessage}\n\nتوضيح الموقف: ${imageContext}`);
+
               // معالجة الرسالة مع الـ AI Agent
               const aiResponse = await this.processWithAI(
-                `${customerMessage}\n\nحالة الصورة: ${imageContext}`,
+                `${customerMessage}\n\nتوضيح الموقف: ${imageContext}`,
                 messageData,
                 intent
               );
@@ -480,6 +487,22 @@ class AIAgentService {
 
       } // إغلاق if (orderConfirmation.isConfirming) من السطر 301
 
+      console.log(`\n📤 [FINAL-RESPONSE] ===== إعداد الرد النهائي =====`);
+      console.log(`📝 [FINAL-RESPONSE] محتوى الرد: "${aiContent.substring(0, 100)}..."`);
+      console.log(`📸 [FINAL-RESPONSE] عدد الصور المرفقة: ${images ? images.length : 0}`);
+
+      if (images && images.length > 0) {
+        console.log(`✅ [FINAL-RESPONSE] الصور التي سيتم إرسالها:`);
+        images.forEach((img, index) => {
+          console.log(`   📸 ${index + 1}. ${img.payload?.title || 'بدون عنوان'}`);
+          console.log(`      🔗 ${img.payload?.url?.substring(0, 60)}...`);
+        });
+      } else {
+        console.log(`❌ [FINAL-RESPONSE] لا توجد صور للإرسال`);
+      }
+
+      console.log(`🎯 [FINAL-RESPONSE] ===== الرد جاهز للإرسال =====`);
+
       return {
         success: true,
         content: aiContent,
@@ -568,6 +591,79 @@ class AIAgentService {
         processingTime: Date.now() - (messageData.startTime || Date.now()),
         errorType: 'system_overload',
         silent: true // 🤐 علامة الصمت
+      };
+    }
+  }
+
+  /**
+   * معالجة الصور مع الـ AI بدون استخدام الذاكرة لضمان الاستقلالية
+   */
+  async processImageWithAI(imageAnalysis, messageData, intent = 'general_inquiry', productMatch = null) {
+    try {
+      console.log('🖼️ [IMAGE-AI] Processing image with AI (memory-independent)...');
+
+      // الحصول على معلومات الشركة والـ prompts
+      const finalCompanyId = messageData.companyId || messageData.customerData?.companyId;
+      console.log('🏢 [IMAGE-AI] Using companyId:', finalCompanyId);
+      const companyPrompts = await this.getCompanyPrompts(finalCompanyId);
+
+      // بناء prompt خاص بالصور بدون استخدام الذاكرة
+      const imagePrompt = this.buildImageResponsePrompt(
+        imageAnalysis,
+        companyPrompts,
+        productMatch,
+        messageData.customerData
+      );
+
+      // تحضير سياق الرسالة للأنماط (بدون ذاكرة)
+      const messageContext = {
+        messageType: 'image_analysis',
+        inquiryType: intent,
+        timeOfDay: this.getTimeOfDay(),
+        customerHistory: {
+          isReturning: false, // نعتبر كل صورة كتفاعل جديد
+          previousPurchases: 0
+        }
+      };
+
+      // إنشاء الرد مع الـ AI بدون ذاكرة
+      const aiContent = await this.generateAIResponse(
+        imagePrompt,
+        [], // ذاكرة فارغة لضمان الاستقلالية
+        true,
+        null, // geminiConfig
+        finalCompanyId,
+        messageData.conversationId,
+        messageContext
+      );
+
+      console.log('✅ [IMAGE-AI] Image processed successfully with independent analysis');
+
+      return {
+        content: aiContent,
+        intent: intent,
+        confidence: 0.9,
+        shouldEscalate: false,
+        metadata: {
+          processingType: 'image_independent',
+          hasProductMatch: !!productMatch?.found,
+          analysisTimestamp: new Date().toISOString()
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ [IMAGE-AI] Error processing image with AI:', error);
+
+      // رد افتراضي في حالة الخطأ
+      return {
+        content: 'عذراً، حدث خطأ في تحليل الصورة. ممكن تجربي ترسليها تاني؟',
+        intent: 'error_handling',
+        confidence: 0.1,
+        shouldEscalate: true,
+        metadata: {
+          processingType: 'image_error',
+          error: error.message
+        }
       };
     }
   }
@@ -671,6 +767,87 @@ class AIAgentService {
         silent: true // 🤐 علامة الصمت
       };
     }
+  }
+
+  /**
+   * حفظ الرد النهائي للصورة في الذاكرة
+   */
+  async saveImageResponseToMemory(messageData, finalResponse, productMatch) {
+    try {
+      const memoryService = require('./memoryService');
+
+      // حفظ الرد النهائي المفيد بدلاً من التحليل الخام
+      await memoryService.saveInteraction({
+        conversationId: messageData.conversationId,
+        senderId: messageData.senderId,
+        companyId: messageData.companyId,
+        userMessage: 'العميل أرسل صورة منتج',
+        aiResponse: finalResponse, // الرد النهائي المفيد
+        intent: 'image_analysis',
+        sentiment: 'neutral',
+        timestamp: new Date(),
+        metadata: {
+          hasProductMatch: !!productMatch?.found,
+          productName: productMatch?.productName || null,
+          processingType: 'image_independent'
+        }
+      });
+
+      console.log('💾 Final image response saved to memory (helpful response, not raw analysis)');
+    } catch (error) {
+      console.log('⚠️ Could not save image response to memory:', error.message);
+    }
+  }
+
+  /**
+   * بناء prompt خاص بالصور بدون استخدام الذاكرة
+   */
+  buildImageResponsePrompt(imageAnalysis, companyPrompts, productMatch, customerData) {
+    let prompt = '';
+
+    // إضافة شخصية الشركة
+    if (companyPrompts.personalityPrompt) {
+      prompt += companyPrompts.personalityPrompt + '\n\n';
+    }
+
+    // تعليمات خاصة بالرد على الصور
+    prompt += `🖼️ مهمة: الرد على العميل بناءً على تحليل الصورة المرسلة
+
+📋 معلومات تحليل الصورة:
+${imageAnalysis}
+
+🎯 تعليمات مهمة للرد:
+1. ✅ استخدم نتائج تحليل الصورة فقط
+2. 🚫 لا تشير لأي محادثات أو تفاعلات سابقة
+3. 💬 رد بشكل طبيعي وودود كأنها أول مرة تتفاعل مع العميل
+4. 🎨 اذكر الألوان والتفاصيل التي تم تحليلها
+5. 💰 اذكر السعر إذا تم العثور على منتج مطابق
+6. ❓ اسأل إذا كان العميل يريد معرفة المزيد
+
+`;
+
+    // إضافة معلومات المطابقة إذا وجدت
+    if (productMatch && productMatch.found) {
+      prompt += `✅ تم العثور على منتج مطابق:
+- اسم المنتج: ${productMatch.productName}
+- السعر: ${productMatch.price}
+- التفاصيل: ${productMatch.details || 'غير متوفر'}
+
+`;
+    } else {
+      prompt += `⚠️ لم يتم العثور على منتج مطابق تماماً في المتجر.
+
+`;
+    }
+
+    // إضافة معلومات العميل إذا توفرت
+    if (customerData && customerData.name) {
+      prompt += `👤 معلومات العميل: ${customerData.name}\n\n`;
+    }
+
+    prompt += `🎯 المطلوب: رد طبيعي وودود بناءً على تحليل الصورة فقط، بدون أي إشارة لسياق سابق.`;
+
+    return prompt;
   }
 
   /**
@@ -1093,6 +1270,16 @@ ${smartResponseInfo && smartResponseInfo.hasSpecificProduct ? `
     try {
       console.log('🎯 [AIAgent] Starting pattern-enhanced AI response generation');
 
+      // 🔍 لوج مفصل لتتبع طلب generateAIResponse
+      console.log('📋 [REQUEST-TRACKING] ===== تتبع طلب generateAIResponse =====');
+      console.log('🏢 [REQUEST-TRACKING] Company ID:', companyId);
+      console.log('💬 [REQUEST-TRACKING] Conversation ID:', conversationId);
+      console.log('📝 [REQUEST-TRACKING] Prompt Length:', prompt?.length);
+      console.log('🧠 [REQUEST-TRACKING] Memory Length:', conversationMemory?.length);
+      console.log('📚 [REQUEST-TRACKING] Use RAG:', useRAG);
+      console.log('🔧 [REQUEST-TRACKING] Provided Config:', !!providedGeminiConfig);
+      console.log('📋 [REQUEST-TRACKING] ===== نهاية تتبع الطلب =====');
+
       // Get active Gemini configuration (use provided one if available, otherwise use session model with company isolation)
       const geminiConfig = providedGeminiConfig || await this.getCurrentActiveModel(companyId);
       if (!geminiConfig) {
@@ -1172,6 +1359,17 @@ ${smartResponseInfo && smartResponseInfo.hasSpecificProduct ? `
       }
 
       console.log('✅ [AIAgent] Pattern-enhanced response generated successfully');
+
+      // 🔍 لوج مفصل لتتبع نتيجة generateAIResponse
+      console.log('🎯 [RESPONSE-RESULT] ===== نتيجة generateAIResponse =====');
+      console.log('🏢 [RESPONSE-RESULT] Company ID:', companyId);
+      console.log('💬 [RESPONSE-RESULT] Conversation ID:', conversationId);
+      console.log('🔑 [RESPONSE-RESULT] Key Used:', geminiConfig?.keyId);
+      console.log('🤖 [RESPONSE-RESULT] Model Used:', geminiConfig?.model);
+      console.log('📝 [RESPONSE-RESULT] Response Length:', aiContent?.length);
+      console.log('📄 [RESPONSE-RESULT] Response Preview:', aiContent?.substring(0, 100) + '...');
+      console.log('🎯 [RESPONSE-RESULT] ===== نهاية النتيجة =====');
+
       return aiContent;
 
     } catch (error) {
@@ -2469,7 +2667,10 @@ ${conversationText}
    */
   async isCustomerRequestingImages(message, conversationMemory = [], companyId = null) {
     try {
-      console.log(`🧠 [AI-IMAGE-DETECTION] Analyzing: "${message.substring(0, 50)}..."`);
+      console.log(`\n🧠 [AI-IMAGE-DETECTION] ===== بدء تحليل طلب الصور =====`);
+      console.log(`📝 [AI-IMAGE-DETECTION] الرسالة الكاملة: "${message}"`);
+      console.log(`🏢 [AI-IMAGE-DETECTION] معرف الشركة: ${companyId}`);
+      console.log(`💭 [AI-IMAGE-DETECTION] ذاكرة المحادثة: ${conversationMemory.length} رسالة`);
 
       // بناء السياق من المحادثة السابقة
       let conversationContext = '';
@@ -2478,6 +2679,9 @@ ${conversationText}
         conversationContext = recentMessages.map(memory =>
           `العميل: ${memory.userMessage}\nالرد: ${memory.aiResponse}`
         ).join('\n---\n');
+        console.log(`📚 [AI-IMAGE-DETECTION] سياق المحادثة:\n${conversationContext.substring(0, 200)}...`);
+      } else {
+        console.log(`📚 [AI-IMAGE-DETECTION] لا يوجد سياق محادثة سابق`);
       }
 
       // Prompt متقدم للذكاء الاصطناعي
@@ -2505,17 +2709,28 @@ ${conversationContext ? `سياق المحادثة السابقة:\n${conversati
 
 التحليل والقرار:`;
 
+      console.log(`🤖 [AI-IMAGE-DETECTION] إرسال الطلب للذكاء الاصطناعي...`);
       const response = await this.generateAIResponse(advancedImageRequestPrompt, [], false, null, companyId);
+      console.log(`📥 [AI-IMAGE-DETECTION] رد الذكاء الاصطناعي: "${response}"`);
+
       const analysisText = response.trim().toLowerCase();
+      console.log(`🔤 [AI-IMAGE-DETECTION] النص بعد التطبيع: "${analysisText}"`);
 
       // تحليل أكثر دقة للرد
-      const isRequesting = analysisText.includes('نعم') && !analysisText.includes('لا نعم');
+      const containsYes = analysisText.includes('نعم');
+      const containsNoYes = analysisText.includes('لا نعم');
+      const isRequesting = containsYes && !containsNoYes;
+
+      console.log(`🔍 [AI-IMAGE-DETECTION] تحليل الرد:`);
+      console.log(`   - يحتوي على "نعم": ${containsYes}`);
+      console.log(`   - يحتوي على "لا نعم": ${containsNoYes}`);
+      console.log(`   - القرار النهائي: ${isRequesting}`);
 
       // تسجيل مفصل للتحليل
-      console.log(`🧠 [AI-IMAGE-DETECTION] Analysis result:`);
-      console.log(`   Message: "${message}"`);
-      console.log(`   AI Response: "${response.substring(0, 100)}..."`);
-      console.log(`   Decision: ${isRequesting ? '✅ YES - Customer wants images' : '❌ NO - Customer does not want images'}`);
+      console.log(`\n🎯 [AI-IMAGE-DETECTION] ===== النتيجة النهائية =====`);
+      console.log(`📝 الرسالة: "${message}"`);
+      console.log(`🤖 رد الـ AI: "${response}"`);
+      console.log(`${isRequesting ? '✅' : '❌'} القرار: ${isRequesting ? 'العميل يريد صور' : 'العميل لا يريد صور'}`);
 
       return isRequesting;
 
@@ -2780,6 +2995,16 @@ ${conversationContext}
         await this.updateModelUsage(bestModel.id);
         
         console.log(`✅ تم العثور على نموذج متاح: ${bestModel.model}`);
+
+        // 🔍 لوج مفصل لتتبع المفتاح المستخدم
+        console.log('🔑 [KEY-TRACKING] ===== تتبع المفتاح المستخدم =====');
+        console.log('🏢 [KEY-TRACKING] Company ID:', targetCompanyId);
+        console.log('🔑 [KEY-TRACKING] Key ID:', activeKey.id);
+        console.log('🤖 [KEY-TRACKING] Model:', bestModel.model);
+        console.log('🔗 [KEY-TRACKING] API Key (first 20 chars):', activeKey.apiKey?.substring(0, 20) + '...');
+        console.log('📊 [KEY-TRACKING] Model Usage:', bestModel.currentUsage + '/' + bestModel.dailyLimit);
+        console.log('🔑 [KEY-TRACKING] ===== نهاية تتبع المفتاح =====');
+
         return {
           apiKey: activeKey.apiKey,
           model: bestModel.model,
@@ -3647,11 +3872,15 @@ ${conversationContext}
   // دالة موحدة ذكية للحصول على الرد والصور
   async getSmartResponse(customerMessage, intent, conversationMemory = [], customerId = null, companyId = null) {
     try {
-      console.log(`🧠 [SMART-RESPONSE] Processing unified request: "${customerMessage.substring(0, 50)}..."`);
+      console.log(`\n🧠 [SMART-RESPONSE] ===== بدء معالجة الطلب الموحد =====`);
+      console.log(`📝 [SMART-RESPONSE] رسالة العميل: "${customerMessage}"`);
+      console.log(`👤 [SMART-RESPONSE] معرف العميل: ${customerId}`);
+      console.log(`🏢 [SMART-RESPONSE] معرف الشركة: ${companyId}`);
 
       // فحص إذا كان العميل يطلب صور
+      console.log(`\n🔍 [SMART-RESPONSE] فحص إذا كان العميل يطلب صور...`);
       const wantsImages = await this.isCustomerRequestingImages(customerMessage, conversationMemory, companyId);
-      console.log(`🔍 [SMART-RESPONSE] Customer wants images: ${wantsImages}`);
+      console.log(`🎯 [SMART-RESPONSE] نتيجة الفحص: ${wantsImages ? '✅ يريد صور' : '❌ لا يريد صور'}`);
 
       // الحصول على RAG data أولاً (سنحتاجها في جميع الحالات)
       const ragService = require('./ragService');
@@ -3659,16 +3888,25 @@ ${conversationContext}
       let productImages = [];
 
       if (wantsImages) {
-        console.log(`📸 [SMART-RESPONSE] Customer wants images, using smart product search...`);
+        console.log(`\n📸 [SMART-RESPONSE] العميل يريد صور - استخدام البحث الذكي للمنتجات...`);
 
         // استخدام النظام الذكي للمنتجات
+        console.log(`🔍 [SMART-RESPONSE] البحث عن منتج محدد...`);
         const specificResult = await ragService.retrieveSpecificProduct(customerMessage, intent, customerId, conversationMemory, companyId);
+        console.log(`📊 [SMART-RESPONSE] نتيجة البحث:`, {
+          isSpecific: specificResult?.isSpecific,
+          hasProduct: !!specificResult?.product,
+          confidence: specificResult?.confidence,
+          productName: specificResult?.product?.metadata?.name
+        });
 
         if (specificResult && specificResult.isSpecific && specificResult.product) {
-          console.log(`✅ [SMART-RESPONSE] Found specific product: ${specificResult.product.metadata?.name} (${(specificResult.confidence * 100).toFixed(1)}%)`);
+          console.log(`✅ [SMART-RESPONSE] تم العثور على منتج محدد: ${specificResult.product.metadata?.name} (${(specificResult.confidence * 100).toFixed(1)}%)`);
 
           // إنشاء الصور من المنتج المحدد
           if (specificResult.product.metadata?.images) {
+            console.log(`📸 [SMART-RESPONSE] المنتج يحتوي على ${specificResult.product.metadata.images.length} صورة`);
+
             const specificImages = specificResult.product.metadata.images.map((imageUrl, index) => ({
               type: 'image',
               payload: {
@@ -3677,9 +3915,15 @@ ${conversationContext}
               }
             }));
 
+            console.log(`🔧 [SMART-RESPONSE] تم إنشاء ${specificImages.length} صورة، بدء الفلترة...`);
+
             // فلترة الصور بناءً على اللون
             const filteredImages = await this.filterImagesByColor(specificImages, customerMessage);
+            console.log(`✅ [SMART-RESPONSE] تم فلترة الصور: ${filteredImages.length} من ${specificImages.length}`);
+
             productImages.push(...filteredImages);
+          } else {
+            console.log(`⚠️ [SMART-RESPONSE] المنتج المحدد لا يحتوي على صور`);
           }
 
           // إنشاء RAG data للرد النصي
@@ -3694,7 +3938,11 @@ ${conversationContext}
             }
           }];
 
-          console.log(`🎯 [SMART-RESPONSE] Returning ${productImages.length} images from specific product`);
+          console.log(`\n🎉 [SMART-RESPONSE] ===== إرجاع النتيجة من المنتج المحدد =====`);
+          console.log(`📸 [SMART-RESPONSE] عدد الصور: ${productImages.length}`);
+          productImages.forEach((img, index) => {
+            console.log(`   📸 ${index + 1}. ${img.payload?.title}`);
+          });
 
           return {
             images: productImages,
@@ -3707,7 +3955,8 @@ ${conversationContext}
 
           // البحث في RAG data العامة عن منتجات بصور
           ragData = await ragService.retrieveRelevantData(customerMessage, intent, customerId, companyId);
-          productImages = await this.extractImagesFromRAGData(ragData, customerMessage);
+          console.log(`🔧 [SMART-RESPONSE] تمرير Company ID للاستخراج: ${companyId}`);
+          productImages = await this.extractImagesFromRAGData(ragData, customerMessage, companyId);
 
           if (productImages.length > 0) {
             console.log(`📸 [SMART-RESPONSE] Found ${productImages.length} images from general RAG data`);
@@ -3778,12 +4027,15 @@ ${conversationContext}
   }
 
   // 🧠 استخراج الصور من RAG data بذكاء
-  async extractImagesFromRAGData(ragData, customerMessage) {
+  async extractImagesFromRAGData(ragData, customerMessage, companyId = null) {
     try {
-      console.log(`🧠 [SMART-IMAGE-EXTRACT] Intelligently searching for relevant images in ${ragData.length} RAG items...`);
+      console.log(`🧠 [SMART-IMAGE-EXTRACT] ===== بدء استخراج الصور الذكي =====`);
+      console.log(`📊 [SMART-IMAGE-EXTRACT] عدد عناصر RAG: ${ragData.length}`);
+      console.log(`📝 [SMART-IMAGE-EXTRACT] رسالة العميل: "${customerMessage}"`);
+      console.log(`🏢 [SMART-IMAGE-EXTRACT] معرف الشركة: ${companyId}`);
 
       if (ragData.length === 0) {
-        console.log(`⚠️ [SMART-IMAGE-EXTRACT] No RAG data available`);
+        console.log(`⚠️ [SMART-IMAGE-EXTRACT] لا توجد بيانات RAG متاحة`);
         return [];
       }
 
@@ -3804,7 +4056,16 @@ ${ragData.filter(item => item.type === 'product' && item.metadata)
 
 الرد:`;
 
-      const aiResponse = await this.generateAIResponse(productAnalysisPrompt, [], false);
+      console.log(`🤖 [SMART-IMAGE-EXTRACT] إرسال طلب للذكاء الاصطناعي لاختيار المنتج...`);
+      console.log(`🏢 [SMART-IMAGE-EXTRACT] Company ID المرسل: ${companyId}`);
+      console.log(`🔍 [SMART-IMAGE-EXTRACT] معاملات generateAIResponse:`, {
+        hasPrompt: !!productAnalysisPrompt,
+        promptLength: productAnalysisPrompt.length,
+        companyId: companyId
+      });
+
+      const aiResponse = await this.generateAIResponse(productAnalysisPrompt, [], false, null, companyId);
+      console.log(`📥 [SMART-IMAGE-EXTRACT] رد الذكاء الاصطناعي: "${aiResponse}"`);
       const responseText = aiResponse.trim().toLowerCase();
 
       let selectedProduct = null;
@@ -3895,7 +4156,35 @@ ${ragData.filter(item => item.type === 'product' && item.metadata)
 
     } catch (error) {
       console.error(`❌ [SMART-IMAGE-EXTRACT] Error in intelligent image extraction:`, error);
-      return [];
+      console.log(`🔍 [SMART-IMAGE-EXTRACT] Error details:`, {
+        message: error.message,
+        companyId: companyId,
+        hasRagData: !!ragData,
+        ragDataLength: ragData?.length || 0
+      });
+
+      // في حالة الخطأ، نحاول إرجاع صور بديلة بسيطة
+      try {
+        console.log(`🔄 [SMART-IMAGE-EXTRACT] Attempting fallback image extraction...`);
+        const fallbackImages = ragData?.filter(item =>
+          item.type === 'product' &&
+          item.metadata?.images?.length > 0
+        ).slice(0, 1).flatMap(item =>
+          item.metadata.images.slice(0, 2).map(imageUrl => ({
+            type: 'image',
+            payload: {
+              url: imageUrl,
+              title: item.metadata.name || 'منتج'
+            }
+          }))
+        ) || [];
+
+        console.log(`🔄 [SMART-IMAGE-EXTRACT] Fallback returned ${fallbackImages.length} images`);
+        return fallbackImages;
+      } catch (fallbackError) {
+        console.error(`❌ [SMART-IMAGE-EXTRACT] Fallback also failed:`, fallbackError);
+        return [];
+      }
     }
   }
 
@@ -3908,6 +4197,19 @@ ${ragData.filter(item => item.type === 'product' && item.metadata)
   // فلترة الصور بناءً على اللون المطلوب
   async filterImagesByColor(images, customerMessage) {
     try {
+      console.log(`🎨 [COLOR-FILTER] ===== بدء فلترة الصور =====`);
+      console.log(`📝 [COLOR-FILTER] رسالة العميل: "${customerMessage}"`);
+      console.log(`📸 [COLOR-FILTER] عدد الصور المدخلة: ${images.length}`);
+
+      // طباعة تفاصيل الصور المدخلة
+      images.forEach((img, index) => {
+        console.log(`📸 [COLOR-FILTER] صورة ${index + 1}:`, {
+          title: img.payload?.title || 'لا يوجد عنوان',
+          variantName: img.payload?.variantName || 'لا يوجد متغير',
+          url: img.payload?.url?.substring(0, 50) + '...' || 'لا يوجد رابط'
+        });
+      });
+
       // كشف الألوان المطلوبة (محدث ليشمل الألف واللام)
       const colorKeywords = {
         'ابيض': ['أبيض', 'ابيض', 'الابيض', 'الأبيض', 'white'],
@@ -3922,70 +4224,129 @@ ${ragData.filter(item => item.type === 'product' && item.metadata)
       };
 
       const normalizedMessage = customerMessage.toLowerCase();
+      console.log(`🔤 [COLOR-FILTER] الرسالة بعد التطبيع: "${normalizedMessage}"`);
+
       let requestedColor = null;
 
       // البحث عن اللون المطلوب
+      console.log(`🔍 [COLOR-FILTER] البحث عن الألوان في الرسالة...`);
       for (const [color, variants] of Object.entries(colorKeywords)) {
-        if (variants.some(variant => normalizedMessage.includes(variant.toLowerCase()))) {
+        console.log(`🔍 [COLOR-FILTER] فحص اللون: ${color} - الكلمات: [${variants.join(', ')}]`);
+
+        const found = variants.some(variant => {
+          const includes = normalizedMessage.includes(variant.toLowerCase());
+          console.log(`   - فحص "${variant}": ${includes}`);
+          return includes;
+        });
+
+        if (found) {
           requestedColor = color;
-          console.log(`🎨 [COLOR-FILTER] Detected color request: ${color}`);
+          console.log(`✅ [COLOR-FILTER] تم اكتشاف طلب اللون: ${color}`);
           break;
         }
       }
 
       // إذا لم يتم طلب لون محدد، أرجع جميع الصور
       if (!requestedColor) {
-        console.log(`🎨 [COLOR-FILTER] No specific color requested, returning all images`);
+        console.log(`⚠️ [COLOR-FILTER] لم يتم طلب لون محدد، إرجاع جميع الصور (${images.length})`);
         return images;
       }
 
+      console.log(`🎯 [COLOR-FILTER] اللون المطلوب: ${requestedColor}`);
+      console.log(`🔍 [COLOR-FILTER] بدء فلترة الصور بناءً على اللون...`);
+
       // 🔍 البحث عن صور تحتوي على اللون المطلوب
-      let filteredImages = images.filter(image => {
+      let filteredImages = images.filter((image, index) => {
+        console.log(`\n🔍 [COLOR-FILTER] فحص الصورة ${index + 1}:`);
+
         const title = image.payload.title.toLowerCase();
         const url = image.payload.url.toLowerCase();
         const variantName = image.payload.variantName?.toLowerCase() || '';
 
+        console.log(`   📝 العنوان: "${title}"`);
+        console.log(`   🔗 الرابط: "${url.substring(0, 50)}..."`);
+        console.log(`   🎨 اسم المتغير: "${variantName}"`);
+
         // البحث عن اللون في العنوان، الرابط، أو اسم المتغير
         const colorVariants = colorKeywords[requestedColor];
-        return colorVariants.some(variant => {
+        console.log(`   🔍 البحث عن: [${colorVariants.join(', ')}]`);
+
+        let matched = false;
+        const matchResults = [];
+
+        const foundMatch = colorVariants.some(variant => {
           const variantLower = variant.toLowerCase();
-          return title.includes(variantLower) ||
-                 url.includes(variantLower) ||
-                 variantName.includes(variantLower) ||
-                 variantName === variantLower;
+          const titleMatch = title.includes(variantLower);
+          const urlMatch = url.includes(variantLower);
+          const variantMatch = variantName.includes(variantLower) || variantName === variantLower;
+
+          console.log(`     - فحص "${variant}": العنوان=${titleMatch}, الرابط=${urlMatch}, المتغير=${variantMatch}`);
+
+          if (titleMatch || urlMatch || variantMatch) {
+            matched = true;
+            matchResults.push(`${variant} (${titleMatch ? 'عنوان' : ''}${urlMatch ? 'رابط' : ''}${variantMatch ? 'متغير' : ''})`);
+          }
+
+          return titleMatch || urlMatch || variantMatch;
         });
+
+        console.log(`   ${matched ? '✅' : '❌'} النتيجة: ${matched ? 'مطابق' : 'غير مطابق'}`);
+        if (matched) {
+          console.log(`   🎯 المطابقات: ${matchResults.join(', ')}`);
+        }
+
+        return foundMatch;
       });
 
-      console.log(`🎨 [COLOR-FILTER] Found ${filteredImages.length} images matching color: ${requestedColor}`);
+      console.log(`\n📊 [COLOR-FILTER] نتائج الفلترة الأولية:`);
+      console.log(`✅ [COLOR-FILTER] تم العثور على ${filteredImages.length} صورة مطابقة للون: ${requestedColor}`);
+
+      filteredImages.forEach((img, index) => {
+        console.log(`   📸 ${index + 1}. ${img.payload?.title} (${img.payload?.variantName})`);
+      });
 
       // إذا لم نجد صور بالون المطلوب، نبحث في قاعدة البيانات
       if (filteredImages.length === 0) {
-        console.log(`🔍 [COLOR-FILTER] No images found with color ${requestedColor} in titles/URLs, searching database...`);
+        console.log(`\n🔍 [COLOR-FILTER] لم يتم العثور على صور بالون ${requestedColor} في العناوين/الروابط`);
+        console.log(`🔍 [COLOR-FILTER] البحث في قاعدة البيانات...`);
 
         // محاولة البحث في قاعدة البيانات عن منتجات بالون المطلوب
         filteredImages = await this.searchImagesByColorInDatabase(requestedColor, images);
+
+        console.log(`📊 [COLOR-FILTER] نتائج البحث في قاعدة البيانات: ${filteredImages.length} صورة`);
       }
 
       // إذا لم نجد أي صور بالون المطلوب، نرجع رسالة توضيحية
       if (filteredImages.length === 0) {
-        console.log(`⚠️ [COLOR-FILTER] No images found for color: ${requestedColor}`);
-
-        // 🤐 النظام الصامت - لا نرسل رسالة خطأ للعميل
-        console.log(`🤐 [SILENT-MODE] No images for color ${requestedColor} - staying silent`);
+        console.log(`\n❌ [COLOR-FILTER] لم يتم العثور على أي صور للون: ${requestedColor}`);
+        console.log(`🤐 [SILENT-MODE] النظام الصامت - لن يتم إرسال رسالة خطأ للعميل`);
+        console.log(`🎨 [COLOR-FILTER] ===== انتهاء الفلترة - نتيجة فارغة =====`);
         return []; // إرجاع مصفوفة فارغة بدلاً من رسالة خطأ
       }
 
       // تحديث عناوين الصور المفلترة
+      console.log(`\n🔧 [COLOR-FILTER] تحديث عناوين الصور المفلترة...`);
       filteredImages.forEach((image, index) => {
         if (image.payload && image.payload.title) {
+          const originalTitle = image.payload.title;
           // إضافة اللون للعنوان إذا لم يكن موجود
           if (!image.payload.title.toLowerCase().includes(requestedColor)) {
             image.payload.title += ` - اللون ${requestedColor}`;
+            console.log(`   📝 تحديث العنوان ${index + 1}: "${originalTitle}" → "${image.payload.title}"`);
+          } else {
+            console.log(`   ✅ العنوان ${index + 1} يحتوي على اللون بالفعل: "${originalTitle}"`);
           }
         }
       });
 
-      console.log(`🎨 [COLOR-FILTER] Found ${filteredImages.length} image(s) for color: ${requestedColor}`);
+      console.log(`\n🎉 [COLOR-FILTER] ===== انتهاء الفلترة بنجاح =====`);
+      console.log(`✅ [COLOR-FILTER] النتيجة النهائية: ${filteredImages.length} صورة للون ${requestedColor}`);
+
+      filteredImages.forEach((img, index) => {
+        console.log(`   📸 ${index + 1}. ${img.payload?.title}`);
+        console.log(`      🔗 ${img.payload?.url?.substring(0, 60)}...`);
+      });
+
       return filteredImages;
 
     } catch (error) {
@@ -3999,7 +4360,9 @@ ${ragData.filter(item => item.type === 'product' && item.metadata)
    */
   async searchImagesByColorInDatabase(requestedColor, fallbackImages) {
     try {
-      console.log(`🔍 [DB-COLOR-SEARCH] Searching for ${requestedColor} products in database...`);
+      console.log(`\n🔍 [DB-COLOR-SEARCH] ===== بدء البحث في قاعدة البيانات =====`);
+      console.log(`🎨 [DB-COLOR-SEARCH] البحث عن منتجات باللون: ${requestedColor}`);
+      console.log(`📦 [DB-COLOR-SEARCH] عدد الصور الاحتياطية: ${fallbackImages.length}`);
 
       // البحث في قاعدة البيانات عن منتجات بالون المطلوب
       const colorVariants = {

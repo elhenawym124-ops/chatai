@@ -1,7 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const { getSharedPrismaClient } = require('./sharedDatabase');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const prisma = new PrismaClient();
+const prisma = getSharedPrismaClient();
 
 class RAGService {
   constructor() {
@@ -39,20 +39,27 @@ class RAGService {
     return this.isInitialized;
   }
 
-  async initializeGemini() {
-    if (!this.genAI) {
-      // الحصول على مفتاح نشط من قاعدة البيانات
-      const { PrismaClient } = require('@prisma/client');
-      const prisma = new PrismaClient();
+  async initializeGemini(companyId = null) {
+    console.log(`🔧 [RAG-GEMINI] تهيئة Gemini للشركة: ${companyId}`);
 
-      const activeKey = await prisma.geminiKey.findFirst({
-        where: { isActive: true },
-        orderBy: { createdAt: 'desc' }
-      });
+    if (!this.genAI || companyId) {
+      // استخدام نفس نظام الحصول على المفاتيح من aiAgentService
+      const aiAgentService = require('./aiAgentService');
 
-      if (activeKey) {
-        this.genAI = new GoogleGenerativeAI(activeKey.apiKey);
-        this.embeddingModel = this.genAI.getGenerativeModel({ model: "embedding-001" });
+      try {
+        // الحصول على مفتاح نشط للشركة المحددة
+        const activeModel = await aiAgentService.getCurrentActiveModel(companyId);
+        console.log(`🔑 [RAG-GEMINI] النموذج النشط:`, activeModel);
+
+        if (activeModel && activeModel.apiKey) {
+          this.genAI = new GoogleGenerativeAI(activeModel.apiKey);
+          this.embeddingModel = this.genAI.getGenerativeModel({ model: "embedding-001" });
+          console.log(`✅ [RAG-GEMINI] تم تهيئة Gemini بنجاح للشركة: ${companyId}`);
+        } else {
+          console.log(`❌ [RAG-GEMINI] لم يتم العثور على مفتاح نشط للشركة: ${companyId}`);
+        }
+      } catch (error) {
+        console.error(`❌ [RAG-GEMINI] خطأ في تهيئة Gemini:`, error);
       }
     }
     return this.genAI !== null;
@@ -922,9 +929,10 @@ class RAGService {
       }
 
       // استخدام AI لفهم المنتج المطلوب
-      const aiResult = await this.askAIForProductChoice(query, availableProducts, conversationMemory);
+      console.log(`🤖 [AI-PRODUCT-SEARCH] استدعاء AI لاختيار المنتج للشركة: ${companyId}`);
+      const aiResult = await this.askAIForProductChoice(query, availableProducts, conversationMemory, companyId);
 
-      if (aiResult && aiResult.productName && aiResult.confidence >= 0.3) {
+      if (aiResult && aiResult.productName && aiResult.confidence >= 0.7) {
         // البحث عن المنتج في قاعدة المعرفة
         const foundProduct = this.findProductByName(aiResult.productName);
 
@@ -941,14 +949,10 @@ class RAGService {
         }
       }
 
-      // Fallback محسن: إذا فشل AI، استخدم البحث البسيط
-      console.log(`⚠️ [AI-PRODUCT-SEARCH] AI failed, trying simple fallback...`);
-      const fallbackResult = await this.simpleProductSearch(query, availableProducts, conversationMemory);
-
-      if (fallbackResult) {
-        console.log(`🔄 [FALLBACK-SEARCH] Found product using simple search: ${fallbackResult.product.metadata?.name}`);
-        return fallbackResult;
-      }
+      // لا نستخدم fallback - الذكاء الاصطناعي هو المسؤول الوحيد
+      console.log(`🚫 [AI-PRODUCT-SEARCH] No fallback - AI is the only decision maker`);
+      console.log(`🤖 [AI-PRODUCT-SEARCH] AI confidence was too low: ${aiResult?.confidence || 0}`);
+      console.log(`🧠 [AI-REASONING] ${aiResult?.reasoning || 'No reasoning provided'}`);
 
       console.log(`❌ [AI-PRODUCT-SEARCH] No product found with AI or fallback (AI Confidence: ${aiResult?.confidence || 0})`);
 
@@ -1097,7 +1101,7 @@ class RAGService {
   }
 
   // استخدام AI لاختيار المنتج المناسب مع cache
-  async askAIForProductChoice(query, availableProducts, conversationMemory = []) {
+  async askAIForProductChoice(query, availableProducts, conversationMemory = [], companyId = null) {
     try {
       // فحص cache أولاً
       const cacheKey = this.createCacheKey(query, availableProducts, conversationMemory);
@@ -1124,9 +1128,9 @@ class RAGService {
         `${index + 1}. ${product.name} (${product.price} جنيه)`
       ).join('\n');
 
-      const prompt = `أنت خبير في فهم طلبات العملاء للمنتجات. حلل الطلب التالي وحدد المنتج المطلوب.
+      const prompt = `أنت خبير في تحليل المنتجات والمطابقة الدقيقة. حلل وصف المنتج التالي وحدد المنتج المطابق.
 
-رسالة العميل: "${query}"
+وصف المنتج من تحليل الصورة: "${query}"
 
 المنتجات المتاحة:
 ${productsText}
@@ -1134,74 +1138,67 @@ ${productsText}
 المحادثة السابقة:
 ${contextText || 'لا توجد محادثة سابقة'}
 
-قواعد مهمة:
-- إذا قال العميل "التاني" أو "الآخر" أو "غيره"، اختر منتج مختلف عن آخر منتج ذُكر
-- إذا ذكر اسم منتج صريح، اختره
-- إذا ذكر لون فقط، استخدم السياق لتحديد المنتج
-- إذا لم تكن متأكد، ضع confidence أقل من 0.3
+قواعد المطابقة الدقيقة:
+🎨 الألوان: ركز على اللون المذكور في الوصف - يجب أن يطابق تماماً
+👟 النوع: تأكد من مطابقة نوع المنتج (حذاء، سليبر، كوتشي، صندل)
+🔍 التفاصيل: انتبه للتفاصيل المميزة المذكورة في الوصف
+⚠️ الدقة: إذا لم تجد مطابقة دقيقة 100%، ضع confidence أقل من 0.7
 
 أجب بـ JSON فقط:
 {
   "productName": "اسم المنتج الدقيق أو null",
   "confidence": 0.95,
-  "reasoning": "سبب الاختيار"
+  "reasoning": "سبب الاختيار مع التركيز على اللون والنوع"
 }`;
 
-      // استدعاء AI
-      await this.initializeGemini();
-      if (!this.genAI) {
-        console.log(`❌ [AI-CHOICE] Gemini not initialized`);
+      // استخدام نفس نظام التبديل المتقدم من aiAgentService
+      console.log(`🔧 [AI-CHOICE] استخدام نظام التبديل المتقدم للشركة: ${companyId}`);
+
+      const aiAgentService = require('./aiAgentService');
+
+      try {
+        // استخدام نفس دالة generateAIResponse مع نظام التبديل المتقدم
+        const result = await aiAgentService.generateAIResponse(prompt, [], false, null, companyId);
+        console.log(`🤖 [AI-CHOICE] رد الذكاء الاصطناعي: ${result.substring(0, 200)}...`);
+
+        // تنظيف وتحليل الرد
+        let cleanResponse = result.trim();
+        if (cleanResponse.startsWith('```json')) {
+          cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
+        }
+
+        try {
+          const parsed = JSON.parse(cleanResponse);
+          console.log(`✅ [AI-CHOICE] تم تحليل الرد بنجاح:`, parsed);
+
+          // حفظ في cache
+          this.aiChoiceCache.set(cacheKey, {
+            result: parsed,
+            timestamp: Date.now()
+          });
+
+          return parsed;
+        } catch (parseError) {
+          console.log(`⚠️ [AI-CHOICE] فشل في تحليل JSON، محاولة استخراج المعلومات:`, parseError.message);
+
+          // محاولة استخراج المعلومات بدون JSON
+          const productMatch = cleanResponse.match(/منتج[:\s]*(.+?)(?:\n|$)/i);
+          const confidenceMatch = cleanResponse.match(/ثقة[:\s]*([0-9.]+)/i);
+
+          const fallbackResult = {
+            productName: productMatch ? productMatch[1].trim() : null,
+            confidence: confidenceMatch ? parseFloat(confidenceMatch[1]) : 0.5,
+            reasoning: cleanResponse.substring(0, 200)
+          };
+
+          console.log(`🔄 [AI-CHOICE] نتيجة احتياطية:`, fallbackResult);
+          return fallbackResult;
+        }
+
+      } catch (error) {
+        console.error(`❌ [AI-CHOICE] خطأ في استدعاء generateAIResponse:`, error);
         return null;
       }
-
-      const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
-
-      console.log(`🤖 [AI-CHOICE] Raw AI response: ${response.substring(0, 200)}...`);
-
-      // تنظيف وتحليل الرد
-      let cleanResponse = response.trim();
-      if (cleanResponse.startsWith('```json')) {
-        cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
-      }
-      if (cleanResponse.startsWith('```')) {
-        cleanResponse = cleanResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
-      }
-
-      // إزالة أي نصوص إضافية بعد JSON
-      const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        cleanResponse = jsonMatch[0];
-      }
-
-      // تنظيف إضافي للنصوص المقطوعة
-      cleanResponse = cleanResponse.replace(/\.\.\.$/, '');
-
-      const aiChoice = JSON.parse(cleanResponse);
-
-      // التحقق من صحة الرد
-      if (aiChoice.productName && typeof aiChoice.confidence === 'number') {
-        console.log(`🎯 [AI-CHOICE] Product: ${aiChoice.productName}, Confidence: ${aiChoice.confidence}, Reason: ${aiChoice.reasoning}`);
-
-        // حفظ النتيجة في cache
-        this.aiChoiceCache.set(cacheKey, {
-          result: aiChoice,
-          timestamp: Date.now()
-        });
-        console.log(`💾 [AI-CACHE] Cached result for future use`);
-
-        return aiChoice;
-      }
-
-      // حفظ النتيجة السلبية في cache أيضاً
-      const nullResult = null;
-      this.aiChoiceCache.set(cacheKey, {
-        result: nullResult,
-        timestamp: Date.now()
-      });
-
-      return nullResult;
 
     } catch (error) {
       console.error(`❌ [AI-CHOICE] Error asking AI for product choice:`, error);
@@ -1321,75 +1318,7 @@ ${contextText || 'لا توجد محادثة سابقة'}
     };
   }
 
-  // بحث بسيط كـ fallback عند فشل AI
-  async simpleProductSearch(query, availableProducts, conversationMemory = []) {
-    try {
-      console.log(`🔍 [SIMPLE-FALLBACK] Trying simple keyword matching...`);
-
-      const normalizedQuery = this.normalizeArabicText(query.toLowerCase());
-      const queryWords = normalizedQuery.split(' ').filter(word => word.length > 2);
-
-      let bestMatch = null;
-      let bestScore = 0;
-
-      // البحث في المنتجات المتاحة
-      for (const product of availableProducts) {
-        const normalizedProductName = this.normalizeArabicText(product.name.toLowerCase());
-        const productWords = normalizedProductName.split(' ').filter(word => word.length > 2);
-
-        let score = 0;
-
-        // حساب المطابقات
-        for (const queryWord of queryWords) {
-          for (const productWord of productWords) {
-            if (this.isFlexibleMatch(queryWord, productWord)) {
-              score += 5;
-            } else if (productWord.includes(queryWord) || queryWord.includes(productWord)) {
-              score += 3;
-            }
-          }
-        }
-
-        // بونص للسياق
-        if (conversationMemory.length > 0) {
-          const lastInteraction = conversationMemory[0];
-          if (lastInteraction && lastInteraction.aiResponse) {
-            const contextText = this.normalizeArabicText(lastInteraction.aiResponse.toLowerCase());
-            if (contextText.includes(normalizedProductName)) {
-              score += 10;
-              console.log(`🧠 [SIMPLE-FALLBACK] Context bonus for: ${product.name}`);
-            }
-          }
-        }
-
-        console.log(`📊 [SIMPLE-FALLBACK] ${product.name}: ${score} points`);
-
-        if (score > bestScore) {
-          bestScore = score;
-          bestMatch = product;
-        }
-      }
-
-      // إذا وجدنا مطابقة جيدة
-      if (bestMatch && bestScore >= 5) {
-        const foundProduct = this.findProductByName(bestMatch.name);
-        if (foundProduct) {
-          return {
-            product: foundProduct,
-            confidence: Math.min(bestScore / 20, 0.8), // حد أقصى 80% للـ fallback
-            isSpecific: true,
-            reasoning: `Simple keyword matching (${bestScore} points)`
-          };
-        }
-      }
-
-      return null;
-
-    } catch (error) {
-      console.error(`❌ [SIMPLE-FALLBACK] Error in simple search:`, error);
-      return null;
-    }
-  }
+  // تم إزالة simpleProductSearch - النظام يعتمد على الذكاء الاصطناعي فقط
 }
 
 // دوال مساعدة لإدارة حالة الصور

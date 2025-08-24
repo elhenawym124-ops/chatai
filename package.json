@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "postinstall": "node scripts/fix-antivirus-issues.js",
+    "fix-antivirus": "node scripts/fix-antivirus-issues.js",
+    "start-both": "concurrently \"cd backend && npm start\" \"cd frontend && npm run dev\"",
+    "dev": "npm run fix-antivirus && npm run start-both"
+  },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "ts-node": "^10.9.2"
   },
   "dependencies": {

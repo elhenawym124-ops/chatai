@@ -13,11 +13,11 @@ import { config } from '@/config';
 let prisma: PrismaClient;
 
 /**
- * Create and configure Prisma client
+ * Create and configure Prisma client with optimized connection pooling
  */
 const createPrismaClient = (): PrismaClient => {
   return new PrismaClient({
-    log: config.env === 'development' 
+    log: config.env === 'development'
       ? ['query', 'info', 'warn', 'error']
       : ['error'],
     errorFormat: 'pretty',
@@ -26,6 +26,17 @@ const createPrismaClient = (): PrismaClient => {
         url: config.database.url,
       },
     },
+    // Optimized connection pool settings
+    __internal: {
+      engine: {
+        connectionLimit: 20,  // Reduced from default 10 per instance
+        poolTimeout: 60000,   // 60 seconds
+        transactionOptions: {
+          maxWait: 5000,      // 5 seconds max wait
+          timeout: 10000,     // 10 seconds timeout
+        }
+      }
+    }
   });
 };
 

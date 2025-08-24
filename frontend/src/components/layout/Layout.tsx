@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuthSimple';
 import NotificationDropdown from '../notifications/NotificationDropdown';
 import {
@@ -8,6 +8,31 @@ import {
   Cog6ToothIcon,
   BellIcon,
   ChevronDownIcon,
+  ChartBarIcon,
+  ChatBubbleLeftRightIcon,
+  UsersIcon,
+  ShoppingBagIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  CogIcon,
+  BuildingOfficeIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  SpeakerWaveIcon,
+  TagIcon,
+  ArchiveBoxIcon,
+  TicketIcon,
+  ClipboardDocumentListIcon,
+  BanknotesIcon,
+  CreditCardIcon,
+  PresentationChartLineIcon,
+  WrenchScrewdriverIcon,
+  BellAlertIcon,
+  ExclamationTriangleIcon,
+  BeakerIcon,
+  ShieldCheckIcon,
+  UserGroupIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 
 interface LayoutProps {
@@ -17,6 +42,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -24,426 +50,308 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate('/auth/login');
   };
 
+  // Helper function for navigation links
+  const NavLink: React.FC<{
+    to: string;
+    icon: React.ReactNode;
+    children: React.ReactNode;
+    variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
+  }> = ({ to, icon, children, variant = 'default' }) => {
+    const isActive = location.pathname === to;
+
+    const getVariantClasses = () => {
+      if (isActive) {
+        return 'bg-blue-50 text-blue-600 border-r-2 border-blue-600 dark:bg-blue-900/20 dark:text-blue-400';
+      }
+
+      switch (variant) {
+        case 'primary':
+          return 'text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-blue-200 dark:border-blue-800';
+        case 'success':
+          return 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 border border-green-200 dark:border-green-800';
+        case 'warning':
+          return 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 border border-amber-200 dark:border-amber-800';
+        case 'danger':
+          return 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800';
+        default:
+          return 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
+      }
+    };
+
+    return (
+      <Link
+        to={to}
+        className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${getVariantClasses()}`}
+      >
+        <span className="mr-3">{icon}</span>
+        {children}
+      </Link>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="flex min-h-screen">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-64 h-screen bg-white dark:bg-gray-800 shadow-lg flex flex-col overflow-hidden">
-          <div className="flex-shrink-0 p-4">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              منصة التواصل
-            </h1>
+        <div className="w-64 h-full bg-white dark:bg-gray-800 shadow-lg flex flex-col overflow-hidden">
+          <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg mr-3">
+                <ChatBubbleLeftRightIcon className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                منصة التواصل
+              </h1>
+            </div>
           </div>
-          <nav className="flex-1 mt-8 overflow-y-auto sidebar-scroll">
-            <div className="px-4 space-y-2">
+          <nav className="flex-1 py-4 overflow-y-auto sidebar-scroll">
+            <div className="px-4 space-y-1">
               {/* القسم الرئيسي */}
-              <Link
-                to="/dashboard"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📊</span>
-                لوحة التحكم
-              </Link>
-              <Link
-                to="/conversations"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">💬</span>
-                المحادثات
-              </Link>
-              <Link
-                to="/conversations-improved"
-                className="flex items-center px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
-              >
-                <span className="ml-3">🚀</span>
-                المحادثات المحسنة
-              </Link>
-              <Link
-                to="/conversations-dashboard"
-                className="flex items-center px-4 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800"
-              >
-                <span className="ml-3">📊</span>
-                لوحة المحادثات
-              </Link>
-
-              {/* قسم إدارة العملاء */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  👥 إدارة العملاء
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الرئيسية
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/dashboard" icon={<ChartBarIcon className="h-5 w-5" />}>
+                    لوحة التحكم
+                  </NavLink>
+                </div>
               </div>
 
-              <Link
-                to="/customers"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">👤</span>
-                العملاء
-              </Link>
-              <a
-                href="/opportunities"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">💼</span>
-                الفرص التجارية
-              </a>
-              <a
-                href="/appointments"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📅</span>
-                المواعيد والتقويم
-              </a>
-              <a
-                href="/tasks"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">✅</span>
-                المهام والمشاريع
-              </a>
-
-              {/* قسم التسويق والإعلانات */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  📢 التسويق والإعلانات
+              {/* قسم المحادثات والعملاء */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  المحادثات والعملاء
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/conversations" icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />}>
+                    المحادثات
+                  </NavLink>
+                  <NavLink to="/conversations-improved" icon={<ChatBubbleLeftRightIcon className="h-5 w-5" />} variant="primary">
+                    المحادثات المحسنة
+                  </NavLink>
+                  <NavLink to="/customers" icon={<UsersIcon className="h-5 w-5" />}>
+                    العملاء
+                  </NavLink>
+                </div>
               </div>
 
-              <Link
-                to="/broadcast"
-                className="flex items-center px-4 py-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800"
-              >
-                <span className="ml-3">📡</span>
-                لوحة البرودكاست
-              </Link>
+              {/* قسم الأعمال والفرص */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الأعمال والفرص
+                </h3>
+                <div className="space-y-1">
+                  <NavLink to="/opportunities" icon={<BuildingOfficeIcon className="h-5 w-5" />}>
+                    الفرص التجارية
+                  </NavLink>
+                  <NavLink to="/appointments" icon={<CalendarIcon className="h-5 w-5" />}>
+                    المواعيد والتقويم
+                  </NavLink>
+                  <NavLink to="/tasks" icon={<CheckCircleIcon className="h-5 w-5" />}>
+                    المهام والمشاريع
+                  </NavLink>
+                </div>
+              </div>
+
+              {/* قسم التسويق */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  التسويق
+                </h3>
+                <div className="space-y-1">
+                  <NavLink to="/broadcast" icon={<SpeakerWaveIcon className="h-5 w-5" />} variant="primary">
+                    لوحة البرودكاست
+                  </NavLink>
+                </div>
+              </div>
 
               {/* قسم التجارة الإلكترونية */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  🛒 التجارة الإلكترونية
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  التجارة الإلكترونية
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/products" icon={<ShoppingBagIcon className="h-5 w-5" />}>
+                    المنتجات
+                  </NavLink>
+                  <NavLink to="/categories" icon={<TagIcon className="h-5 w-5" />}>
+                    فئات المنتجات
+                  </NavLink>
+                  <NavLink to="/orders" icon={<ArchiveBoxIcon className="h-5 w-5" />}>
+                    الطلبات
+                  </NavLink>
+                  <NavLink to="/inventory" icon={<ClipboardDocumentListIcon className="h-5 w-5" />}>
+                    إدارة المخزون
+                  </NavLink>
+                  <NavLink to="/coupons" icon={<TicketIcon className="h-5 w-5" />}>
+                    الكوبونات والخصومات
+                  </NavLink>
+                </div>
               </div>
-
-              <a
-                href="/products"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🛍️</span>
-                المنتجات
-              </a>
-              <a
-                href="/categories"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🏷️</span>
-                فئات المنتجات
-              </a>
-              <a
-                href="/orders"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📦</span>
-                الطلبات
-              </a>
-              <a
-                href="/orders/enhanced"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🚀</span>
-                الطلبات المحسنة
-              </a>
-              <a
-                href="/inventory"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📋</span>
-                إدارة المخزون
-              </a>
-              <a
-                href="/coupons"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🎫</span>
-                الكوبونات والخصومات
-              </a>
 
               {/* قسم الفواتير والمدفوعات */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  💳 الفواتير والمدفوعات
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الفواتير والمدفوعات
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/invoices" icon={<DocumentTextIcon className="h-5 w-5" />}>
+                    فواتيري
+                  </NavLink>
+                  <NavLink to="/payments" icon={<BanknotesIcon className="h-5 w-5" />}>
+                    مدفوعاتي
+                  </NavLink>
+                  <NavLink to="/subscription" icon={<CreditCardIcon className="h-5 w-5" />} variant="primary">
+                    اشتراكي
+                  </NavLink>
+                </div>
               </div>
 
-              <Link
-                to="/invoices"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🧾</span>
-                فواتيري
-              </Link>
-              <Link
-                to="/payments"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">💰</span>
-                مدفوعاتي
-              </Link>
-              <Link
-                to="/subscription"
-                className="flex items-center px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
-              >
-                <span className="ml-3">📋</span>
-                اشتراكي
-              </Link>
-
-              {/* قسم التحليلات */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  📈 التحليلات
+              {/* قسم التحليلات والتقارير */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  التحليلات والتقارير
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/reports" icon={<ChartBarIcon className="h-5 w-5" />}>
+                    التقارير
+                  </NavLink>
+                  <NavLink to="/analytics" icon={<PresentationChartLineIcon className="h-5 w-5" />}>
+                    التحليلات المتقدمة
+                  </NavLink>
+                </div>
               </div>
 
-              <a
-                href="/analytics"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📊</span>
-                التحليلات المتقدمة
-              </a>
-
-              {/* 🗑️ تم حذف قسم الذكاء الصناعي كاملاً */}
-              {/* قسم الأدوات والإدارة */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  🛠️ الأدوات والإدارة
+              {/* قسم الذكاء الاصطناعي */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الذكاء الاصطناعي
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/ai-management" icon={<BeakerIcon className="h-5 w-5" />} variant="primary">
+                    إدارة AI Agent
+                  </NavLink>
+                </div>
               </div>
 
-              <a
-                href="/reminders"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🔔</span>
-                التذكيرات
-              </a>
-              <a
-                href="/notification-settings"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📢</span>
-                إعدادات الإشعارات
-              </a>
-              <a
-                href="/reports"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📊</span>
-                التقارير
-              </a>
-
-              {/* قسم الذكاء الصناعي */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  🤖 الذكاء الصناعي
+              {/* قسم الأدوات */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الأدوات
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/notifications" icon={<BellIcon className="h-5 w-5" />}>
+                    الإشعارات
+                  </NavLink>
+                  <NavLink to="/reminders" icon={<BellAlertIcon className="h-5 w-5" />}>
+                    التذكيرات
+                  </NavLink>
+                  <NavLink to="/notification-settings" icon={<CogIcon className="h-5 w-5" />}>
+                    إعدادات الإشعارات
+                  </NavLink>
+                </div>
               </div>
 
-              <Link
-                to="/ai-management"
-                className="flex items-center px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
-              >
-                <span className="ml-3">🧠</span>
-                إدارة AI Agent
-              </Link>
-
-              {/* قسم التعلم المستمر */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  🧠 التعلم المستمر
+              {/* قسم التعلم والتطوير */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  التعلم والتطوير
                 </h3>
+                <div className="space-y-1">
+                  <NavLink to="/learning/settings" icon={<CogIcon className="h-5 w-5" />}>
+                    إعدادات التعلم
+                  </NavLink>
+                  <NavLink to="/success-analytics" icon={<PresentationChartLineIcon className="h-5 w-5" />} variant="success">
+                    تحليلات أنماط النجاح
+                  </NavLink>
+                  <NavLink to="/pattern-management" icon={<WrenchScrewdriverIcon className="h-5 w-5" />}>
+                    إدارة الأنماط
+                  </NavLink>
+                </div>
               </div>
 
-              {/* Continuous Learning Links - REMOVED */}
-
-              <Link
-                to="/learning/settings"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">⚙️</span>
-                إعدادات التعلم
-              </Link>
-
-              <Link
-                to="/learning/reports"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📊</span>
-                التقارير التفصيلية
-              </Link>
-
-              <Link
-                to="/success-analytics"
-                className="flex items-center px-4 py-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800"
-              >
-                <span className="ml-3">🎯</span>
-                تحليلات أنماط النجاح
-              </Link>
-
-              <Link
-                to="/pattern-management"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🔧</span>
-                إدارة الأنماط
-              </Link>
-
-              {/* قسم الإدارة المتقدمة */}
-              <div className="mt-6 mb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  🎛️ الإدارة المتقدمة
-                </h3>
-              </div>
-
-              <Link
-                to="/admin/dashboard"
-                className="flex items-center px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800"
-              >
-                <span className="ml-3">🎛️</span>
-                لوحة التحكم الإدارية
-              </Link>
-
-              <Link
-                to="/admin/ai-management"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">🤖</span>
-                إدارة الذكاء الاصطناعي
-              </Link>
-
-              {/* Learning Control Link - REMOVED */}
-
-              <Link
-                to="/monitoring"
-                className="flex items-center px-4 py-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800"
-              >
-                <span className="ml-3">📊</span>
-                مراقبة النظام
-              </Link>
-
-              <Link
-                to="/alert-settings"
-                className="flex items-center px-4 py-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800"
-              >
-                <span className="ml-3">🔔</span>
-                إعدادات التنبيهات
-              </Link>
-
-              <Link
-                to="/reports"
-                className="flex items-center px-4 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800"
-              >
-                <span className="ml-3">📊</span>
-                التقارير والتحليلات
-              </Link>
-
-              <Link
-                to="/quality"
-                className="flex items-center px-4 py-2 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg border border-pink-200 dark:border-pink-800"
-              >
-                <span className="ml-3">👍</span>
-                جودة الردود
-              </Link>
-              <Link
-                to="/quality-advanced"
-                className="flex items-center px-4 py-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800"
-              >
-                <span className="ml-3">📊</span>
-                لوحة الجودة المتقدمة
-              </Link>
-              <Link
-                to="/ai-quality"
-                className="flex items-center px-4 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800"
-              >
-                <span className="ml-3">🤖</span>
-                التقييم الذكي
-              </Link>
-
-              <Link
-                to="/admin/performance-monitor"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📈</span>
-                مراقبة الأداء
-              </Link>
-
-              {/* لوحة التحكم الرئيسية */}
-              <Link
-                to="/company-dashboard"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">📊</span>
-                لوحة التحكم
-              </Link>
-
-              {/* قسم الإدارة - يظهر للمديرين فقط */}
-              {user?.role === 'SUPER_ADMIN' && (
-                <>
-                  <div className="mt-6 mb-2">
-                    <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      🏛️ إدارة النظام
-                    </h3>
+              {/* قسم الإدارة المتقدمة - للمديرين فقط */}
+              {(user?.role === 'SUPER_ADMIN' || user?.role === 'COMPANY_ADMIN') && (
+                <div className="mb-6">
+                  <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    الإدارة المتقدمة
+                  </h3>
+                  <div className="space-y-1">
+                    <NavLink to="/admin/dashboard" icon={<WrenchScrewdriverIcon className="h-5 w-5" />} variant="danger">
+                      لوحة التحكم الإدارية
+                    </NavLink>
+                    <NavLink to="/monitoring" icon={<ChartBarIcon className="h-5 w-5" />} variant="success">
+                      مراقبة النظام
+                    </NavLink>
+                    <NavLink to="/alert-settings" icon={<ExclamationTriangleIcon className="h-5 w-5" />} variant="warning">
+                      إعدادات التنبيهات
+                    </NavLink>
                   </div>
+                </div>
+              )}
 
-                  <Link
-                    to="/companies"
-                    className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <span className="ml-3">🏢</span>
-                    إدارة الشركات
-                  </Link>
-                </>
+              {/* قسم الجودة والأداء */}
+              <div className="mb-6">
+                <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  الجودة والأداء
+                </h3>
+                <div className="space-y-1">
+                  <NavLink to="/quality" icon={<CheckCircleIcon className="h-5 w-5" />} variant="success">
+                    جودة الردود
+                  </NavLink>
+                  <NavLink to="/quality-advanced" icon={<PresentationChartLineIcon className="h-5 w-5" />} variant="primary">
+                    لوحة الجودة المتقدمة
+                  </NavLink>
+                  <NavLink to="/ai-quality" icon={<BeakerIcon className="h-5 w-5" />}>
+                    التقييم الذكي
+                  </NavLink>
+                </div>
+              </div>
+
+              {/* قسم إدارة النظام - للمديرين العامين فقط */}
+              {user?.role === 'SUPER_ADMIN' && (
+                <div className="mb-6">
+                  <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    إدارة النظام
+                  </h3>
+                  <div className="space-y-1">
+                    <NavLink to="/companies" icon={<BuildingOfficeIcon className="h-5 w-5" />} variant="warning">
+                      إدارة الشركات
+                    </NavLink>
+                  </div>
+                </div>
               )}
 
               {/* قسم إدارة الشركة - يظهر لمديري الشركات */}
               {(user?.role === 'COMPANY_ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                <>
-                  <div className="mt-6 mb-2">
-                    <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      👥 إدارة الشركة
-                    </h3>
+                <div className="mb-6">
+                  <h3 className="px-4 mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    إدارة الشركة
+                  </h3>
+                  <div className="space-y-1">
+                    <NavLink to="/users" icon={<UserGroupIcon className="h-5 w-5" />}>
+                      إدارة المستخدمين
+                    </NavLink>
+                    <NavLink to="/roles" icon={<KeyIcon className="h-5 w-5" />}>
+                      إدارة الأدوار والصلاحيات
+                    </NavLink>
                   </div>
-
-                  <Link
-                    to="/users"
-                    className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <span className="ml-3">👤</span>
-                    إدارة المستخدمين
-                  </Link>
-
-                  <Link
-                    to="/roles"
-                    className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <span className="ml-3">🔐</span>
-                    إدارة الأدوار والصلاحيات
-                  </Link>
-                </>
+                </div>
               )}
 
-              <a
-                href="/settings"
-                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-              >
-                <span className="ml-3">⚙️</span>
-                الإعدادات
-              </a>
+              {/* الإعدادات */}
+              <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                <NavLink to="/settings" icon={<CogIcon className="h-5 w-5" />}>
+                  الإعدادات
+                </NavLink>
+              </div>
             </div>
           </nav>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
           {/* Header */}
           <header className="flex-shrink-0 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
             <div className="px-6 py-4">
@@ -530,7 +438,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
 
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto p-6">
             {children}
           </main>
         </div>

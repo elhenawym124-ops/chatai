@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../services/apiClient';
 
 interface Conversation {
   id: string;
@@ -36,13 +37,9 @@ const ConversationsSimple: React.FC = () => {
   const loadConversations = async () => {
     try {
       console.log('🔄 Loading conversations...');
-      const response = await fetch('http://localhost:3001/api/v1/conversations');
+      const response = await apiClient.get('/conversations');
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = response.data;
       console.log('📊 API Response:', data);
 
       // Check if data is an array (direct response) or has success property
@@ -70,13 +67,9 @@ const ConversationsSimple: React.FC = () => {
   const loadMessages = async (conversationId: string) => {
     try {
       console.log('🔄 Loading messages for conversation:', conversationId);
-      const response = await fetch(`http://localhost:3001/api/v1/conversations/${conversationId}/messages`);
+      const response = await apiClient.get(`/conversations/${conversationId}/messages`);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = response.data;
       console.log('📊 Messages Response:', data);
 
       // Check if data is an array (direct response) or has success property
@@ -100,26 +93,16 @@ const ConversationsSimple: React.FC = () => {
 
     try {
       console.log('📤 Sending message:', newMessage);
-      const response = await fetch(`http://localhost:3001/api/v1/conversations/${selectedConversation.id}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: newMessage
-        })
+      const response = await apiClient.post(`/conversations/${selectedConversation.id}/messages`, {
+        message: newMessage
       });
 
-      const data = await response.json();
+      const data = response.data;
       console.log('📤 Send response:', data);
 
-      if (response.ok) {
-        setNewMessage('');
-        // إعادة تحميل الرسائل
-        loadMessages(selectedConversation.id);
-      } else {
-        console.error('❌ Failed to send message:', data);
-      }
+      setNewMessage('');
+      // إعادة تحميل الرسائل
+      loadMessages(selectedConversation.id);
     } catch (error) {
       console.error('❌ Error sending message:', error);
     }

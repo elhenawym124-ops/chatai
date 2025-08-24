@@ -60,8 +60,8 @@ class ApiClient {
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         } else if (import.meta.env.DEV) {
-          // Mock token for development
-          const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRldi11c2VyIiwiZW1haWwiOiJkZXZAZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4iLCJjb21wYW55SWQiOiJjbWQ1YzBjOXkwMDAweW16ZGQ3d3R2N2liIiwiaWF0IjoxNjQwOTk1MjAwLCJleHAiOjk5OTk5OTk5OTl9.mock-signature';
+          // Mock token for development - updated with correct company ID
+          const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWVtOGF6bHYwMDRldWZha2JrbzB3bW4xIiwiZW1haWwiOiJhbGlAYWxpLmNvbSIsInJvbGUiOiJDT01QQU5ZX0FETUlOIiwiY29tcGFueUlkIjoiY21lbThhenlycjAwNGN1ZmFrcWtjc3luOTciLCJpYXQiOjE3NTYwMDY0MDAsImV4cCI6OTk5OTk5OTk5OX0.mock-signature-for-dev';
           config.headers.Authorization = `Bearer ${mockToken}`;
           console.log('🔧 Using mock token for development');
         }

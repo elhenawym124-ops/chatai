@@ -144,8 +144,8 @@ const setupPlaceholderRoutes = (router: Router): void => {
   // Companies routes
   router.get('/companies', async (req, res) => {
     try {
-      const { PrismaClient } = await import('@prisma/client');
-      const prisma = new PrismaClient();
+      const { getSharedPrismaClient } = require('../services/sharedDatabase');
+      const prisma = getSharedPrismaClient();
 
       const {
         page = 1,

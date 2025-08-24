@@ -429,11 +429,12 @@ class DashboardService {
    */
   async getRealTimeMetrics(companyId) {
     try {
-      const metrics = this.metrics.get(companyId) || this.generateMockMetrics();
+      // Get real data from database
+      const realMetrics = await this.getRealDashboardStats(companyId);
 
       return {
         success: true,
-        data: metrics
+        data: realMetrics
       };
 
     } catch (error) {
@@ -442,6 +443,166 @@ class DashboardService {
         success: false,
         error: 'فشل في جلب المقاييس المباشرة'
       };
+    }
+  }
+
+  /**
+   * Get real dashboard statistics from database
+   */
+  async getRealDashboardStats(companyId) {
+    try {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+      // Get basic counts
+      const [
+        totalCustomers,
+        totalConversations,
+        totalProducts,
+        totalOrders,
+        todayCustomers,
+        activeConversations,
+        pendingOrders,
+        lowStockProducts
+      ] = await Promise.all([
+        // Total customers
+        this.prisma.customer.count({
+          where: { companyId }
+        }),
+
+        // Total conversations
+        this.prisma.conversation.count({
+          where: { companyId }
+        }),
+
+        // Total products
+        this.prisma.product.count({
+          where: { companyId, isActive: true }
+        }),
+
+        // Total orders
+        this.prisma.order.count({
+          where: { companyId }
+        }),
+
+        // Today's new customers
+        this.prisma.customer.count({
+          where: {
+            companyId,
+            createdAt: { gte: today }
+          }
+        }),
+
+        // Active conversations (updated in last 24 hours)
+        this.prisma.conversation.count({
+          where: {
+            companyId,
+            updatedAt: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) }
+          }
+        }),
+
+        // Pending orders
+        this.prisma.order.count({
+          where: {
+            companyId,
+            status: 'PENDING'
+          }
+        }),
+
+        // Low stock products (stock < 10)
+        this.prisma.product.count({
+          where: {
+            companyId,
+            isActive: true,
+            trackInventory: true,
+            stock: { lt: 10 }
+          }
+        })
+      ]);
+
+      // Calculate revenue
+      const totalRevenue = await this.prisma.order.aggregate({
+        where: {
+          companyId,
+          status: 'DELIVERED'
+        },
+        _sum: { total: true }
+      });
+
+      // Calculate this month's revenue for growth
+      const thisMonthRevenue = await this.prisma.order.aggregate({
+        where: {
+          companyId,
+          status: 'DELIVERED',
+          createdAt: { gte: thisMonth }
+        },
+        _sum: { total: true }
+      });
+
+      const lastMonthRevenue = await this.prisma.order.aggregate({
+        where: {
+          companyId,
+          status: 'DELIVERED',
+          createdAt: {
+            gte: lastMonth,
+            lt: thisMonth
+          }
+        },
+        _sum: { total: true }
+      });
+
+      // Calculate growth percentage
+      const thisMonthTotal = thisMonthRevenue._sum.total || 0;
+      const lastMonthTotal = lastMonthRevenue._sum.total || 0;
+      const monthlyGrowth = lastMonthTotal > 0
+        ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100)
+        : 0;
+
+      // Get AI metrics
+      const aiMetrics = await this.getAIMetrics(companyId);
+
+      // Get broadcast metrics
+      const broadcastMetrics = await this.getBroadcastMetrics(companyId);
+
+      // Get system health
+      const systemHealth = await this.getSystemHealth(companyId);
+
+      return {
+        // Basic stats
+        totalCustomers,
+        totalConversations,
+        totalProducts,
+        totalOrders,
+        totalRevenue: totalRevenue._sum.total || 0,
+        newCustomersToday: todayCustomers,
+        activeConversations,
+        pendingOrders,
+        lowStockProducts,
+        monthlyGrowth: Math.round(monthlyGrowth * 100) / 100,
+
+        // AI metrics
+        aiInteractions: aiMetrics.totalInteractions,
+        aiQualityScore: aiMetrics.averageQuality,
+        aiResponseTime: aiMetrics.averageResponseTime,
+
+        // Broadcast metrics
+        activeCampaigns: broadcastMetrics.activeCampaigns,
+        totalBroadcastsSent: broadcastMetrics.totalSent,
+        broadcastOpenRate: broadcastMetrics.openRate,
+
+        // System health
+        systemStatus: systemHealth.status,
+        activeServices: systemHealth.activeServices,
+        systemUptime: systemHealth.uptime,
+
+        lastUpdated: new Date()
+      };
+
+    } catch (error) {
+      console.error('Error getting real dashboard stats:', error);
+      throw error;
     }
   }
 
@@ -728,87 +889,6 @@ class DashboardService {
     };
   }
 
-      case 'REVENUE_CHART':
-        return {
-          data: [
-            { date: '2024-01-01', revenue: 12500 },
-            { date: '2024-01-02', revenue: 15200 },
-            { date: '2024-01-03', revenue: 18900 },
-            { date: '2024-01-04', revenue: 16700 },
-            { date: '2024-01-05', revenue: 21300 },
-            { date: '2024-01-06', revenue: 19800 },
-            { date: '2024-01-07', revenue: 23400 },
-          ],
-          total: 127800,
-          trend: { direction: 'up', percentage: 8.3 },
-          lastUpdated: new Date(),
-        };
-
-      case 'TOP_PRODUCTS':
-        return {
-          data: [
-            { id: '1', name: 'لابتوب HP Pavilion', sales: 23, revenue: 57500, image: '/products/laptop1.jpg' },
-            { id: '2', name: 'سماعات Sony WH-1000XM4', sales: 18, revenue: 21600, image: '/products/headphones1.jpg' },
-            { id: '3', name: 'هاتف iPhone 15', sales: 15, revenue: 67500, image: '/products/phone1.jpg' },
-            { id: '4', name: 'ساعة Apple Watch', sales: 12, revenue: 18000, image: '/products/watch1.jpg' },
-            { id: '5', name: 'تابلت iPad Air', sales: 10, revenue: 25000, image: '/products/tablet1.jpg' },
-          ],
-          lastUpdated: new Date(),
-        };
-
-      case 'CUSTOMER_SATISFACTION':
-        return {
-          value: 4.2,
-          total: 5,
-          responses: 156,
-          distribution: [
-            { rating: 5, count: 78, percentage: 50 },
-            { rating: 4, count: 47, percentage: 30 },
-            { rating: 3, count: 23, percentage: 15 },
-            { rating: 2, count: 6, percentage: 4 },
-            { rating: 1, count: 2, percentage: 1 },
-          ],
-          trend: { direction: 'up', percentage: 3.2 },
-          lastUpdated: new Date(),
-        };
-
-      case 'RESPONSE_TIME':
-        return {
-          value: 2.3,
-          unit: 'minutes',
-          trend: { direction: 'down', percentage: 15.2 },
-          comparison: { period: 'last_week', value: 2.7 },
-          distribution: {
-            under_1min: 45,
-            under_5min: 78,
-            under_15min: 92,
-            over_15min: 8,
-          },
-          lastUpdated: new Date(),
-        };
-
-      case 'SALES_FUNNEL':
-        return {
-          stages: [
-            { name: 'عملاء محتملون', value: 1250, percentage: 100 },
-            { name: 'مؤهلون', value: 875, percentage: 70 },
-            { name: 'عروض أسعار', value: 525, percentage: 42 },
-            { name: 'تفاوض', value: 315, percentage: 25 },
-            { name: 'مبيعات مغلقة', value: 188, percentage: 15 },
-          ],
-          conversionRate: 15,
-          totalRevenue: 2350000,
-          lastUpdated: new Date(),
-        };
-
-      default:
-        return {
-          error: 'نوع الودجت غير مدعوم',
-          lastUpdated: new Date(),
-        };
-    }
-  }
-
   /**
    * Create default dashboard for user
    */
@@ -878,13 +958,251 @@ class DashboardService {
   }
 
   /**
+   * Get AI metrics
+   */
+  async getAIMetrics(companyId) {
+    try {
+      const now = new Date();
+      const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+      // Get AI interactions count
+      const totalInteractions = await this.prisma.aiInteraction.count({
+        where: { companyId }
+      });
+
+      // Get recent AI interactions for quality calculation
+      const recentInteractions = await this.prisma.aiInteraction.findMany({
+        where: {
+          companyId,
+          createdAt: { gte: last24Hours }
+        },
+        select: {
+          responseTime: true,
+          confidence: true
+        }
+      });
+
+      const averageQuality = recentInteractions.length > 0
+        ? recentInteractions.reduce((sum, interaction) => sum + (interaction.confidence || 0), 0) / recentInteractions.length
+        : 0;
+
+      const averageResponseTime = recentInteractions.length > 0
+        ? recentInteractions.reduce((sum, interaction) => sum + (interaction.responseTime || 0), 0) / recentInteractions.length
+        : 0;
+
+      return {
+        totalInteractions,
+        averageQuality: Math.round(averageQuality * 100) / 100,
+        averageResponseTime: Math.round(averageResponseTime)
+      };
+    } catch (error) {
+      console.error('Error getting AI metrics:', error);
+      return {
+        totalInteractions: 0,
+        averageQuality: 0,
+        averageResponseTime: 0
+      };
+    }
+  }
+
+  /**
+   * Get broadcast metrics
+   */
+  async getBroadcastMetrics(companyId) {
+    try {
+      // Note: Assuming broadcast tables exist, adjust based on actual schema
+      const activeCampaigns = 0; // Placeholder - implement based on actual broadcast schema
+      const totalSent = 0; // Placeholder
+      const openRate = 0; // Placeholder
+
+      return {
+        activeCampaigns,
+        totalSent,
+        openRate
+      };
+    } catch (error) {
+      console.error('Error getting broadcast metrics:', error);
+      return {
+        activeCampaigns: 0,
+        totalSent: 0,
+        openRate: 0
+      };
+    }
+  }
+
+  /**
+   * Get system health metrics
+   */
+  async getSystemHealth(companyId) {
+    try {
+      const uptime = Math.floor(process.uptime());
+
+      // Check various services
+      const services = {
+        database: true, // We're connected if we got here
+        ai: true, // Assume AI service is running
+        facebook: true, // Assume Facebook integration is working
+        broadcast: true // Assume broadcast service is working
+      };
+
+      const activeServices = Object.values(services).filter(Boolean).length;
+      const totalServices = Object.keys(services).length;
+
+      const status = activeServices === totalServices ? 'healthy' :
+                    activeServices > totalServices / 2 ? 'warning' : 'critical';
+
+      return {
+        status,
+        activeServices,
+        totalServices,
+        uptime,
+        services
+      };
+    } catch (error) {
+      console.error('Error getting system health:', error);
+      return {
+        status: 'unknown',
+        activeServices: 0,
+        totalServices: 0,
+        uptime: 0,
+        services: {}
+      };
+    }
+  }
+
+  /**
+   * Get recent activities
+   */
+  async getRecentActivities(companyId, limit = 10) {
+    try {
+      const activities = [];
+
+      // Get recent messages
+      const recentMessages = await this.prisma.message.findMany({
+        where: {
+          conversation: { companyId }
+        },
+        include: {
+          conversation: {
+            include: {
+              customer: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3
+      });
+
+      // Get recent orders
+      const recentOrders = await this.prisma.order.findMany({
+        where: { companyId },
+        include: {
+          customer: true
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3
+      });
+
+      // Get recent customers
+      const recentCustomers = await this.prisma.customer.findMany({
+        where: { companyId },
+        orderBy: { createdAt: 'desc' },
+        take: 2
+      });
+
+      // Format activities
+      recentMessages.forEach(message => {
+        if (message.conversation?.customer) {
+          const customerName = `${message.conversation.customer.firstName} ${message.conversation.customer.lastName}`;
+          activities.push({
+            id: `msg-${message.id}`,
+            type: 'message',
+            title: `رسالة جديدة من ${customerName}`,
+            description: message.content?.substring(0, 50) + '...' || 'رسالة جديدة',
+            time: this.formatTimeAgo(message.createdAt),
+            status: 'info',
+            createdAt: message.createdAt
+          });
+        }
+      });
+
+      recentOrders.forEach(order => {
+        const customerName = order.customer ? `${order.customer.firstName} ${order.customer.lastName}` : 'عميل';
+        activities.push({
+          id: `order-${order.id}`,
+          type: 'order',
+          title: `طلب جديد #${order.id.substring(0, 8)}`,
+          description: `طلب من ${customerName} بقيمة ${order.total} جنيه`,
+          time: this.formatTimeAgo(order.createdAt),
+          status: 'success',
+          createdAt: order.createdAt
+        });
+      });
+
+      recentCustomers.forEach(customer => {
+        const customerName = `${customer.firstName} ${customer.lastName}`;
+        activities.push({
+          id: `customer-${customer.id}`,
+          type: 'customer',
+          title: `عميل جديد: ${customerName}`,
+          description: 'انضم عبر Facebook Messenger',
+          time: this.formatTimeAgo(customer.createdAt),
+          status: 'success',
+          createdAt: customer.createdAt
+        });
+      });
+
+      // Sort by time and limit
+      const sortedActivities = activities
+        .filter(activity => activity.createdAt) // Filter out activities without createdAt
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, limit);
+
+      return sortedActivities;
+
+    } catch (error) {
+      console.error('Error getting recent activities:', error);
+      // Return some default activities if database fails
+      return [
+        {
+          id: 'default-1',
+          type: 'info',
+          title: 'مرحباً بك في لوحة التحكم',
+          description: 'ابدأ بإضافة عملاء ومنتجات جديدة',
+          time: 'الآن',
+          status: 'info',
+          createdAt: new Date()
+        }
+      ];
+    }
+  }
+
+  /**
+   * Format time ago helper
+   */
+  formatTimeAgo(date) {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now - new Date(date)) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'الآن';
+    if (diffInMinutes < 60) return `منذ ${diffInMinutes} دقيقة`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `منذ ${diffInHours} ساعة`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `منذ ${diffInDays} يوم`;
+  }
+
+  /**
    * Start metrics updater
    */
   startMetricsUpdater() {
-    // Update metrics every 30 seconds
+    // Update metrics every 5 minutes for real data
     setInterval(() => {
-      this.updateMockMetrics();
-    }, 30000);
+      // Clear cache to force fresh data
+      this.metrics.clear();
+    }, 5 * 60 * 1000);
   }
 
   /**

@@ -18,7 +18,7 @@ export interface NotificationItem {
   title: string;
   message: string;
   timestamp: Date;
-  read: boolean;
+  isRead: boolean;
   silent?: boolean;
   customerId?: string;
   errorType?: string;
@@ -53,7 +53,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
 
   // تحديث عدد الإشعارات غير المقروءة
   useEffect(() => {
-    const unread = notifications.filter(n => !n.read).length;
+    const unread = notifications.filter(n => !n.isRead).length;
     setUnreadCount(unread);
   }, [notifications]);
 
@@ -79,7 +79,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
     }
 
     try {
-      const response = await fetch('/api/v1/notifications/recent', {
+      const response = await fetch('http://localhost:3001/api/v1/notifications/recent', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -92,9 +92,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
       } else if (response.status === 401) {
         console.log('🔐 User not authenticated for notifications');
         setNotifications([]);
+      } else {
+        console.log('❌ [NotificationDropdown] API error:', response.status, response.statusText);
+        setNotifications([]);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('❌ [NotificationDropdown] Error fetching notifications:', error);
       setNotifications([]);
     }
   };
@@ -106,7 +109,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
     if (!token) return;
 
     try {
-      await fetch(`/api/v1/notifications/${notificationId}/read`, {
+      await fetch(`http://localhost:3001/api/v1/notifications/${notificationId}/read`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -115,7 +118,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
       });
 
       setNotifications(prev =>
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
       );
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -129,7 +132,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
     if (!token) return;
 
     try {
-      await fetch('/api/v1/notifications/mark-all-read', {
+      await fetch('http://localhost:3001/api/v1/notifications/mark-all-read', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -150,7 +153,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
     if (!token) return;
 
     try {
-      await fetch(`/api/v1/notifications/${notificationId}`, {
+      await fetch(`http://localhost:3001/api/v1/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -272,7 +275,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
                 <div
                   key={notification.id}
                   className={`px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200 ${
-                    !notification.read ? 'bg-blue-50' : ''
+                    !notification.isRead ? 'bg-blue-50' : ''
                   }`}
                 >
                   <div className="flex items-start space-x-3 space-x-reverse">
@@ -283,7 +286,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'}`}>
+                          <p className={`text-sm font-medium ${!notification.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
                             {notification.title}
                             {notification.silent && (
                               <span className="mr-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
@@ -307,7 +310,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className =
                         </div>
                         
                         <div className="flex items-center space-x-1 space-x-reverse mr-2">
-                          {!notification.read && (
+                          {!notification.isRead && (
                             <button
                               onClick={() => markAsRead(notification.id)}
                               className="p-1 text-gray-400 hover:text-blue-600 transition-colors duration-200"

@@ -177,8 +177,8 @@ model Message {
   conversationId String
   senderId       String?
   type           MessageType  @default(TEXT)
-  content        String
-  attachments    String?
+  content        String       @db.LongText
+  attachments    String?      @db.LongText
   metadata       String?      @db.LongText
   isFromCustomer Boolean      @default(true)
   isRead         Boolean      @default(false)

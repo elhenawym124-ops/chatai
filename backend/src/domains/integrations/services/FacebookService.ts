@@ -226,7 +226,7 @@ export class FacebookService {
     try {
       await this.graphAPI.post(`/${pageId}/subscribed_apps`, {
         access_token: pageAccessToken,
-        subscribed_fields: 'messages,messaging_postbacks,messaging_optins,message_deliveries,message_reads',
+        subscribed_fields: 'messages,messaging_postbacks,messaging_optins,message_deliveries,message_reads,message_attachments',
       });
 
       enhancedLogger.info('Subscribed to Facebook webhooks', { pageId });

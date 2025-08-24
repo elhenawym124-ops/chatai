@@ -1470,17 +1470,40 @@ const ConversationsImprovedFixedContent: React.FC = () => {
                         }`}
                       >
                         {/* عرض الرسائل حسب النوع */}
-                        {message.type === 'image' && message.fileUrl ? (
+                        {(() => {
+                          // Debug logging for image messages
+                          if (message.type === 'image' || message.type === 'IMAGE') {
+                            console.log('🖼️ [IMAGE-DEBUG] Image message found:', {
+                              id: message.id,
+                              type: message.type,
+                              content: message.content,
+                              fileUrl: message.fileUrl,
+                              hasContent: !!message.content,
+                              startsWithHttp: message.content?.startsWith('http'),
+                              shouldShow: !!(message.fileUrl || message.content?.startsWith('http'))
+                            });
+                          }
+                          return null;
+                        })()}
+                        {(message.type === 'image' || message.type === 'IMAGE') && (message.fileUrl || message.content?.startsWith('http')) ? (
                           <div>
-                            <img 
-                              src={message.fileUrl} 
-                              alt={message.fileName || message.content}
+                            <img
+                              src={message.fileUrl || message.content}
+                              alt={message.fileName || message.content || 'صورة'}
                               className="max-w-full h-auto rounded mb-2 cursor-pointer"
-                              onClick={() => window.open(message.fileUrl, '_blank')}
+                              onClick={() => window.open(message.fileUrl || message.content, '_blank')}
+                              onError={(e) => {
+                                console.log('❌ Image load error:', e.target.src);
+                                console.log('❌ Message data:', message);
+                                e.target.style.display = 'none';
+                                if (e.target.nextSibling) {
+                                  e.target.nextSibling.innerHTML = '❌ فشل في تحميل الصورة: ' + (message.fileName || 'صورة');
+                                }
+                              }}
                             />
-                            <p className="text-sm">{message.fileName || message.content}</p>
+                            <p className="text-sm">{message.fileName || 'صورة'}</p>
                           </div>
-                        ) : message.type === 'file' && message.fileUrl ? (
+                        ) : (message.type === 'file' || message.type === 'FILE') && message.fileUrl ? (
                           <div className="flex items-center space-x-2">
                             <PaperClipIcon className="w-5 h-5" />
                             <div>

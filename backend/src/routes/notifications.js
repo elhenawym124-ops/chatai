@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
+const { getSharedPrismaClient } = require('../services/sharedDatabase');
 
-// Initialize Prisma Client
-const prisma = new PrismaClient();
+// Use shared Prisma Client
+const prisma = getSharedPrismaClient();
 
 // Authentication middleware - relies on global security middleware
 const requireAuth = (req, res, next) => {
@@ -34,35 +34,28 @@ const optionalAuth = (req, res, next) => {
 /**
  * Get recent notifications for user
  */
-router.get('/recent', requireAuth, optionalAuth, async (req, res) => {
+router.get('/recent', requireAuth, async (req, res) => {
   try {
-    // إذا لم يكن المستخدم مسجل دخول، أرجع قائمة فارغة
-    if (!req.user) {
-      return res.json({
-        success: true,
-        notifications: [],
-        unreadCount: 0,
-        message: 'User not authenticated'
-      });
-    }
-
     const { userId, companyId } = req.user;
     const limit = parseInt(req.query.limit) || 20;
 
+    console.log('🔍 [NOTIFICATIONS-API] Fetching notifications for user:', userId);
+    console.log('🔍 [NOTIFICATIONS-API] Company:', companyId);
+    console.log('🔍 [NOTIFICATIONS-API] Limit:', limit);
+
     // جلب الإشعارات من قاعدة البيانات
     const notifications = await prisma.notification.findMany({
-      where: { companyId: req.user?.companyId },
       where: {
-        OR: [
-          { userId: userId },
-          { companyId: companyId, userId: null } // إشعارات عامة للشركة
-        ]
+        companyId: companyId,
+        userId: userId
       },
       orderBy: {
         createdAt: 'desc'
       },
       take: limit
     });
+
+    console.log('✅ [NOTIFICATIONS-API] Found notifications:', notifications.length);
 
     // تحويل البيانات للتنسيق المطلوب
     const formattedNotifications = notifications.map(notification => ({
@@ -71,21 +64,24 @@ router.get('/recent', requireAuth, optionalAuth, async (req, res) => {
       title: notification.title,
       message: notification.message,
       timestamp: notification.createdAt,
-      read: notification.read,
-      silent: notification.metadata?.silent || false,
-      customerId: notification.metadata?.customerId,
-      errorType: notification.metadata?.errorType,
-      metadata: notification.metadata
+      isRead: notification.isRead,
+      silent: notification.data?.silent || false,
+      customerId: notification.data?.customerId,
+      errorType: notification.data?.errorType,
+      metadata: notification.data
     }));
+
+    console.log('📋 [NOTIFICATIONS-API] Formatted notifications:', formattedNotifications.length);
+    console.log('📋 [NOTIFICATIONS-API] Sample notification:', formattedNotifications[0] || 'none');
 
     res.json({
       success: true,
       notifications: formattedNotifications,
-      unreadCount: notifications.filter(n => !n.read).length
+      unreadCount: notifications.filter(n => !n.isRead).length
     });
 
   } catch (error) {
-    console.error('Error fetching notifications:', error);
+    console.error('❌ [NOTIFICATIONS-API] Error fetching notifications:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch notifications'
@@ -102,7 +98,27 @@ router.post('/:notificationId/read', requireAuth, async (req, res) => {
     const { userId } = req.user;
 
     // FIXED: Add company isolation for security
-    await prisma.notification.updateMany({
+    // First check if notification exists and belongs to user/company
+    const notification = await prisma.notification.findFirst({
+      where: {
+        id: notificationId,
+        companyId: req.user.companyId, // Company isolation
+        OR: [
+          { userId: userId },
+          { userId: null } // إشعارات عامة
+        ]
+      }
+    });
+
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
+        error: 'Notification not found'
+      });
+    }
+
+    // Update the notification using updateMany for safety
+    const updatedNotification = await prisma.notification.updateMany({
       where: {
         id: notificationId,
         companyId: req.user.companyId, // Company isolation
@@ -112,10 +128,17 @@ router.post('/:notificationId/read', requireAuth, async (req, res) => {
         ]
       },
       data: {
-        read: true,
+        isRead: true,
         readAt: new Date()
       }
     });
+
+    if (updatedNotification.count === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Notification not found or access denied'
+      });
+    }
 
     res.json({
       success: true,
@@ -146,10 +169,10 @@ router.post('/mark-all-read', requireAuth, async (req, res) => {
           { userId: userId },
           { userId: null } // إشعارات عامة للشركة
         ],
-        read: false
+        isRead: false
       },
       data: {
-        read: true,
+        isRead: true,
         readAt: new Date()
       }
     });
@@ -217,7 +240,7 @@ router.post('/create', requireAuth, async (req, res) => {
         userId: userId || null,
         companyId: companyId || req.user.companyId,
         metadata: metadata || {},
-        read: false
+        isRead: false
       }
     });
 
@@ -229,7 +252,7 @@ router.post('/create', requireAuth, async (req, res) => {
         title: notification.title,
         message: notification.message,
         timestamp: notification.createdAt,
-        read: notification.read,
+        isRead: notification.isRead,
         metadata: notification.metadata
       }
     });
@@ -251,7 +274,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     const { userId, companyId } = req.user;
 
     const stats = await prisma.notification.groupBy({
-      by: ['type', 'read'],
+      by: ['type', 'isRead'],
       where: {
         OR: [
           { userId: userId },
@@ -276,7 +299,7 @@ router.get('/stats', requireAuth, async (req, res) => {
 
     stats.forEach(stat => {
       formattedStats.total += stat._count.id;
-      if (!stat.read) {
+      if (!stat.isRead) {
         formattedStats.unread += stat._count.id;
       }
       

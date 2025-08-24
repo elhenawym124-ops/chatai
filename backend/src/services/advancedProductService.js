@@ -4,12 +4,12 @@
  * Handles product recommendations, image analysis, and order creation
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { getSharedPrismaClient } = require('./sharedDatabase');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 class AdvancedProductService {
   constructor() {
-    this.prisma = new PrismaClient();
+    this.prisma = getSharedPrismaClient();
     this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
   }
 

@@ -36,16 +36,9 @@ process.stderr.setEncoding('utf8');
 
 console.log('🚀 Starting Clean Server (No AI)...');
 
-// Initialize Prisma Client with UTF-8 support and connection pooling
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  },
-  log: ['error', 'warn'],
-  errorFormat: 'minimal'
-});
+// Use shared database service instead of creating new PrismaClient
+const { getSharedPrismaClient, initializeSharedDatabase } = require('./src/services/sharedDatabase');
+const prisma = getSharedPrismaClient();
 
 // Helper function to generate unique IDs
 function generateId() {
@@ -203,7 +196,7 @@ app.get('/health', async (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    security: securityMonitor.calculateSecurityScore(),
+    security: 'OK',
     version: '1.0.0'
   };
 
@@ -683,7 +676,7 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
   try {
     const senderId = webhookEvent.sender.id;
     const messageText = webhookEvent.message.text;
-    const attachments = webhookEvent.message.attachments;
+    let attachments = webhookEvent.message.attachments;
     // استخراج معلومات الرد على الرسالة (reply_to)
     const replyTo = webhookEvent.message.reply_to;
 
@@ -700,9 +693,43 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
 
     console.log(`📨 Message from ${senderId}: "${messageText}"`);
     console.log(`🔍 [WEBHOOK-DEBUG] Full message object:`, JSON.stringify(webhookEvent.message, null, 2));
-    console.log(`📎 [WEBHOOK-DEBUG] Attachments:`, attachments);
+    console.log(`📎 [WEBHOOK-DEBUG] Attachments from webhook:`, attachments);
     console.log(`📎 [WEBHOOK-DEBUG] Attachments type:`, typeof attachments);
     console.log(`📎 [WEBHOOK-DEBUG] Attachments length:`, attachments ? attachments.length : 'undefined');
+
+    // 🚨 إذا لم توجد attachments في webhook، استخدم Graph API للحصول عليها
+    if (!attachments && webhookEvent.message.mid) {
+      console.log(`🔍 [GRAPH-API] No attachments in webhook, fetching from Graph API...`);
+      try {
+        const messageId = webhookEvent.message.mid;
+        const pageData = await getPageToken(messagePageId);
+
+        if (pageData && pageData.pageAccessToken) {
+          console.log(`🔍 [GRAPH-API] Fetching message ${messageId} with attachments...`);
+
+          const graphResponse = await fetch(`https://graph.facebook.com/v18.0/${messageId}?fields=message,attachments&access_token=${pageData.pageAccessToken}`);
+
+          if (graphResponse.ok) {
+            const messageData = await graphResponse.json();
+            console.log(`✅ [GRAPH-API] Message data received:`, JSON.stringify(messageData, null, 2));
+
+            if (messageData.attachments && messageData.attachments.data) {
+              attachments = messageData.attachments.data;
+              console.log(`✅ [GRAPH-API] Found ${attachments.length} attachments via Graph API`);
+            }
+          } else {
+            console.log(`❌ [GRAPH-API] Failed to fetch message: ${graphResponse.status} ${graphResponse.statusText}`);
+          }
+        } else {
+          console.log(`❌ [GRAPH-API] No page access token available`);
+        }
+      } catch (graphError) {
+        console.error(`❌ [GRAPH-API] Error fetching attachments:`, graphError.message);
+      }
+    }
+
+    console.log(`📎 [FINAL-ATTACHMENTS] Final attachments:`, attachments);
+    console.log(`📎 [FINAL-ATTACHMENTS] Final attachments length:`, attachments ? attachments.length : 'undefined');
 
     // إضافة لوج لمعلومات الرد
     if (replyTo) {
@@ -951,29 +978,79 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
       console.log(`💬 New conversation created: ${conversation.id}`);
     }
     
-    // Save message to database
-    const newMessage = await prisma.message.create({
-      data: {
-        content: messageText || '',
-        type: 'TEXT',
-        conversationId: conversation.id,
-        isFromCustomer: true,
-        metadata: JSON.stringify({
-          platform: 'facebook',
-          source: 'messenger',
-          senderId: senderId,
-          hasAttachments: !!attachments,
-          // إضافة معلومات الرد
-          replyTo: replyTo ? {
-            messageId: replyTo.mid,
-            isReply: true
-          } : null
-        }),
-        createdAt: timestamp
+    // Determine message type and content based on attachments
+    let messageType = 'TEXT';
+    let content = messageText || '';
+    let attachmentsData = [];
+
+    if (attachments && attachments.length > 0) {
+      const attachment = attachments[0];
+      console.log(`📎 [ATTACHMENT-DEBUG] Processing attachment:`, attachment);
+
+      if (attachment.type === 'image') {
+        messageType = 'IMAGE';
+        content = attachment.payload.url; // حفظ رابط الصورة في content
+        console.log(`🖼️ [IMAGE-DEBUG] Image URL: ${content}`);
+        console.log(`🖼️ [IMAGE-DEBUG] Message type set to: ${messageType}`);
+      } else if (attachment.type === 'file') {
+        messageType = 'FILE';
+        content = attachment.payload.url;
+        console.log(`📁 [FILE-DEBUG] File URL: ${content}`);
+        console.log(`📁 [FILE-DEBUG] Message type set to: ${messageType}`);
       }
+
+      // حفظ معلومات المرفقات مع الحماية
+      const AttachmentValidator = require('./utils/attachmentValidator');
+      attachmentsData = AttachmentValidator.createSafeAttachments(attachments);
+    }
+
+    // Save message to database
+    console.log(`💾 [SAVE-DEBUG] Saving message with type: ${messageType}, content: ${content.substring(0, 50)}...`);
+    console.log(`💾 [SAVE-DEBUG] Attachments data:`, attachmentsData);
+
+    const messageData = {
+      content: content,
+      type: messageType,
+      conversationId: conversation.id,
+      isFromCustomer: true,
+      attachments: attachmentsData ? JSON.stringify(attachmentsData) : null,
+      metadata: JSON.stringify({
+        platform: 'facebook',
+        source: 'messenger',
+        senderId: senderId,
+        hasAttachments: !!attachments,
+        messageType: messageType,
+        // إضافة معلومات الرد
+        replyTo: replyTo ? {
+          messageId: replyTo.mid,
+          isReply: true
+        } : null,
+        // إضافة معلومات المرفقات في metadata أيضاً
+        attachments: attachmentsData
+      }),
+      createdAt: timestamp
+    };
+
+    console.log(`💾 [SAVE-DEBUG] Full message data:`, messageData);
+
+    // التحقق النهائي من صحة البيانات قبل الحفظ
+    const AttachmentValidator = require('./utils/attachmentValidator');
+    const validation = AttachmentValidator.validateMessageBeforeSave(messageData);
+
+    if (validation.warnings.length > 0) {
+      console.log('⚠️ [VALIDATION] Warnings:', validation.warnings);
+    }
+
+    if (validation.fixes.length > 0) {
+      console.log('🔧 [VALIDATION] Applied fixes:', validation.fixes);
+    }
+
+    const newMessage = await prisma.message.create({
+      data: messageData
     });
 
     console.log(`✅ Message saved: ${newMessage.id}`);
+    console.log(`✅ [SAVE-RESULT] Saved message type: ${newMessage.type}, content: ${newMessage.content.substring(0, 50)}...`);
 
     // البحث عن الرسالة الأصلية المُرد عليها
     let originalMessage = null;
@@ -1001,11 +1078,11 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
     }
 
     // Prepare message data for AI Agent
-    const messageData = {
+    const aiMessageData = {
       conversationId: conversation.id,
       senderId: senderId,
       content: messageText || '',
-      attachments: attachments || [],
+      attachments: attachmentsData || [], // استخدام البيانات المُعالجة بدلاً من الخام
       timestamp: timestamp,
       companyId: customer.companyId, // 🔐 إضافة companyId للعزل
       // إضافة معلومات الرد
@@ -1064,21 +1141,92 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
 
     // Process with AI Agent
     console.log('🤖 Processing message with AI Agent...');
-    console.log('📤 Message data:', JSON.stringify(messageData, null, 2));
+    console.log('📤 Message data:', JSON.stringify(aiMessageData, null, 2));
 
     try {
       console.log('⏳ Starting AI Agent processing...');
       const startTime = Date.now();
-      const aiResponse = await aiAgentService.processCustomerMessage(messageData);
+      const aiResponse = await aiAgentService.processCustomerMessage(aiMessageData);
       const processingTime = Date.now() - startTime;
 
       console.log('🔄 AI Agent response received:', aiResponse ? 'Success' : 'No response');
+
+      // 🔍 لوج مفصل لتتبع مصدر الرد
+      if (aiResponse) {
+        console.log('🎯 [RESPONSE-SOURCE] ===== تتبع مصدر الرد =====');
+        console.log('🏢 [RESPONSE-SOURCE] Company ID:', aiMessageData.companyId);
+        console.log('👤 [RESPONSE-SOURCE] Customer ID:', aiMessageData.customerData?.id);
+        console.log('💬 [RESPONSE-SOURCE] Conversation ID:', aiMessageData.conversationId);
+        console.log('📱 [RESPONSE-SOURCE] Sender ID:', aiMessageData.senderId);
+        console.log('🔑 [RESPONSE-SOURCE] Key Used:', aiResponse.keyId);
+        console.log('🤖 [RESPONSE-SOURCE] Model Used:', aiResponse.model);
+        console.log('⏱️ [RESPONSE-SOURCE] Processing Time:', processingTime + 'ms');
+        console.log('📝 [RESPONSE-SOURCE] Response Length:', aiResponse.content?.length);
+        console.log('🎯 [RESPONSE-SOURCE] Intent Detected:', aiResponse.intent);
+        console.log('📊 [RESPONSE-SOURCE] Confidence:', aiResponse.confidence);
+        console.log('🖼️ [RESPONSE-SOURCE] Images Count:', aiResponse.images?.length || 0);
+        console.log('⚠️ [RESPONSE-SOURCE] Error Type:', aiResponse.errorType || 'none');
+        console.log('🔄 [RESPONSE-SOURCE] Should Escalate:', aiResponse.shouldEscalate);
+        console.log('🧠 [RESPONSE-SOURCE] Memory Used:', aiResponse.memoryUsed);
+        console.log('📚 [RESPONSE-SOURCE] RAG Data Used:', aiResponse.ragDataUsed);
+        console.log('🤐 [RESPONSE-SOURCE] Silent Mode:', aiResponse.silent || false);
+        console.log('🎯 [RESPONSE-SOURCE] ===== نهاية تتبع المصدر =====');
+      }
+
       console.log('🔍 [AI-DEBUG] Full AI response structure:', JSON.stringify(aiResponse, null, 2));
 
       if (aiResponse) {
         console.log('✅ AI Agent generated response:', aiResponse.content);
         console.log('🔍 [DEBUG] aiResponse.content type:', typeof aiResponse.content);
         console.log('🔍 [DEBUG] aiResponse.content length:', aiResponse.content?.length);
+        console.log('🔍 [DEBUG] aiResponse.silent value:', aiResponse.silent);
+        console.log('🔍 [DEBUG] aiResponse.silent type:', typeof aiResponse.silent);
+
+        // 🤐 التحقق من النظام الصامت أولاً قبل أي معالجة أخرى
+        if (aiResponse.silent) {
+          console.log('🤐 [SILENT-MODE] AI returned silent response - no message will be sent to customer');
+          console.log('🔍 [SILENT-DEBUG] Silent response details:', {
+            error: aiResponse.error,
+            errorType: aiResponse.errorType,
+            success: aiResponse.success
+          });
+
+          // إرسال إشعار خطأ للنظام الداخلي
+          await simpleMonitor.logError(new Error(`Silent AI Error: ${aiResponse.error}`), {
+            customerId: senderId,
+            conversationId: conversation?.id,
+            errorType: aiResponse.errorType || 'no_api_key',
+            silent: true,
+            timestamp: new Date().toISOString(),
+            messageContent: messageText || 'non-text message'
+          });
+
+          // إنشاء إشعار للمطورين
+          try {
+            await prisma.notification.create({
+              data: {
+                title: 'خطأ في مفتاح API',
+                message: `لا يوجد مفتاح API نشط للشركة. العميل ${senderId} أرسل رسالة لكن النظام لم يرد.`,
+                type: 'ERROR',
+                priority: 'HIGH',
+                companyId: facebookPage.companyId,
+                metadata: JSON.stringify({
+                  customerId: senderId,
+                  errorType: aiResponse.errorType,
+                  originalMessage: messageText,
+                  timestamp: new Date().toISOString()
+                })
+              }
+            });
+            console.log('📢 تم إرسال إشعار خطأ للمطورين');
+          } catch (notificationError) {
+            console.error('❌ فشل في إرسال الإشعار:', notificationError);
+          }
+
+          // 🚫 الخروج بدون إرسال أي رد للعميل
+          console.log('🤐 [SILENT-MODE] Exiting without sending any message to customer');
+          return;
+        }
 
       // Send AI response back to Facebook
       let responseContent = aiResponse.content;
@@ -1089,8 +1237,33 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
         responseContent = aiResponse.imageAnalysis;
       }
 
-      // إذا لم يكن هناك محتوى، فحص حالة نظام الأنماط
+      // إذا لم يكن هناك محتوى، فحص حالة نظام الأنماط (إلا إذا كان النظام صامت)
       if (!responseContent) {
+        // 🤐 التحقق من النظام الصامت أولاً
+        if (aiResponse.silent) {
+          console.log('🤐 [SILENT-MODE] AI returned silent response - no message will be sent to customer');
+          console.log('🔍 [SILENT-DEBUG] Silent response details:', {
+            error: aiResponse.error,
+            errorType: aiResponse.errorType,
+            success: aiResponse.success
+          });
+
+          // إرسال إشعار خطأ للنظام الداخلي
+          await simpleMonitor.logError(new Error(`Silent AI Error: ${aiResponse.error}`), {
+            customerId: senderId,
+            conversationId: conversation?.id,
+            errorType: aiResponse.errorType || 'no_api_key',
+            silent: true,
+            timestamp: new Date().toISOString(),
+            messageContent: messageText || 'non-text message'
+          });
+
+          // 🚫 الخروج بدون إرسال أي رد للعميل
+          console.log('🤐 [SILENT-MODE] Exiting without sending any message to customer');
+          return;
+        }
+
+        // إذا لم يكن النظام صامت، فحص حالة نظام الأنماط
         console.log('⚠️ [DEBUG] لا يوجد محتوى من AI - فحص حالة نظام الأنماط...');
 
         try {
@@ -1248,6 +1421,33 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
               if (result.success) {
                 sentCount++;
                 console.log(`✅ Image ${sentCount}/${validImages.length} sent successfully - ID: ${result.messageId}`);
+
+                // حفظ الصورة كرسالة منفصلة في قاعدة البيانات
+                try {
+                  const imageMessage = await prisma.message.create({
+                    data: {
+                      content: image.payload.url,
+                      type: 'IMAGE',
+                      conversationId: conversationId,
+                      isFromCustomer: false, // من الذكاء الصناعي
+                      attachments: JSON.stringify([{
+                        type: 'image',
+                        url: image.payload.url,
+                        title: image.title || null
+                      }]),
+                      metadata: JSON.stringify({
+                        platform: 'facebook',
+                        source: 'ai_response',
+                        messageId: result.messageId,
+                        imageIndex: sentCount,
+                        totalImages: validImages.length
+                      })
+                    }
+                  });
+                  console.log(`💾 [IMAGE-SAVE] Saved image message to database: ${imageMessage.id}`);
+                } catch (saveError) {
+                  console.error(`❌ [IMAGE-SAVE] Failed to save image message:`, saveError);
+                }
               } else {
                 console.log(`❌ Failed to send image ${sentCount + 1}/${validImages.length}:`, result.error);
               }
@@ -1272,8 +1472,32 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
               // فحص إذا كانت الرسالة null (النظام الصامت)
               if (smartFollowUpMessage) {
                 console.log(`📤 [SMART-FOLLOW-UP] Sending smart message: "${smartFollowUpMessage}"`);
-                await sendFacebookMessage(senderId, smartFollowUpMessage, 'TEXT', messagePageId);
+                const followUpResult = await sendFacebookMessage(senderId, smartFollowUpMessage, 'TEXT', messagePageId);
                 console.log(`✅ [SMART-FOLLOW-UP] Smart follow-up message sent successfully`);
+
+                // حفظ رسالة المتابعة في قاعدة البيانات
+                if (followUpResult.success) {
+                  try {
+                    const followUpMessage = await prisma.message.create({
+                      data: {
+                        content: smartFollowUpMessage,
+                        type: 'TEXT',
+                        conversationId: conversationId,
+                        isFromCustomer: false, // من الذكاء الصناعي
+                        metadata: JSON.stringify({
+                          platform: 'facebook',
+                          source: 'ai_follow_up',
+                          messageId: followUpResult.messageId,
+                          followUpType: 'smart_image_follow_up',
+                          imageCount: sentCount
+                        })
+                      }
+                    });
+                    console.log(`💾 [FOLLOW-UP-SAVE] Saved follow-up message to database: ${followUpMessage.id}`);
+                  } catch (saveError) {
+                    console.error(`❌ [FOLLOW-UP-SAVE] Failed to save follow-up message:`, saveError);
+                  }
+                }
               } else {
                 console.log(`🤐 [SILENT-MODE] Smart follow-up returned null - staying silent`);
               }
@@ -1316,29 +1540,34 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
         console.log('🔍 [IMAGE-DEBUG] Full aiResponse structure:', JSON.stringify(aiResponse, null, 2));
       }
 
-      // Save AI response to database
-      const contentToSave = aiResponse.content || aiResponse.imageAnalysis || responseContent;
-      await prisma.message.create({
-        data: {
-          content: contentToSave,
-          type: 'TEXT',
-          conversationId: conversation.id,
-          isFromCustomer: false,
-          metadata: JSON.stringify({
-            platform: 'facebook',
-            source: 'ai_agent',
-            intent: aiResponse.intent,
-            sentiment: aiResponse.sentiment,
-            confidence: aiResponse.confidence,
-            shouldEscalate: aiResponse.shouldEscalate,
-            isAIGenerated: true, // 🤖 تحديد أن هذه رسالة من الذكاء الصناعي
-            aiModel: aiResponse.model || 'unknown',
-            processingTime: aiResponse.processingTime || 0,
-            timestamp: new Date().toISOString()
-          }),
-          createdAt: new Date()
-        }
-      });
+      // Save AI response to database (only if not silent)
+      if (!aiResponse.silent) {
+        const contentToSave = aiResponse.content || aiResponse.imageAnalysis || responseContent;
+        await prisma.message.create({
+          data: {
+            content: contentToSave,
+            type: 'TEXT',
+            conversationId: conversation.id,
+            isFromCustomer: false,
+            metadata: JSON.stringify({
+              platform: 'facebook',
+              source: 'ai_agent',
+              intent: aiResponse.intent,
+              sentiment: aiResponse.sentiment,
+              confidence: aiResponse.confidence,
+              shouldEscalate: aiResponse.shouldEscalate,
+              isAIGenerated: true, // 🤖 تحديد أن هذه رسالة من الذكاء الصناعي
+              aiModel: aiResponse.model || 'unknown',
+              processingTime: aiResponse.processingTime || 0,
+              timestamp: new Date().toISOString()
+            }),
+            createdAt: new Date()
+          }
+        });
+        console.log('💾 [SAVE] تم حفظ الرد في قاعدة البيانات');
+      } else {
+        console.log('🤐 [SILENT-SAVE] لم يتم حفظ الرد - النظام صامت');
+      }
 
       // 🤐 النظام الصامت - لا تصعيد تلقائي للعميل
       if (aiResponse.shouldEscalate && !aiResponse.silent) {
@@ -1366,17 +1595,6 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
             console.error('❌ Error sending follow-up:', escalationError);
           }
         }, 3000);
-      } else if (aiResponse.silent) {
-        // 🤐 النظام الصامت - تسجيل داخلي فقط بدون إرسال رسائل
-        console.log('🤐 [SILENT-MODE] Error occurred but staying completely silent - no customer message');
-
-        // إشعار داخلي للمطورين فقط
-        await simpleMonitor.logError(new Error(`Silent AI Error: ${aiResponse.error}`), {
-          customerId: senderId,
-          errorType: aiResponse.errorType,
-          silent: true,
-          timestamp: new Date().toISOString()
-        });
       }
 
       } else {
@@ -3584,7 +3802,7 @@ app.get('/api/v1/integrations/facebook/config', authenticateToken, async (req, r
       webhookUrl: `${process.env.BACKEND_URL || 'http://localhost:3001'}/webhook`,
       verifyToken: process.env.FACEBOOK_VERIFY_TOKEN || 'simple_chat_verify_token_2025',
       requiredPermissions: ['pages_messaging', 'pages_read_engagement'],
-      webhookFields: ['messages', 'messaging_postbacks']
+      webhookFields: ['messages', 'messaging_postbacks', 'message_attachments']
     };
 
     res.json({
@@ -4131,17 +4349,191 @@ app.get('/api/v1/debug/database', async (req, res) => {
   }
 });
 
+// ==================== MESSAGE HEALTH ENDPOINTS ====================
+
+// فحص صحة محادثة محددة
+app.get('/api/v1/conversations/:id/health-check', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`🔍 [HEALTH-CHECK] Manual check for conversation: ${id}`);
+
+    const MessageHealthChecker = require('./utils/messageHealthChecker');
+    const checker = new MessageHealthChecker();
+
+    const results = await checker.checkConversation(id);
+    await checker.disconnect();
+
+    const summary = {
+      conversationId: id,
+      totalChecked: results.length,
+      healthy: results.filter(r => r.status === 'healthy').length,
+      fixed: results.filter(r => r.status === 'fixed').length,
+      unfixable: results.filter(r => r.status === 'unfixable').length,
+      details: results
+    };
+
+    res.json({
+      success: true,
+      data: summary
+    });
+
+  } catch (error) {
+    console.error('❌ [HEALTH-CHECK] Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// فحص صحة جميع الرسائل
+app.post('/api/v1/messages/health-check', async (req, res) => {
+  try {
+    console.log(`🔍 [HEALTH-CHECK] Manual full system check`);
+
+    const MessageHealthChecker = require('./utils/messageHealthChecker');
+    const checker = new MessageHealthChecker();
+
+    const results = await checker.checkAllMessages();
+    await checker.disconnect();
+
+    res.json({
+      success: true,
+      data: results
+    });
+
+  } catch (error) {
+    console.error('❌ [HEALTH-CHECK] Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// إصلاح رسالة محددة
+app.post('/api/v1/messages/:id/fix', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`🔧 [FIX-MESSAGE] Fixing message: ${id}`);
+
+    const message = await prisma.message.findUnique({
+      where: { id }
+    });
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found'
+      });
+    }
+
+    // إذا كانت رسالة صورة، استخرج URL من metadata
+    if (message.type === 'IMAGE' && message.metadata) {
+      try {
+        const metadata = JSON.parse(message.metadata);
+        const originalAttachments = metadata.attachments;
+
+        if (originalAttachments && originalAttachments[0] && originalAttachments[0].url) {
+          const fullUrl = originalAttachments[0].url;
+          const safeUrl = fullUrl.substring(0, 500); // قطع إلى حد آمن
+
+          const safeAttachments = JSON.stringify([{
+            type: 'image',
+            url: safeUrl,
+            title: null,
+            recovered: true
+          }]);
+
+          await prisma.message.update({
+            where: { id },
+            data: {
+              content: safeUrl,
+              attachments: safeAttachments
+            }
+          });
+
+          console.log(`✅ [FIX-MESSAGE] Fixed image message: ${id}`);
+
+          return res.json({
+            success: true,
+            message: 'Image message fixed successfully',
+            data: {
+              urlLength: safeUrl.length,
+              hasValidAttachments: true
+            }
+          });
+        }
+      } catch (e) {
+        console.log(`❌ [FIX-MESSAGE] Could not parse metadata: ${e.message}`);
+      }
+    }
+
+    res.json({
+      success: false,
+      error: 'Could not fix this message'
+    });
+
+  } catch (error) {
+    console.error('❌ [FIX-MESSAGE] Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // ==================== SERVER STARTUP ====================
 
 const PORT = process.env.PORT || 3001;
 
-server.listen(PORT, () => {
-  console.log(`🎉 Clean Server running on port ${PORT}`);
-  console.log(`📱 Frontend URL: http://localhost:3000`);
-  console.log(`🔗 Backend URL: http://localhost:${PORT}`);
-  console.log(`📊 API Base URL: http://localhost:${PORT}/api/v1`);
-  console.log(`🤖 AI Features: ENABLED`);
-  console.log(`✅ AI Agent ready for customer service`);
+// Initialize shared database before starting server
+async function startServer() {
+  try {
+    console.log('🔧 [SERVER] Initializing shared database...');
+    await initializeSharedDatabase();
+    console.log('✅ [SERVER] Shared database initialized successfully');
+
+    server.listen(PORT, () => {
+      console.log(`🎉 Clean Server running on port ${PORT}`);
+      console.log(`📱 Frontend URL: http://localhost:3000`);
+      console.log(`🔗 Backend URL: http://localhost:${PORT}`);
+      console.log(`📊 API Base URL: http://localhost:${PORT}/api/v1`);
+      console.log(`🤖 AI Features: ENABLED`);
+      console.log(`✅ AI Agent ready for customer service`);
+    });
+  } catch (error) {
+    console.error('❌ [SERVER] Failed to initialize shared database:', error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
+
+  // تشغيل فحص صحة الرسائل كل ساعة
+  console.log(`🔍 Starting message health monitoring...`);
+  const MessageHealthChecker = require('./utils/messageHealthChecker');
+
+  setInterval(async () => {
+    try {
+      console.log('🔍 [AUTO-HEALTH-CHECK] Running periodic message health check...');
+      const checker = new MessageHealthChecker();
+      const results = await checker.checkAllMessages();
+
+      if (results.fixed > 0) {
+        console.log(`🔧 [AUTO-HEALTH-CHECK] Fixed ${results.fixed} broken messages`);
+      }
+
+      if (results.broken > 0) {
+        console.log(`⚠️ [AUTO-HEALTH-CHECK] Found ${results.broken} broken messages`);
+      }
+
+      await checker.disconnect();
+    } catch (error) {
+      console.error('❌ [AUTO-HEALTH-CHECK] Error:', error.message);
+    }
+  }, 60 * 60 * 1000); // كل ساعة
 
   // Initialize System Manager
   console.log(`🔧 Initializing System Manager...`);
@@ -4178,7 +4570,6 @@ server.listen(PORT, () => {
   } catch (error) {
     console.error(`❌ Failed to start Scheduled Pattern Maintenance Service:`, error.message);
   }
-});
 
 // ================================
 // AI AGENT API ENDPOINTS
@@ -6076,8 +6467,14 @@ app.put('/api/v1/companies/:companyId/currency', async (req, res) => {
 const settingsRoutes = require('./src/routes/settingsRoutes');
 app.use('/api/v1/settings', settingsRoutes);
 
+// Test notifications route (direct)
+app.get('/api/v1/notifications/test', (req, res) => {
+  console.log('🧪 Test notifications route called');
+  res.json({ success: true, message: 'Test route works!' });
+});
+
 // Notifications routes
-const notificationRoutes = require('./src/routes/notifications');
+const notificationRoutes = require('./src/routes/notifications-simple');
 app.use('/api/v1/notifications', notificationRoutes);
 
 // Companies routes
@@ -7291,6 +7688,66 @@ app.delete('/api/v1/companies/:companyId/roles/:roleKey', async (req, res) => {
       success: false,
       message: 'فشل في حذف الدور',
       error: error.message
+    });
+  }
+});
+
+// ==================== DASHBOARD SERVICE ROUTES ====================
+
+// Dashboard Service endpoints
+const dashboardService = require('./src/services/dashboardService');
+
+// Get real dashboard statistics
+app.get('/api/v1/dashboard/stats/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    const result = await dashboardService.getRealDashboardStats(companyId);
+    res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Error getting dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'فشل في جلب إحصائيات لوحة التحكم'
+    });
+  }
+});
+
+// Get recent activities
+app.get('/api/v1/dashboard/activities/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+  const { limit } = req.query;
+
+  try {
+    const result = await dashboardService.getRecentActivities(companyId, parseInt(limit) || 10);
+    res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Error getting recent activities:', error);
+    res.status(500).json({
+      success: false,
+      error: 'فشل في جلب الأنشطة الأخيرة'
+    });
+  }
+});
+
+// Get real-time metrics
+app.get('/api/v1/dashboard/metrics/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    const result = await dashboardService.getRealTimeMetrics(companyId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error getting real-time metrics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'فشل في جلب المقاييس المباشرة'
     });
   }
 });
@@ -9218,34 +9675,112 @@ app.get('/api/v1/conversations/:id/messages', async (req, res) => {
 
     // Transform messages to match frontend format
     const transformedMessages = messages.map(msg => {
+      try {
       // استخراج معلومات الذكاء الصناعي من metadata
       let isAiGenerated = false;
       if (msg.metadata) {
         try {
-          const metadata = JSON.parse(msg.metadata);
-          isAiGenerated = metadata.isAIGenerated || metadata.isAutoGenerated || false;
+          // تنظيف metadata قبل parsing
+          let cleanMetadata = msg.metadata;
+          if (typeof cleanMetadata === 'string') {
+            cleanMetadata = cleanMetadata.trim();
+
+            // التحقق من صحة JSON
+            if (cleanMetadata.startsWith('{') && cleanMetadata.endsWith('}')) {
+              const metadata = JSON.parse(cleanMetadata);
+              isAiGenerated = metadata.isAIGenerated || metadata.isAutoGenerated || false;
+            } else {
+              // إذا لم يكن JSON صحيح، تحقق من النص المباشر
+              isAiGenerated = cleanMetadata.includes('"isAIGenerated":true') ||
+                             cleanMetadata.includes('"isAutoGenerated":true');
+            }
+          }
         } catch (e) {
+          console.warn(`⚠️ Failed to parse metadata for message ${msg.id}:`, e.message);
           // إذا فشل parsing، تحقق من النص المباشر
           isAiGenerated = msg.metadata.includes('"isAIGenerated":true') ||
                          msg.metadata.includes('"isAutoGenerated":true');
         }
       }
 
+      // معالجة الصور والمرفقات
+      let fileUrl = null;
+      let fileName = null;
+      let fileSize = null;
+
+      if (msg.type === 'IMAGE' && msg.content) {
+        fileUrl = msg.content; // رابط الصورة محفوظ في content
+        fileName = 'صورة'; // اسم افتراضي
+      }
+
       return {
         id: msg.id,
-        content: msg.content,
+        content: msg.type === 'IMAGE' ? (fileName || 'صورة') : msg.content,
         timestamp: msg.createdAt,
         isFromCustomer: msg.isFromCustomer,
         sender: msg.sender ? {
           id: msg.sender.id,
           name: `${msg.sender.firstName} ${msg.sender.lastName}`,
         } : null,
-        type: msg.type || 'text',
-        attachments: msg.attachments ? JSON.parse(msg.attachments) : [],
+        type: msg.type?.toLowerCase() || 'text',
+        attachments: (() => {
+          try {
+            if (!msg.attachments) return [];
+
+            // تنظيف البيانات قبل parsing
+            let cleanAttachments = msg.attachments;
+            if (typeof cleanAttachments === 'string') {
+              // إزالة الأحرف غير المرغوب فيها
+              cleanAttachments = cleanAttachments.trim();
+
+              // التحقق من صحة JSON
+              if (cleanAttachments.startsWith('[') && cleanAttachments.endsWith(']')) {
+                return JSON.parse(cleanAttachments);
+              } else if (cleanAttachments.startsWith('{') && cleanAttachments.endsWith('}')) {
+                return [JSON.parse(cleanAttachments)];
+              } else {
+                console.warn(`⚠️ Invalid JSON format for attachments in message ${msg.id}`);
+                return [];
+              }
+            }
+
+            return Array.isArray(cleanAttachments) ? cleanAttachments : [];
+          } catch (error) {
+            console.error(`❌ Failed to parse attachments for message ${msg.id}:`, error.message);
+            console.error(`❌ Raw attachments data: "${msg.attachments?.substring(0, 200)}..."`);
+            // إرجاع مصفوفة فارغة في حالة الخطأ
+            return [];
+          }
+        })(),
+        fileUrl: fileUrl, // إضافة رابط الملف للصور
+        fileName: fileName, // إضافة اسم الملف
+        fileSize: fileSize, // إضافة حجم الملف
         isAiGenerated: isAiGenerated, // إضافة معلومة الذكاء الصناعي
         metadata: msg.metadata // إضافة metadata للتشخيص
       };
-    });
+      } catch (messageError) {
+        console.error(`❌ Error processing message ${msg.id}:`, messageError.message);
+        console.error(`❌ Message data:`, {
+          id: msg.id,
+          type: msg.type,
+          content: msg.content?.substring(0, 100),
+          attachments: msg.attachments?.substring(0, 100),
+          metadata: msg.metadata?.substring(0, 100)
+        });
+
+        // إرجاع رسالة بسيطة في حالة الخطأ
+        return {
+          id: msg.id,
+          content: msg.content || '[رسالة معطوبة]',
+          type: msg.type || 'TEXT',
+          timestamp: msg.createdAt,
+          isFromCustomer: msg.isFromCustomer,
+          attachments: [],
+          isAiGenerated: false,
+          metadata: null
+        };
+      }
+    }).filter(Boolean); // إزالة الرسائل null
 
     // إحصائيات الرسائل
     const aiMessages = transformedMessages.filter(m => m.isAiGenerated).length;
@@ -9945,5 +10480,7 @@ process.on('SIGTERM', async () => {
     process.exit(1);
   }
 });
+
+// Server is already started by startServer() function above
 
 module.exports = app;

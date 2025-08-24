@@ -1,9 +1,9 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const { getSharedPrismaClient } = require('../services/sharedDatabase');
 const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
-const prisma = new PrismaClient();
+const prisma = getSharedPrismaClient();
 
 /**
  * تشغيل/إيقاف الذكاء الاصطناعي لمحادثة معينة

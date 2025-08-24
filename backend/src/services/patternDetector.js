@@ -5,26 +5,7 @@
  * وتحدد ما إذا كانت مهمة بما يكفي للحفظ
  */
 
-const { PrismaClient } = require('@prisma/client');
-
-// إنشاء instance مشترك من Prisma
-let sharedPrismaClient = null;
-
-function getSharedPrismaClient() {
-  if (!sharedPrismaClient) {
-    try {
-      sharedPrismaClient = new PrismaClient({
-        log: ['error', 'warn'],
-        errorFormat: 'pretty'
-      });
-      console.log('✅ [PatternDetector] Shared Prisma client initialized successfully');
-    } catch (error) {
-      console.error('❌ [PatternDetector] Failed to initialize shared Prisma client:', error);
-      throw error;
-    }
-  }
-  return sharedPrismaClient;
-}
+const { getSharedPrismaClient } = require('./sharedDatabase');
 
 class PatternDetector {
   constructor() {

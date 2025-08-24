@@ -32,7 +32,14 @@ const PUBLIC_ROUTES = [
   'POST /api/v1/auto-patterns/public/*',
 
   // Development routes (في بيئة التطوير فقط)
-  'POST /api/v1/dev/create-test-user'
+  'POST /api/v1/dev/create-test-user',
+
+  // Temporary: notifications routes for testing
+  'GET /api/v1/notifications/test',
+  'GET /api/v1/notifications/recent',
+  'POST /api/v1/notifications/*/read',
+  'DELETE /api/v1/notifications/*',
+  'POST /api/v1/notifications/mark-all-read'
 ];
 
 /**

@@ -48,10 +48,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const checkAuth = async () => {
+      console.log('🔍 [AuthProvider] Starting auth check...');
       try {
         const token = localStorage.getItem('accessToken');
+        console.log('🔍 [AuthProvider] Token exists:', !!token);
+        console.log('🔍 [AuthProvider] Token preview:', token ? token.substring(0, 20) + '...' : 'null');
+
         if (token) {
           // Call real API to get current user
+          console.log('🔍 [AuthProvider] Making /auth/me request...');
           const response = await fetch('http://localhost:3001/api/v1/auth/me', {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -59,9 +64,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
           });
 
+          console.log('🔍 [AuthProvider] Response status:', response.status);
+
           if (response.ok) {
             const data = await response.json();
+            console.log('🔍 [AuthProvider] Response data:', data);
+
             if (data.success) {
+              console.log('✅ [AuthProvider] Setting user:', data.data);
               setUser(data.data);
             } else {
               throw new Error(data.message);
@@ -69,12 +79,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           } else {
             throw new Error('فشل في التحقق من المصادقة');
           }
+        } else {
+          console.log('🔐 [AuthProvider] No token found');
         }
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('❌ [AuthProvider] Auth check failed:', error);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
       } finally {
+        console.log('🔍 [AuthProvider] Setting loading to false');
         setIsLoading(false);
       }
     };
@@ -83,9 +96,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (credentials: LoginCredentials | User, token?: string) => {
+    console.log('🔍 [AuthProvider] Starting login...');
     try {
       // If user and token are provided directly (for Super Admin)
       if (token && typeof credentials === 'object' && 'id' in credentials) {
+        console.log('🔍 [AuthProvider] Direct login with token');
         localStorage.setItem('accessToken', token);
         setUser(credentials as User);
         return;
@@ -93,6 +108,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Normal login flow
       const loginCredentials = credentials as LoginCredentials;
+      console.log('🔍 [AuthProvider] Normal login for:', loginCredentials.email);
+
       const response = await fetch('http://localhost:3001/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -104,19 +121,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         })
       });
 
+      console.log('🔍 [AuthProvider] Login response status:', response.status);
       const data = await response.json();
+      console.log('🔍 [AuthProvider] Login response data:', data);
 
       if (response.ok && data.success) {
         // Store tokens
+        console.log('✅ [AuthProvider] Login successful, storing token');
         localStorage.setItem('accessToken', data.data.token);
 
         // Set user data
+        console.log('✅ [AuthProvider] Setting user data:', data.data.user);
         setUser(data.data.user);
       } else {
         throw new Error(data.message || 'فشل في تسجيل الدخول');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ [AuthProvider] Login error:', error);
       throw error;
     }
   };

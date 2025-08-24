@@ -65,6 +65,7 @@ import AIManagement from './pages/ai/AIManagement';
 import { BroadcastDashboard } from './pages/broadcast';
 import Reminders from './pages/Reminders';
 import NotificationSettings from './pages/NotificationSettings';
+import Notifications from './pages/Notifications';
 import MonitoringDashboard from './pages/MonitoringDashboard';
 import AlertSettings from './pages/AlertSettings';
 import ReportsPage from './pages/ReportsPage';
@@ -95,11 +96,12 @@ import CustomerInvoices from './pages/CustomerInvoices';
 import CustomerPayments from './pages/CustomerPayments';
 import CustomerSubscription from './pages/CustomerSubscription';
 import SubscriptionRenewalPayment from './pages/SubscriptionRenewalPayment';
+import { useAuth } from './hooks/useAuthSimple';
 
-const App: React.FC = () => {
-  // Mock authentication state for now
-  const isAuthenticated = true; // Set to true for development
-  const isLoading = false;
+// Create a separate component that uses auth
+const AppContent: React.FC = () => {
+  // Use real authentication state
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -113,9 +115,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <AppProviders>
-      <div className="App">
-        <Routes>
+    <div className="App">
+      <Routes>
         {/* Public Routes */}
         <Route path="/auth/login" element={<AuthLayout><ModernLogin /></AuthLayout>} />
         <Route path="/auth/login-simple" element={<AuthLayout><SimpleLogin /></AuthLayout>} />
@@ -186,6 +187,7 @@ const App: React.FC = () => {
 
             <Route path="/broadcast" element={<Layout><BroadcastDashboard /></Layout>} />
             <Route path="/reminders" element={<Layout><Reminders /></Layout>} />
+            <Route path="/notifications" element={<Layout><Notifications /></Layout>} />
             <Route path="/notification-settings" element={<Layout><NotificationSettings /></Layout>} />
             <Route path="/monitoring" element={<Layout><MonitoringDashboard /></Layout>} />
             <Route path="/alert-settings" element={<Layout><AlertSettings /></Layout>} />
@@ -213,7 +215,15 @@ const App: React.FC = () => {
         {/* Catch all route */}
         <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/auth/login"} replace />} />
         </Routes>
-      </div>
+    </div>
+  );
+};
+
+// Main App component with providers
+const App: React.FC = () => {
+  return (
+    <AppProviders>
+      <AppContent />
     </AppProviders>
   );
 };

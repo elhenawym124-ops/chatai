@@ -11,13 +11,36 @@ class MultimodalService {
     this.textModel = null;
   }
 
-  async initializeGemini() {
+  async initializeGemini(companyId = null) {
     try {
       console.log('🔧 [MULTIMODAL] Initializing Gemini for image processing...');
+      console.log('🔧 [MULTIMODAL] CompanyId received:', companyId);
 
       // استخدام نفس نظام المفاتيح المستخدم في aiAgentService
       const aiAgentService = require('./aiAgentService');
-      const geminiConfig = await aiAgentService.getCurrentActiveModel();
+
+      // الحصول على مفتاح Gemini من نظام إدارة المفاتيح المتقدم
+      let geminiConfig;
+      try {
+        console.log('🔧 [MULTIMODAL] Getting Gemini key from advanced key management system...');
+        console.log('🏢 [MULTIMODAL] Company ID:', companyId);
+
+        if (!companyId) {
+          throw new Error('Company ID is required for security - no fallback allowed');
+        }
+
+        geminiConfig = await aiAgentService.getCurrentActiveModel(companyId);
+        console.log('✅ [MULTIMODAL] Got Gemini config from database:', geminiConfig ? 'SUCCESS' : 'NULL');
+
+        if (!geminiConfig) {
+          throw new Error('No active Gemini key found for this company in database');
+        }
+
+      } catch (error) {
+        console.error('❌ [MULTIMODAL] Failed to get Gemini key from advanced system:', error.message);
+        console.error('🚫 [MULTIMODAL] No fallback allowed - using advanced key management only');
+        return false;
+      }
 
       if (!geminiConfig) {
         console.log('❌ [MULTIMODAL] No active Gemini key available for image processing');
@@ -26,10 +49,14 @@ class MultimodalService {
 
       console.log(`✅ [MULTIMODAL] Using model: ${geminiConfig.model} from key: ${geminiConfig.keyId}`);
 
+      // إجبار استخدام gemini-2.5-flash للاختبار
+      const testModel = 'gemini-2.5-flash';
+      console.log(`🧪 [MULTIMODAL] TESTING: Forcing model to ${testModel} for prohibited content issue`);
+
       // تهيئة Gemini باستخدام المفتاح النشط
       this.genAI = new GoogleGenerativeAI(geminiConfig.apiKey);
-      this.visionModel = this.genAI.getGenerativeModel({ model: geminiConfig.model });
-      this.textModel = this.genAI.getGenerativeModel({ model: geminiConfig.model });
+      this.visionModel = this.genAI.getGenerativeModel({ model: testModel });
+      this.textModel = this.genAI.getGenerativeModel({ model: testModel });
 
       console.log('✅ [MULTIMODAL] Gemini Vision initialized successfully');
       return true;
@@ -98,12 +125,12 @@ class MultimodalService {
       }
 
       const products = await prisma.product.findMany({
-      where: { companyId: companyId },
         where: whereClause,
         include: {
           variants: {
             where: { isActive: true }
-          }
+          },
+          category: true
         }
       });
 
@@ -135,12 +162,19 @@ class MultimodalService {
   }
 
   async processImage(messageData) {
+    const startTime = Date.now();
     try {
       console.log('🖼️ [MULTIMODAL] Starting image processing...');
+      console.log('⏱️ [MULTIMODAL] Start time:', new Date().toISOString());
       console.log('🖼️ [MULTIMODAL] Message data:', JSON.stringify(messageData, null, 2));
 
       // تهيئة Gemini إذا لم يكن مُهيأ
-      const initialized = await this.initializeGemini();
+      const companyId = messageData.companyId || messageData.customerData?.companyId;
+      console.log('🔍 [MULTIMODAL] CompanyId extracted:', companyId);
+      console.log('🔍 [MULTIMODAL] messageData.companyId:', messageData.companyId);
+      console.log('🔍 [MULTIMODAL] messageData.customerData?.companyId:', messageData.customerData?.companyId);
+
+      const initialized = await this.initializeGemini(companyId);
 
       if (!initialized || !this.visionModel) {
         console.log('❌ [MULTIMODAL] Vision model not available');
@@ -163,16 +197,27 @@ class MultimodalService {
       const attachment = messageData.attachments[0];
       console.log('🖼️ [MULTIMODAL] Processing attachment:', attachment);
 
-      if (!attachment.payload || !attachment.payload.url) {
-        console.log('❌ [MULTIMODAL] Invalid attachment format');
+      // دعم كلا التنسيقين: البيانات الخام من Facebook والبيانات المُعالجة
+      let imageUrl = null;
+
+      if (attachment.payload && attachment.payload.url) {
+        // تنسيق Facebook الخام
+        imageUrl = attachment.payload.url;
+      } else if (attachment.url) {
+        // تنسيق البيانات المُعالجة
+        imageUrl = attachment.url;
+      }
+
+      if (!imageUrl) {
+        console.log('❌ [MULTIMODAL] No image URL found in attachment');
+        console.log('❌ [MULTIMODAL] Attachment structure:', JSON.stringify(attachment, null, 2));
         return {
           type: 'image_error',
           originalMessage: messageData.content || 'صورة',
-          processedContent: 'عذراً، تنسيق الصورة غير صحيح. يرجى إعادة إرسالها.'
+          processedContent: 'عذراً، لم أتمكن من الوصول لرابط الصورة. يرجى إعادة إرسالها.'
         };
       }
 
-      const imageUrl = attachment.payload.url;
       console.log('🖼️ [MULTIMODAL] Image URL:', imageUrl);
       
       // تحميل الصورة
@@ -187,32 +232,12 @@ class MultimodalService {
 
       // الحصول على المنتجات المتاحة للمقارنة
       console.log('📦 [MULTIMODAL] Getting available products...');
-      const companyId = messageData.companyId;
       const availableProductsText = await this.getAvailableProducts(companyId);
       const availableProducts = await this.getProductsArray(companyId);
       console.log('✅ [MULTIMODAL] Retrieved products for comparison');
 
-      // تحليل الصورة باستخدام Gemini Vision
-      const prompt = `
-        أنت مساعد ذكي في متجر أحذية ومنتجات رياضية.
-        حلل هذه الصورة واكتب وصفاً مفصلاً لما تراه.
-
-        المنتجات المتاحة في المتجر:
-        ${availableProductsText}
-
-        إذا كانت الصورة تحتوي على:
-        - حذاء أو كوتشي:
-          * اذكر النوع واللون والحالة بالتفصيل
-          * قارن مع المنتجات المتاحة أعلاه
-          * إذا وجدت تطابق، اذكر اسم المنتج والسعر
-          * إذا لم تجد تطابق، اقترح أقرب منتج متاح
-        - قدم: اقترح المقاس المناسب إذا أمكن
-        - منتج تالف: اذكر نوع التلف
-        - فاتورة أو إيصال: اقرأ المعلومات المهمة
-
-        رد باللغة العربية بطريقة ودودة ومفيدة.
-        ابدأ ردك بـ "أهلاً بك في متجرنا! يسعدني جداً أن أحلل لك هذه الصورة"
-      `;
+      // تحليل الصورة باستخدام Gemini Vision مع prompt مخصص للشركة
+      const prompt = await this.buildImageAnalysisPrompt(companyId, availableProductsText);
 
       const imagePart = {
         inlineData: {
@@ -222,35 +247,124 @@ class MultimodalService {
       };
 
       console.log('🧠 [MULTIMODAL] Sending image to Gemini Vision for analysis...');
-      const result = await this.visionModel.generateContent([prompt, imagePart]);
+      console.log('📝 [MULTIMODAL] Prompt length:', prompt.length, 'characters');
+      console.log('🖼️ [MULTIMODAL] Image data length:', base64Image.length, 'characters');
+      console.log('📋 [MULTIMODAL] MIME type:', imagePart.inlineData.mimeType);
+
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      // إعدادات الأمان لتحليل المنتجات - تعطيل كامل للحظر
+      const safetySettings = [
+        {
+          category: 'HARM_CATEGORY_HARASSMENT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_HATE_SPEECH',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          threshold: 'BLOCK_NONE'
+        }
+      ];
+
+      const generationConfig = {
+        temperature: 0.1,
+        topK: 32,
+        topP: 1,
+        maxOutputTokens: 2048,
+      };
+
+      console.log('🛡️ [MULTIMODAL] Using safety settings to allow product analysis');
+      console.log('🔧 [MULTIMODAL] Safety settings:', JSON.stringify(safetySettings, null, 2));
+      console.log('⚙️ [MULTIMODAL] Generation config:', JSON.stringify(generationConfig, null, 2));
+
+      const requestConfig = {
+        contents: [{ parts: [{ text: prompt }, imagePart] }],
+        safetySettings,
+        generationConfig
+      };
+
+      console.log('📤 [MULTIMODAL] Full request config:', JSON.stringify(requestConfig, null, 2));
+      const geminiPromise = this.visionModel.generateContent(requestConfig);
+
+      console.log('⏰ [MULTIMODAL] Waiting for Gemini response with 30s timeout...');
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
+
+      console.log('📥 [MULTIMODAL] Got result from Gemini, extracting response...');
       const response = await result.response;
-      const analysis = response.text();
+      console.log('🔍 [MULTIMODAL] Response object type:', typeof response);
+      console.log('🔍 [MULTIMODAL] Response object keys:', Object.keys(response));
+
+      // فحص إذا كان هناك promptFeedback يشير لحظر المحتوى
+      if (response.promptFeedback) {
+        console.log('⚠️ [MULTIMODAL] Prompt feedback found:', JSON.stringify(response.promptFeedback, null, 2));
+        if (response.promptFeedback.blockReason) {
+          console.error('🚫 [MULTIMODAL] Content blocked! Reason:', response.promptFeedback.blockReason);
+          console.error('🔧 [MULTIMODAL] Safety settings used:', JSON.stringify(safetySettings, null, 2));
+
+          // محاولة مع prompt مبسط
+          console.log('🔄 [MULTIMODAL] Trying with simplified prompt...');
+          const simplifiedPrompt = "وصف هذه الصورة بشكل مختصر";
+
+          try {
+            const retryResult = await this.visionModel.generateContent({
+              contents: [{ parts: [{ text: simplifiedPrompt }, imagePart] }],
+              safetySettings,
+              generationConfig
+            });
+
+            const retryResponse = await retryResult.response;
+            const retryAnalysis = await retryResponse.text();
+
+            if (retryAnalysis && retryAnalysis.trim().length > 0) {
+              console.log('✅ [MULTIMODAL] Retry successful with simplified prompt');
+              return retryAnalysis;
+            }
+          } catch (retryError) {
+            console.error('❌ [MULTIMODAL] Retry also failed:', retryError.message);
+          }
+        }
+      }
+
+      console.log('📝 [MULTIMODAL] Extracting text from response...');
+      const analysis = await response.text();
+      console.log('🔍 [MULTIMODAL] Raw analysis type:', typeof analysis);
+      console.log('🔍 [MULTIMODAL] Raw analysis value:', JSON.stringify(analysis));
+
+      console.log('✅ [MULTIMODAL] Successfully extracted analysis text');
+      console.log('🔍 [MULTIMODAL] Analysis length:', analysis.length, 'characters');
 
       console.log('✅ [MULTIMODAL] Image analysis completed');
-      console.log('📝 [MULTIMODAL] Analysis result:', analysis.substring(0, 200) + '...');
+
+      // تشخيص مفصل للتحليل
+      if (!analysis || analysis.trim().length === 0) {
+        console.error('❌ [MULTIMODAL] CRITICAL: Analysis is empty or null!');
+        console.error('🔍 [MULTIMODAL] Analysis value:', JSON.stringify(analysis));
+        console.error('🔍 [MULTIMODAL] Response object:', JSON.stringify(response, null, 2));
+      } else {
+        console.log('📝 [MULTIMODAL] Analysis result (first 200 chars):', analysis.substring(0, 200) + '...');
+        console.log('📊 [MULTIMODAL] Full analysis length:', analysis.length);
+      }
 
       console.log('✅ Image analysis completed');
 
-      // حفظ تحليل الصورة في الذاكرة للمحادثات المستقبلية مع العزل الأمني
-      try {
-        const memoryService = require('./memoryService');
-        await memoryService.saveInteraction({
-          conversationId: messageData.conversationId,
-          senderId: messageData.senderId,
-          companyId: messageData.companyId, // ✅ إضافة companyId للعزل الأمني
-          userMessage: 'صورة',
-          aiResponse: analysis,
-          intent: 'image_analysis',
-          sentiment: 'neutral',
-          timestamp: new Date()
-        });
-        console.log('💾 Image analysis saved to memory');
-      } catch (memoryError) {
-        console.log('⚠️ Could not save image analysis to memory:', memoryError.message);
-      }
+      // ملاحظة: حفظ الذاكرة سيتم في aiAgentService بعد إنشاء الرد النهائي
+      console.log('📝 Image analysis completed - memory will be saved by aiAgentService with final response');
 
-      // استخراج المعلومات المهمة فقط للـ AI Agent
-      const productMatch = this.extractProductMatch(analysis, availableProducts);
+      // استخراج المعلومات المهمة باستخدام RAG الذكي
+      const productMatch = await this.findProductWithRAG(analysis, companyId);
+
+      // تحسين معالجة النتائج بناءً على مستوى الثقة
+      const processedContent = this.buildProcessedContent(productMatch, analysis);
 
       return {
         type: 'image_analysis',
@@ -258,24 +372,76 @@ class MultimodalService {
         analysis: analysis,
         imageUrl: imageUrl,
         productMatch: productMatch,
-        processedContent: productMatch.found
-          ? `العميل أرسل صورة لمنتج. تم العثور على: ${productMatch.productName} - ${productMatch.color} - السعر: ${productMatch.price} جنيه`
-          : `العميل أرسل صورة لمنتج غير متوفر في المتجر. يحتاج اقتراح بدائل.`
+        processedContent: processedContent,
+        confidence: productMatch.confidence || 0,
+        shouldEscalate: false
       };
 
     } catch (error) {
       console.error('❌ Error processing image:', error);
+      console.error('❌ Error type:', error.constructor.name);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error stack:', error.stack);
+
+      // 🔄 نظام إعادة المحاولة للأخطاء المؤقتة
+      if (error.message && (error.message.includes('503') || error.message.includes('502'))) {
+        console.log('🔄 [RETRY] Attempting retry for temporary error...');
+        try {
+          await new Promise(resolve => setTimeout(resolve, 2000)); // انتظار ثانيتين
+
+          console.log('🔄 [RETRY] Retrying image analysis...');
+          const retryAnalysis = await this.analyzeImageWithGemini(imageUrl, messageData.companyId);
+
+          if (retryAnalysis) {
+            console.log('✅ [RETRY] Retry successful!');
+            const retryProductMatch = await this.findBestProductMatch(retryAnalysis, messageData.companyId);
+            const retryProcessedContent = this.formatAnalysisResult(retryAnalysis, retryProductMatch);
+
+            return {
+              type: 'image_analysis',
+              originalMessage: messageData.content || 'صورة',
+              analysis: retryAnalysis,
+              imageUrl: imageUrl,
+              productMatch: retryProductMatch,
+              processedContent: retryProcessedContent,
+              confidence: retryProductMatch.confidence || 0,
+              shouldEscalate: false,
+              wasRetried: true
+            };
+          }
+        } catch (retryError) {
+          console.error('❌ [RETRY] Retry also failed:', retryError);
+        }
+      }
 
       // تحديد نوع الخطأ لتقديم رد مناسب
       let errorMessage = '';
       let shouldEscalate = false;
 
-      if (error.message && error.message.includes('429')) {
+      if (error.message && error.message.includes('PROHIBITED_CONTENT')) {
+        // خطأ محتوى محظور - Gemini رفض تحليل الصورة
+        return {
+          type: 'image_error',
+          originalMessage: messageData.content || 'صورة',
+          processedContent: `العميل أرسل صورة لكن لا يمكن تحليلها حالياً. اعتذر للعميل بلطف واطلب منه وصف المنتج المطلوب بالكلمات، أو إرسال صورة أخرى أوضح.`,
+          shouldEscalate: false,
+          errorType: 'prohibited_content'
+        };
+      } else if (error.message && error.message.includes('timeout')) {
+        // خطأ timeout - Gemini استغرق وقت طويل
+        return {
+          type: 'image_error',
+          originalMessage: messageData.content || 'صورة',
+          processedContent: `العميل أرسل صورة وتم استلامها بنجاح، لكن تحليل الصورة استغرق وقتاً أطول من المتوقع. اعتذر للعميل واطلب منه وصف المنتج أو إعادة المحاولة.`,
+          shouldEscalate: true,
+          errorType: 'timeout'
+        };
+      } else if (error.message && error.message.includes('429')) {
         // خطأ تجاوز الحد - نرجع للـ AI Agent للرد بشخصية ساره
         return {
           type: 'image_error',
           originalMessage: messageData.content || 'صورة',
-          processedContent: `العميل أرسل صورة لكن النظام مشغول. يحتاج مساعدة بديلة.`,
+          processedContent: `العميل أرسل صورة وتم استلامها بنجاح، لكن النظام وصل لحد الاستخدام اليومي لتحليل الصور. اعتذر للعميل واطلب منه وصف المنتج أو إعادة المحاولة لاحقاً.`,
           shouldEscalate: true,
           errorType: 'quota_exceeded'
         };
@@ -284,7 +450,7 @@ class MultimodalService {
         return {
           type: 'image_error',
           originalMessage: messageData.content || 'صورة',
-          processedContent: `العميل أرسل صورة لكن الخدمة غير متاحة مؤقتاً. يحتاج مساعدة بديلة.`,
+          processedContent: `العميل أرسل صورة وتم استلامها، لكن خدمة تحليل الصور غير متاحة مؤقتاً. اعتذر للعميل واطلب منه وصف المنتج المطلوب.`,
           shouldEscalate: true,
           errorType: 'service_unavailable'
         };
@@ -293,13 +459,23 @@ class MultimodalService {
         return {
           type: 'image_error',
           originalMessage: messageData.content || 'صورة',
-          processedContent: `العميل أرسل صورة لكن حدث خطأ في التحليل. يحتاج عرض المنتجات المتاحة.`,
+          processedContent: `العميل أرسل صورة وتم استلامها، لكن حدث خطأ تقني في تحليلها. اعتذر للعميل واعرض عليه المنتجات المتاحة أو اطلب منه وصف المنتج.`,
           shouldEscalate: false,
           errorType: 'general_error'
         };
       }
+    } finally {
+      // 🔄 إضافة معلومات إضافية للمساعدة في التشخيص
+      const processingTime = Date.now() - startTime;
+      console.log('🔍 [MULTIMODAL-FINAL] Image processing completed');
+      console.log('🏢 [MULTIMODAL-FINAL] Company ID:', messageData.companyId);
+      console.log('📊 [MULTIMODAL-FINAL] Processing time:', processingTime + 'ms');
+      console.log('⏱️ [MULTIMODAL-FINAL] End time:', new Date().toISOString());
 
-
+      // تسجيل الأداء للمراقبة
+      if (processingTime > 10000) { // أكثر من 10 ثواني
+        console.warn('⚠️ [PERFORMANCE] Slow image processing detected:', processingTime + 'ms');
+      }
     }
   }
 
@@ -376,15 +552,17 @@ class MultimodalService {
       const prompt = `
         حلل هذه الصورة وحدد:
         1. نوع المنتج (حذاء، كوتشي، صندل، إلخ)
-        2. اللون الأساسي
+        2. جميع الألوان الموجودة في المنتج (مثل: أسود مع بيج)
         3. الماركة إن أمكن
         4. الحالة (جديد، مستعمل، تالف)
         5. أي تفاصيل مميزة
-        
+
+        مهم: المنتج الواحد يمكن أن يحتوي على ألوان متعددة. اذكر جميع الألوان المرئية.
+
         رد بتنسيق JSON:
         {
           "productType": "نوع المنتج",
-          "color": "اللون",
+          "colors": "جميع الألوان (مثل: أسود مع بيج)",
           "brand": "الماركة",
           "condition": "الحالة",
           "details": "تفاصيل إضافية"
@@ -398,7 +576,13 @@ class MultimodalService {
         }
       };
 
-      const result = await this.visionModel.generateContent([prompt, imagePart]);
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      const geminiPromise = this.visionModel.generateContent([prompt, imagePart]);
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
       const response = await result.response;
       const analysis = response.text();
 
@@ -408,7 +592,7 @@ class MultimodalService {
         // إذا فشل في تحليل JSON، أرجع النص كما هو
         return {
           productType: 'غير محدد',
-          color: 'غير محدد',
+          colors: 'غير محدد',
           brand: 'غير محدد',
           condition: 'غير محدد',
           details: analysis
@@ -434,9 +618,15 @@ class MultimodalService {
         إذا كان المنتج تالف، اعرض المساعدة في الإرجاع أو الاستبدال.
       `;
 
-      const result = await this.textModel.generateContent(prompt);
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      const geminiPromise = this.textModel.generateContent(prompt);
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
       const response = await result.response;
-      
+
       return response.text();
 
     } catch (error) {
@@ -466,7 +656,13 @@ class MultimodalService {
         }
       };
 
-      const result = await this.visionModel.generateContent([prompt, imagePart]);
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      const geminiPromise = this.visionModel.generateContent([prompt, imagePart]);
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
       const response = await result.response;
       const sentiment = response.text().trim().toLowerCase();
 
@@ -503,9 +699,15 @@ class MultimodalService {
         }
       };
 
-      const result = await this.visionModel.generateContent([prompt, imagePart]);
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      const geminiPromise = this.visionModel.generateContent([prompt, imagePart]);
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
       const response = await result.response;
-      
+
       return response.text().trim();
 
     } catch (error) {
@@ -535,7 +737,13 @@ class MultimodalService {
         }
       };
 
-      const result = await this.visionModel.generateContent([prompt, imagePart]);
+      // إضافة timeout للـ Gemini API
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Gemini API timeout after 30 seconds')), 30000);
+      });
+
+      const geminiPromise = this.visionModel.generateContent([prompt, imagePart]);
+      const result = await Promise.race([geminiPromise, timeoutPromise]);
       const response = await result.response;
       const quality = parseInt(response.text().trim());
 
@@ -547,7 +755,200 @@ class MultimodalService {
     }
   }
 
-  // استخراج معلومات المنتج من التحليل
+  // بناء prompt مخصص لتحليل الصور حسب الشركة
+  async buildImageAnalysisPrompt(companyId, availableProductsText) {
+    try {
+      console.log('🎯 [PROMPT] Building custom image analysis prompt for company:', companyId);
+
+      // الحصول على إعدادات الشركة
+      const aiAgentService = require('./aiAgentService');
+      const companyPrompts = await aiAgentService.getCompanyPrompts(companyId);
+
+      let prompt = '';
+
+      // استخدام شخصية الشركة المخصصة
+      if (companyPrompts.personalityPrompt) {
+        // استخراج الشخصية وتكييفها لتحليل الصور
+        const imagePersonality = this.adaptPersonalityForImages(companyPrompts.personalityPrompt);
+        prompt += `${imagePersonality}\n\n`;
+        console.log('✅ [PROMPT] Using custom company personality for image analysis');
+      } else {
+        // prompt افتراضي
+        prompt += `أنت خبير في تحليل المنتجات والتعرف عليها بصرياً.\n\n`;
+        console.log('⚠️ [PROMPT] Using default personality for image analysis');
+      }
+
+      // إضافة تعليمات تحليل الصور المحسنة مع منع استخدام السياق السابق
+      prompt += `🎯 مهمة مستقلة: تحليل الصورة المرسلة بدقة عالية
+
+🚫 تعليمات حرجة - ممنوع منعاً باتاً:
+- الإشارة لأي محادثة سابقة أو سياق سابق
+- استخدام عبارات مثل "لسه مهتمة" أو "اللي كنتي سألتي عليه" أو "واضح إنك"
+- الاعتماد على أي معلومات خارج الصورة الحالية
+- ربط هذه الصورة بأي صور أو تفاعلات سابقة
+
+✅ المطلوب: تحليل مستقل تماماً للصورة الحالية فقط
+
+المنتجات المتاحة في المتجر:
+${availableProductsText}
+
+📋 تعليمات التحليل المهمة:
+1. 🔍 حلل الصورة بصرياً بشكل مستقل تماماً
+2. 🎨 حدد جميع الألوان المرئية في المنتج (مثل: أسود مع بيج، أبيض مع أحمر)
+3. 👟 صف نوع المنتج (حذاء، سليبر، كوتشي، صندل)
+4. 🔍 اذكر التفاصيل المميزة (الشكل، المواد، التصميم)
+5. ✅ ابحث عن المنتج المطابق في القائمة أعلاه بناءً على النوع والتصميم العام
+6. 🎯 إذا وجدت مطابقة، اذكر اسم المنتج والسعر
+
+⚠️ مهم جداً - فهم المنتجات متعددة الألوان:
+- المنتج الواحد يمكن أن يحتوي على ألوان متعددة (مثل: سليبر أسود مع جزء بيج)
+- لا تعامل كل لون كمنتج منفصل
+- ابحث عن المنتج الذي يطابق التصميم العام والشكل
+- إذا كان المنتج في قائمتنا يسمى "الأسود" وهو يحتوي على أسود وبيج، فهذا مطابق
+- ركز على التطابق الشامل للمنتج وليس الألوان المنفردة
+
+✅ مثال للرد الصحيح:
+"أهلاً بيكي يا قمر! ده سليبر حريمي جميل، شايفة إن لونه [الألوان الفعلية المرئية في الصورة]. عندنا منه بـ [السعر] جنيه. تحبي تعرفي تفاصيل أكتر؟"
+
+🎯 المطلوب: وصف دقيق للمنتج في الصورة الحالية فقط - بدون أي إشارة لسياق سابق.`;
+
+      console.log('✅ [PROMPT] Custom image analysis prompt built successfully');
+      return prompt;
+
+    } catch (error) {
+      console.error('❌ [PROMPT] Error building custom prompt:', error);
+
+      // prompt افتراضي في حالة الخطأ
+      return `أنت خبير في تحليل المنتجات. حلل هذه الصورة بدقة.
+
+المنتجات المتاحة:
+${availableProductsText}
+
+مهم: المنتج الواحد يمكن أن يحتوي على ألوان متعددة. ابحث عن المنتج المطابق في التصميم العام وليس الألوان المنفردة.
+صف المنتج بالتفصيل وقارنه مع المنتجات المتاحة كوحدة واحدة.`;
+    }
+  }
+
+  // بناء محتوى معالج ذكي بناءً على نتيجة المطابقة
+  buildProcessedContent(productMatch, analysis) {
+    try {
+      if (productMatch.found) {
+        const confidence = productMatch.confidence || 0;
+
+        if (confidence > 0.9) {
+          // ثقة عالية جداً - مطابقة مؤكدة
+          return `العميل أرسل صورة منتج. تم التعرف عليه بدقة عالية: ${productMatch.productName}${productMatch.price ? ` - السعر: ${productMatch.price} جنيه` : ''}. ${productMatch.reasoning || ''}`;
+        } else if (confidence > 0.7) {
+          // ثقة جيدة - مطابقة محتملة
+          return `العميل أرسل صورة منتج. يبدو أنه: ${productMatch.productName}${productMatch.price ? ` - السعر: ${productMatch.price} جنيه` : ''}. يحتاج تأكيد من العميل.`;
+        } else {
+          // ثقة منخفضة - لا يجب أن نصل هنا مع المعايير الجديدة
+          return `العميل أرسل صورة منتج. الثقة في المطابقة منخفضة (${(confidence * 100).toFixed(1)}%). يحتاج توضيح أكثر من العميل.`;
+        }
+      } else {
+        // لم يتم العثور على مطابقة
+        return `العميل أرسل صورة منتج لكن لم يتم العثور على مطابقة دقيقة في المتجر. يحتاج عرض المنتجات المشابهة أو المتاحة. وصف الصورة: ${analysis.substring(0, 200)}...`;
+      }
+    } catch (error) {
+      console.error('❌ [CONTENT] Error building processed content:', error);
+      return `العميل أرسل صورة منتج. يحتاج مساعدة في تحديد المنتج المطلوب.`;
+    }
+  }
+
+  // تكييف شخصية الشركة لتحليل الصور
+  adaptPersonalityForImages(personalityPrompt) {
+    try {
+      // استخراج الاسم والشخصية الأساسية
+      let adaptedPrompt = personalityPrompt;
+
+      // تحويل من شخصية المحادثة إلى شخصية تحليل الصور
+      adaptedPrompt = adaptedPrompt
+        .replace(/تتحدثين|تتحدث/g, 'تحلل الصور')
+        .replace(/في المحادثة|في الرد/g, 'في تحليل الصور')
+        .replace(/مع العملاء|للعملاء/g, 'للصور المرسلة')
+        .replace(/الردود|الرد/g, 'التحليل');
+
+      // إضافة تخصص تحليل الصور
+      adaptedPrompt += '\nأنت متخصص في تحليل الصور والتعرف على المنتجات بصرياً.';
+
+      return adaptedPrompt;
+
+    } catch (error) {
+      console.error('❌ [PROMPT] Error adapting personality:', error);
+      return 'أنت خبير في تحليل المنتجات بصرياً.';
+    }
+  }
+
+  // البحث الذكي عن المنتج باستخدام RAG
+  async findProductWithRAG(imageAnalysis, companyId) {
+    try {
+      console.log('🧠 [RAG-MATCH] Using RAG for intelligent product matching...');
+      console.log('🔍 [RAG-MATCH] Image analysis input:', imageAnalysis ? imageAnalysis.substring(0, 100) + '...' : 'EMPTY OR NULL');
+      console.log('📏 [RAG-MATCH] Analysis length:', imageAnalysis ? imageAnalysis.length : 0, 'characters');
+
+      if (!imageAnalysis || imageAnalysis.trim().length === 0) {
+        console.error('❌ [RAG-MATCH] CRITICAL: Image analysis is empty - cannot match products!');
+        return {
+          found: false,
+          reason: 'فشل في تحليل الصورة - لا يمكن مطابقة المنتجات',
+          confidence: 0,
+          reasoning: 'تحليل الصورة فارغ أو فاشل'
+        };
+      }
+
+      const ragService = require('./ragService');
+
+      // استخدام RAG للبحث الذكي عن المنتج
+      const ragResult = await ragService.retrieveSpecificProduct(
+        imageAnalysis,
+        'product_inquiry',
+        null,
+        [],
+        companyId
+      );
+
+      if (ragResult && ragResult.product && ragResult.confidence > 0.7) {
+        console.log(`✅ [RAG-MATCH] HIGH CONFIDENCE MATCH FOUND!`);
+        console.log(`📦 Product: ${ragResult.product.metadata?.name}`);
+        console.log(`🎯 Confidence: ${(ragResult.confidence * 100).toFixed(1)}%`);
+        console.log(`🧠 AI Reasoning: ${ragResult.reasoning}`);
+
+        return {
+          found: true,
+          productName: ragResult.product.metadata?.name || 'منتج',
+          price: ragResult.product.metadata?.price || 'غير محدد',
+          description: ragResult.product.metadata?.description || '',
+          productId: ragResult.product.metadata?.id,
+          confidence: ragResult.confidence,
+          reasoning: ragResult.reasoning
+        };
+      }
+
+      console.log(`❌ [RAG-MATCH] REJECTED - Confidence too low: ${ragResult?.confidence ? (ragResult.confidence * 100).toFixed(1) + '%' : 'N/A'}`);
+      console.log(`🚫 [RAG-MATCH] AI-Only System - No fallback allowed`);
+      console.log(`🧠 [RAG-MATCH] AI Reasoning: ${ragResult?.reasoning || 'No reasoning provided'}`);
+
+      return {
+        found: false,
+        reason: 'لم يتم العثور على منتج مطابق بدقة كافية (70%+)',
+        confidence: ragResult?.confidence || 0,
+        reasoning: ragResult?.reasoning
+      };
+
+    } catch (error) {
+      console.error('❌ [RAG-MATCH] Error in RAG matching:', error);
+
+      // لا نستخدم fallback - الذكاء الاصطناعي هو المسؤول الوحيد
+      console.log('🚫 [RAG-MATCH] No fallback - AI is the only decision maker');
+      return {
+        found: false,
+        reason: 'خطأ في تحليل الصورة بالذكاء الاصطناعي',
+        error: error.message
+      };
+    }
+  }
+
+  // استخراج معلومات المنتج من التحليل (الطريقة القديمة كـ fallback)
   extractProductMatch(analysis, availableProducts) {
     try {
       // التحقق من صحة المدخلات
@@ -593,33 +994,56 @@ class MultimodalService {
               const colorName = variant.name.toLowerCase();
               console.log('🔍 [COLOR-CHECK] Checking variant:', variant.name, 'against analysis');
 
-              // مطابقة الألوان الشائعة في بداية التحليل أولاً
-              if ((analysisStart.includes('أسود') || analysisStart.includes('اسود') || analysisStart.includes('black')) &&
-                  (colorName.includes('أسود') || colorName.includes('اسود') || colorName.includes('الاسود'))) {
-                matchedColor = variant.name;
-                matchedPrice = variant.price;
-                foundColor = true;
-                console.log('🎯 [COLOR-MATCH] Found black color match:', variant.name);
-                break;
+              // مطابقة الألوان بدقة - بدون أولوية مسبقة
+              const colorMatches = [
+                {
+                  keywords: ['أحمر', 'احمر', 'red'],
+                  variants: ['أحمر', 'احمر', 'الاحمر', 'red'],
+                  name: 'red'
+                },
+                {
+                  keywords: ['أسود', 'اسود', 'black'],
+                  variants: ['أسود', 'اسود', 'الاسود', 'black'],
+                  name: 'black'
+                },
+                {
+                  keywords: ['أبيض', 'ابيض', 'white'],
+                  variants: ['أبيض', 'ابيض', 'الابيض', 'white'],
+                  name: 'white'
+                },
+                {
+                  keywords: ['بيج', 'beige'],
+                  variants: ['بيج', 'البيج', 'beige'],
+                  name: 'beige'
+                },
+                {
+                  keywords: ['أزرق', 'ازرق', 'blue'],
+                  variants: ['أزرق', 'ازرق', 'الازرق', 'blue'],
+                  name: 'blue'
+                }
+              ];
+
+              for (const colorMatch of colorMatches) {
+                const hasColorInAnalysis = colorMatch.keywords.some(keyword =>
+                  analysisStart.includes(keyword)
+                );
+
+                if (hasColorInAnalysis) {
+                  const hasVariantMatch = colorMatch.variants.some(variantKeyword =>
+                    colorName.includes(variantKeyword)
+                  );
+
+                  if (hasVariantMatch) {
+                    matchedColor = variant.name;
+                    matchedPrice = variant.price;
+                    foundColor = true;
+                    console.log(`🎯 [COLOR-MATCH] Found ${colorMatch.name} color match:`, variant.name);
+                    break;
+                  }
+                }
               }
 
-              if ((analysisStart.includes('أبيض') || analysisStart.includes('ابيض') || analysisStart.includes('white')) &&
-                  (colorName.includes('أبيض') || colorName.includes('ابيض') || colorName.includes('الابيض'))) {
-                matchedColor = variant.name;
-                matchedPrice = variant.price;
-                foundColor = true;
-                console.log('🎯 [COLOR-MATCH] Found white color match:', variant.name);
-                break;
-              }
-
-              if ((analysisStart.includes('بيج') || analysisStart.includes('beige')) &&
-                  (colorName.includes('بيج') || colorName.includes('البيج'))) {
-                matchedColor = variant.name;
-                matchedPrice = variant.price;
-                foundColor = true;
-                console.log('🎯 [COLOR-MATCH] Found beige color match:', variant.name);
-                break;
-              }
+              if (foundColor) break;
             }
 
             // إذا لم نجد مطابقة في البداية، ابحث في النص كاملاً لكن بحذر

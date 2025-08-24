@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
-import { AuthProvider } from './hooks/useAuthSimple';
+
 
 import './styles/index.css';
 
@@ -94,11 +94,9 @@ const AppWithProviders: React.FC = () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <AuthProvider>
-            <App />
-            <Toaster toastOptions={toastOptions} />
-            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-          </AuthProvider>
+          <App />
+          <Toaster toastOptions={toastOptions} />
+          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
