@@ -19,13 +19,27 @@ function createOptimizedPrismaClient() {
   console.log('🔧 [SharedDB] Creating optimized PrismaClient...');
   
   return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' 
-      ? ['error', 'warn'] 
+    log: process.env.NODE_ENV === 'development'
+      ? ['error', 'warn']
       : ['error'],
     errorFormat: 'minimal',
     datasources: {
       db: {
         url: process.env.DATABASE_URL
+      }
+    },
+    // تحسين إعدادات الاتصال
+    __internal: {
+      engine: {
+        connectTimeout: 60000,
+        queryTimeout: 60000,
+        pool: {
+          max: 10,        // حد أقصى 10 اتصالات
+          min: 2,         // حد أدنى 2 اتصالات
+          idle: 10000,    // إغلاق الاتصالات الخاملة بعد 10 ثوان
+          acquire: 60000, // انتظار الحصول على اتصال لمدة 60 ثانية
+          evict: 1000     // فحص الاتصالات الخاملة كل ثانية
+        }
       }
     }
   });
@@ -106,6 +120,40 @@ async function closeSharedDatabase() {
 }
 
 /**
+ * Execute database operation with retry logic
+ */
+async function executeWithRetry(operation, maxRetries = 3, delay = 1000) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await operation();
+      return result;
+    } catch (error) {
+      lastError = error;
+
+      // Check if it's a connection error
+      const isConnectionError = error.message.includes('max_connections_per_hour') ||
+                               error.message.includes('Connection') ||
+                               error.message.includes('timeout') ||
+                               error.code === 'P1001' ||
+                               error.code === 'P1008';
+
+      if (isConnectionError && attempt < maxRetries) {
+        console.log(`⚠️ [SharedDB] Connection error on attempt ${attempt}/${maxRetries}, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2; // Exponential backoff
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError;
+}
+
+/**
  * Health check for database connection
  */
 async function healthCheck() {
@@ -113,19 +161,22 @@ async function healthCheck() {
     if (!sharedPrismaInstance) {
       return { status: 'disconnected', error: 'No instance' };
     }
-    
-    await sharedPrismaInstance.$queryRaw`SELECT 1 as health`;
-    return { 
-      status: 'healthy', 
+
+    await executeWithRetry(async () => {
+      await sharedPrismaInstance.$queryRaw`SELECT 1 as health`;
+    });
+
+    return {
+      status: 'healthy',
       connectionCount,
-      isInitialized 
+      isInitialized
     };
   } catch (error) {
-    return { 
-      status: 'error', 
+    return {
+      status: 'error',
       error: error.message,
       connectionCount,
-      isInitialized 
+      isInitialized
     };
   }
 }
@@ -153,5 +204,6 @@ module.exports = {
   initializeSharedDatabase,
   closeSharedDatabase,
   getConnectionStats,
-  healthCheck
+  healthCheck,
+  executeWithRetry
 };

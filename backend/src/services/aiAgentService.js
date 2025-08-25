@@ -2982,6 +2982,16 @@ ${conversationContext}
 
       if (!activeKey) {
         console.log(`❌ لم يتم العثور على مفتاح نشط للشركة: ${targetCompanyId}`);
+        console.log('🔄 محاولة تفعيل أول مفتاح متاح تلقائياً...');
+
+        // البحث عن أول مفتاح متاح وتفعيله تلقائياً
+        const autoActivatedKey = await this.findAndActivateFirstAvailableKey(targetCompanyId);
+        if (autoActivatedKey) {
+          console.log(`✅ تم تفعيل مفتاح تلقائياً: ${autoActivatedKey.keyName}`);
+          return autoActivatedKey;
+        }
+
+        console.log(`❌ لا توجد مفاتيح متاحة للتفعيل للشركة: ${targetCompanyId}`);
         return null;
       }
 
@@ -3483,6 +3493,58 @@ ${conversationContext}
     }
   }
 
+  // البحث عن أول مفتاح متاح وتفعيله تلقائياً
+  async findAndActivateFirstAvailableKey(companyId) {
+    try {
+      console.log(`🔍 البحث عن أول مفتاح متاح للتفعيل التلقائي للشركة: ${companyId}`);
+
+      // البحث عن جميع مفاتيح الشركة
+      const allKeys = await this.prisma.geminiKey.findMany({
+        where: { companyId: companyId },
+        orderBy: { priority: 'asc' }
+      });
+
+      if (allKeys.length === 0) {
+        console.log(`❌ لا توجد مفاتيح مُضافة للشركة: ${companyId}`);
+        return null;
+      }
+
+      console.log(`📋 فحص ${allKeys.length} مفتاح للتفعيل التلقائي...`);
+
+      // البحث عن أول مفتاح يحتوي على نماذج متاحة
+      for (const key of allKeys) {
+        console.log(`🔍 فحص المفتاح: ${key.name}`);
+
+        // البحث عن نموذج متاح في هذا المفتاح
+        const availableModel = await this.findBestModelInKey(key.id);
+
+        if (availableModel) {
+          console.log(`✅ تم العثور على نموذج متاح في المفتاح: ${key.name} - ${availableModel.model}`);
+
+          // تفعيل هذا المفتاح
+          const activated = await this.activateKey(key.id);
+          if (activated) {
+            return {
+              apiKey: key.apiKey,
+              model: availableModel.model,
+              keyId: key.id,
+              keyName: key.name,
+              modelId: availableModel.id,
+              autoActivated: true
+            };
+          }
+        }
+      }
+
+      console.log(`❌ لا توجد مفاتيح تحتوي على نماذج متاحة للشركة: ${companyId}`);
+      return null;
+
+    } catch (error) {
+      console.error('❌ خطأ في البحث عن مفتاح للتفعيل التلقائي:', error);
+      return null;
+    }
+  }
+
   // تفعيل مفتاح معين
   async activateKey(keyId) {
     try {
@@ -3522,9 +3584,11 @@ ${conversationContext}
       });
       
       console.log(`✅ تم تفعيل المفتاح: ${keyId}`);
-      
+      return true;
+
     } catch (error) {
       console.error('❌ خطأ في تفعيل المفتاح:', error);
+      return false;
     }
   }
 

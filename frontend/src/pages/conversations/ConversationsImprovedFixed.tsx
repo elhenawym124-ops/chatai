@@ -288,10 +288,39 @@ const ConversationsImprovedFixedContent: React.FC = () => {
       console.log(`   👨‍💼 ${manualMessages} يدوية`);
 
       // تحديث المحادثة المختارة بالرسائل
-      setSelectedConversation(prev => prev ? {
-        ...prev,
-        messages: append ? [...messages, ...prev.messages] : messages
-      } : null);
+      setSelectedConversation(prev => {
+        if (!prev) return null;
+
+        if (append) {
+          // إضافة رسائل قديمة في البداية
+          return {
+            ...prev,
+            messages: [...messages, ...(prev.messages || [])]
+          };
+        } else {
+          // تحميل رسائل جديدة - نحتاج للحفاظ على الرسائل الجديدة التي لم تُحفظ بعد
+          const existingMessages = prev.messages || [];
+          const newMessages = messages || [];
+
+          // البحث عن الرسائل الجديدة التي لا توجد في الرسائل المحملة
+          const latestMessageFromServer = newMessages.length > 0 ? new Date(newMessages[newMessages.length - 1].timestamp) : new Date(0);
+          const recentMessages = existingMessages.filter(msg =>
+            new Date(msg.timestamp) > latestMessageFromServer
+          );
+
+          console.log('🔄 [LOAD-MESSAGES] Merging messages:', {
+            fromServer: newMessages.length,
+            existing: existingMessages.length,
+            recent: recentMessages.length,
+            latestFromServer: latestMessageFromServer
+          });
+
+          return {
+            ...prev,
+            messages: [...newMessages, ...recentMessages]
+          };
+        }
+      });
 
       // تحديث حالة وجود رسائل أقدم
       setHasMoreMessages(messages.length === 50); // إذا كان عدد الرسائل أقل من 50، فلا توجد رسائل أقدم
@@ -344,7 +373,7 @@ const ConversationsImprovedFixedContent: React.FC = () => {
         // إضافة الرسائل القديمة في بداية القائمة
         setSelectedConversation(prev => prev ? {
           ...prev,
-          messages: [...oldMessages, ...prev.messages]
+          messages: [...oldMessages, ...(prev.messages || [])]
         } : null);
         
         setMessagesPage(nextPage);
@@ -369,17 +398,32 @@ const ConversationsImprovedFixedContent: React.FC = () => {
 
     if (conversation) {
       console.log('✅ Setting selected conversation:', conversation.customerName);
-      setSelectedConversation(conversation);
+
+      // إذا كانت المحادثة محملة بالفعل، احتفظ بالرسائل الموجودة
+      if (selectedConversation?.id === conversationId) {
+        console.log('🔄 Conversation already selected, keeping existing messages');
+        // لا نغير selectedConversation إذا كانت نفس المحادثة
+      } else {
+        console.log('🆕 Selecting new conversation');
+        setSelectedConversation(conversation);
+
+        // تحميل الرسائل إذا لم تكن محملة
+        // نتحقق من المحادثة في القائمة أو المحادثة المختارة السابقة
+        const hasMessages = (conversation.messages || []).length > 0 ||
+                           (selectedConversation?.id === conversationId && (selectedConversation.messages || []).length > 0);
+
+        if (!hasMessages) {
+          console.log('📥 Loading messages for new conversation');
+          loadMessages(conversationId);
+        } else {
+          console.log('✅ Messages already available, skipping load');
+        }
+      }
 
       // تحديث URL لتضمين معرف المحادثة
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.set('conversationId', conversationId);
       window.history.replaceState({}, '', newUrl.toString());
-
-      // تحميل الرسائل إذا لم تكن محملة
-      if (conversation.messages.length === 0) {
-        loadMessages(conversationId);
-      }
 
       // تمييز كمقروءة
       if (conversation.unreadCount > 0) {
@@ -470,7 +514,7 @@ const ConversationsImprovedFixedContent: React.FC = () => {
         // تحديث الرسالة المؤقتة بالبيانات الحقيقية
         setSelectedConversation(prev => prev ? {
           ...prev,
-          messages: prev.messages.map(msg =>
+          messages: (prev.messages || []).map(msg =>
             msg.id === tempMessage.id
               ? {
                   ...msg,
@@ -510,8 +554,8 @@ const ConversationsImprovedFixedContent: React.FC = () => {
       // تحديث حالة الرسالة إلى خطأ
       setSelectedConversation(prev => prev ? {
         ...prev,
-        messages: prev.messages.map(msg => 
-          msg.id === tempMessage.id 
+        messages: (prev.messages || []).map(msg =>
+          msg.id === tempMessage.id
             ? { ...msg, status: 'error' }
             : msg
         )
@@ -852,16 +896,22 @@ const ConversationsImprovedFixedContent: React.FC = () => {
     }
   };
 
-  // إعداد مستمعي أحداث Socket.IO (معطل مؤقتاً لتجنب التضارب مع API)
+  // إعداد مستمعي أحداث Socket.IO (مُفعل للتحديث الفوري)
   useEffect(() => {
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) {
+      console.log('❌ [SOCKET] Socket not available:', { socket: !!socket, isConnected });
+      return;
+    }
 
-    // تعطيل Socket.IO مؤقتاً
-    return;
+    console.log('🔌 [SOCKET] Setting up Socket.IO event listeners...');
+    console.log('🔌 [SOCKET] Socket ID:', socket.id);
+    console.log('🔌 [SOCKET] Connection status:', isConnected);
 
     // استقبال رسالة جديدة
     const handleNewMessage = (data: any) => {
-      console.log('📨 New message received:', data);
+      console.log('📨 [SOCKET] New message received:', data);
+      console.log('📨 [SOCKET] Current conversation:', selectedConversation?.id);
+      console.log('📨 [SOCKET] Message conversation:', data.conversationId || data.message?.conversationId);
       
       const newMessage: Message = {
         id: data.id,
@@ -875,12 +925,15 @@ const ConversationsImprovedFixedContent: React.FC = () => {
         conversationId: data.conversationId
       };
 
-      // إضافة الرسالة للمحادثة المناسبة
+      // إضافة الرسالة للمحادثة المناسبة في قائمة المحادثات
       setConversations(prev => prev.map(conv => {
         if (conv.id === data.conversationId) {
+          // إذا كانت هذه المحادثة المختارة حالياً، نحدث الرسائل أيضاً
+          const shouldUpdateMessages = selectedConversation?.id === data.conversationId;
+
           return {
             ...conv,
-            messages: [...conv.messages, newMessage],
+            messages: shouldUpdateMessages ? [...(selectedConversation.messages || []), newMessage] : (conv.messages || []),
             lastMessage: data.content,
             lastMessageTime: new Date(data.timestamp),
             unreadCount: selectedConversation?.id === data.conversationId ? 0 : conv.unreadCount + 1
@@ -891,12 +944,30 @@ const ConversationsImprovedFixedContent: React.FC = () => {
 
       // تحديث المحادثة المختارة إذا كانت نفس المحادثة
       if (selectedConversation?.id === data.conversationId) {
-        setSelectedConversation(prev => prev ? {
-          ...prev,
-          messages: [...prev.messages, newMessage],
-          lastMessage: data.content,
-          lastMessageTime: new Date(data.timestamp)
-        } : null);
+        setSelectedConversation(prev => {
+          if (!prev) return null;
+
+          // التحقق من عدم وجود الرسالة بالفعل لتجنب التكرار
+          const existingMessages = prev.messages || [];
+          const messageExists = existingMessages.some(msg =>
+            msg.id === newMessage.id ||
+            (msg.content === newMessage.content &&
+             Math.abs(new Date(msg.timestamp).getTime() - new Date(newMessage.timestamp).getTime()) < 1000)
+          );
+
+          if (messageExists) {
+            console.log('⚠️ [SOCKET] Message already exists, skipping duplicate');
+            return prev;
+          }
+
+          console.log('✅ [SOCKET] Adding new message to selected conversation');
+          return {
+            ...prev,
+            messages: [...existingMessages, newMessage],
+            lastMessage: data.content,
+            lastMessageTime: new Date(data.timestamp)
+          };
+        });
         
         // إذا لم يكن المستخدم في الأسفل، زيادة عداد الرسائل غير المقروءة
         if (showScrollToBottom) {
@@ -955,27 +1026,58 @@ const ConversationsImprovedFixedContent: React.FC = () => {
     const handleUserOffline = (data: any) => {
       console.log('🔴 User offline:', data.userId);
       setOnlineUsers(prev => prev.filter(id => id !== data.userId));
-      
+
       // تحديث حالة المحادثات
-      setConversations(prev => prev.map(conv => 
+      setConversations(prev => prev.map(conv =>
         conv.id === data.userId ? { ...conv, isOnline: false } : conv
       ));
     };
 
+    // استقبال محادثة جديدة
+    const handleConversationCreated = (data: any) => {
+      console.log('🆕 [SOCKET] New conversation created:', data);
+
+      // تحويل البيانات إلى التنسيق المطلوب
+      const formattedConversation: Conversation = {
+        id: data.id,
+        customerId: data.customerId || data.id,
+        customerName: data.customerName || 'عميل غير معروف',
+        lastMessage: data.lastMessage || 'لا توجد رسائل',
+        lastMessageTime: new Date(data.lastMessageTime || data.lastMessageAt || Date.now()),
+        unreadCount: data.unreadCount || 0,
+        platform: (data.platform || data.channel || 'unknown') as Conversation['platform'],
+        isOnline: false,
+        customerAvatar: data.customerAvatar || null,
+        customerEmail: data.customerEmail || '',
+        customerPhone: data.customerPhone || '',
+        status: data.status || 'ACTIVE',
+        messages: [] // إضافة مصفوفة رسائل فارغة للمحادثات الجديدة
+      };
+
+      // إضافة المحادثة الجديدة لأعلى القائمة
+      setConversations(prev => [formattedConversation, ...prev]);
+    };
+
     // تسجيل مستمعي الأحداث
+    console.log('🎯 [SOCKET] Registering event listeners...');
     on('new_message', handleNewMessage);
     on('user_typing', handleUserTyping);
     on('user_stopped_typing', handleUserStoppedTyping);
     on('user_online', handleUserOnline);
     on('user_offline', handleUserOffline);
+    on('conversation_created', handleConversationCreated);
+    console.log('✅ [SOCKET] Event listeners registered successfully');
 
     // تنظيف المستمعين عند إلغاء التحميل
     return () => {
+      console.log('🧹 [SOCKET] Cleaning up event listeners...');
       off('new_message', handleNewMessage);
       off('user_typing', handleUserTyping);
       off('user_stopped_typing', handleUserStoppedTyping);
       off('user_online', handleUserOnline);
       off('user_offline', handleUserOffline);
+      off('conversation_created', handleConversationCreated);
+      console.log('✅ [SOCKET] Event listeners cleaned up');
     };
   }, [socket, isConnected, selectedConversation, on, off]);
 
@@ -1033,6 +1135,21 @@ const ConversationsImprovedFixedContent: React.FC = () => {
     }
   }, [conversations]);
 
+  // مزامنة الرسائل بين selectedConversation و conversations
+  useEffect(() => {
+    if (selectedConversation && selectedConversation.messages && selectedConversation.messages.length > 0) {
+      setConversations(prev => prev.map(conv => {
+        if (conv.id === selectedConversation.id) {
+          return {
+            ...conv,
+            messages: selectedConversation.messages
+          };
+        }
+        return conv;
+      }));
+    }
+  }, [selectedConversation?.messages?.length]); // فقط عندما يتغير عدد الرسائل
+
   // الاستماع لتغييرات URL
   useEffect(() => {
     const handleUrlChange = () => {
@@ -1066,8 +1183,8 @@ const ConversationsImprovedFixedContent: React.FC = () => {
 
   // فلترة المحادثات حسب البحث
   const filteredConversations = conversations.filter(conv =>
-    conv.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+    (conv.customerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (conv.lastMessage || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // عرض حالة تحميل المصادقة
@@ -1249,9 +1366,9 @@ const ConversationsImprovedFixedContent: React.FC = () => {
                       <div className="flex items-center space-x-1">
                         <p className="text-sm text-gray-500 truncate flex-1">{conversation.lastMessage}</p>
                         {/* مؤشر نوع آخر رسالة */}
-                        {conversation.messages && conversation.messages.length > 0 && (
+                        {conversation.messages && (conversation.messages || []).length > 0 && (
                           (() => {
-                            const lastMessage = conversation.messages[conversation.messages.length - 1];
+                            const lastMessage = (conversation.messages || [])[(conversation.messages || []).length - 1];
                             if (!lastMessage.isFromCustomer) {
                               return lastMessage.isAiGenerated ? (
                                 <CpuChipIcon className="w-3 h-3 text-green-600" title="آخر رسالة من الذكاء الصناعي" />
@@ -1319,13 +1436,13 @@ const ConversationsImprovedFixedContent: React.FC = () => {
                       {isReconnecting && <span className="text-yellow-600">يعيد الاتصال...</span>}
 
                       {/* إحصائيات الرسائل */}
-                      {selectedConversation.messages && selectedConversation.messages.length > 0 && (
+                      {selectedConversation.messages && (selectedConversation.messages || []).length > 0 && (
                         <div className="flex items-center space-x-2 text-xs">
                           <span className="text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                            👤 {selectedConversation.messages.filter(m => !m.isFromCustomer && !m.isAiGenerated).length} يدوي
+                            👤 {(selectedConversation.messages || []).filter(m => !m.isFromCustomer && !m.isAiGenerated).length} يدوي
                           </span>
                           <span className="text-green-600 bg-green-50 px-2 py-1 rounded">
-                            🤖 {selectedConversation.messages.filter(m => !m.isFromCustomer && m.isAiGenerated).length} ذكي
+                            🤖 {(selectedConversation.messages || []).filter(m => !m.isFromCustomer && m.isAiGenerated).length} ذكي
                           </span>
                         </div>
                       )}
@@ -1446,14 +1563,14 @@ const ConversationsImprovedFixedContent: React.FC = () => {
                 </div>
               )}
               
-              {selectedConversation.messages.length === 0 ? (
+              {(selectedConversation.messages || []).length === 0 ? (
                 <div className="text-center text-gray-500 mt-8">
                   <ChatBubbleLeftRightIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                   <p>لا توجد رسائل في هذه المحادثة</p>
                 </div>
               ) : (
                 <div>
-                  {selectedConversation.messages.map((message, index) => (
+                  {(selectedConversation.messages || []).map((message, index) => (
                     <div
                       key={message.id || `temp-${index}-${Date.now()}`}
                       className={`flex ${message.isFromCustomer ? 'justify-start' : 'justify-end'}`}

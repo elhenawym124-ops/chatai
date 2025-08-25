@@ -37,7 +37,7 @@ process.stderr.setEncoding('utf8');
 console.log('🚀 Starting Clean Server (No AI)...');
 
 // Use shared database service instead of creating new PrismaClient
-const { getSharedPrismaClient, initializeSharedDatabase } = require('./src/services/sharedDatabase');
+const { getSharedPrismaClient, initializeSharedDatabase, executeWithRetry } = require('./src/services/sharedDatabase');
 const prisma = getSharedPrismaClient();
 
 // Helper function to generate unique IDs
@@ -52,23 +52,8 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 socketService.initialize(server);
 
-// Database connection retry utility
-async function withRetry(operation, maxRetries = 3, delay = 1000) {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      console.log(`⚠️ Database operation failed (attempt ${attempt}/${maxRetries}):`, error.message);
-
-      if (attempt === maxRetries) {
-        throw error;
-      }
-
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, delay * attempt));
-    }
-  }
-}
+// Use shared database retry utility
+const withRetry = executeWithRetry;
 
 // Middleware
 app.use(cors({
@@ -976,6 +961,37 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
         }
       });
       console.log(`💬 New conversation created: ${conversation.id}`);
+
+      // 🔌 إرسال Socket.IO event للمحادثة الجديدة
+      const io = socketService.getIO();
+      if (io) {
+        const conversationData = {
+          id: conversation.id,
+          customerId: conversation.customerId,
+          companyId: conversation.companyId,
+          channel: conversation.channel,
+          status: conversation.status,
+          lastMessageAt: conversation.lastMessageAt,
+          customerName: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'عميل غير معروف',
+          lastMessage: 'لا توجد رسائل',
+          lastMessageTime: conversation.lastMessageAt || conversation.createdAt,
+          unreadCount: 0,
+          platform: conversation.channel || 'unknown',
+          customerAvatar: null,
+          customerEmail: customer.email,
+          customerPhone: customer.phone,
+          customer: {
+            id: customer.id,
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            email: customer.email,
+            phone: customer.phone
+          }
+        };
+
+        console.log(`🔌 [SOCKET-CONVERSATION] Emitting new conversation event:`, conversationData);
+        io.emit('conversation_created', conversationData);
+      }
     }
     
     // Determine message type and content based on attachments
@@ -1051,6 +1067,24 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
 
     console.log(`✅ Message saved: ${newMessage.id}`);
     console.log(`✅ [SAVE-RESULT] Saved message type: ${newMessage.type}, content: ${newMessage.content.substring(0, 50)}...`);
+
+    // 🔌 إرسال Socket.IO event للرسالة الجديدة
+    const io = socketService.getIO();
+    if (io) {
+      const socketData = {
+        id: newMessage.id,
+        conversationId: newMessage.conversationId,
+        content: newMessage.content,
+        type: newMessage.type.toLowerCase(),
+        isFromCustomer: newMessage.isFromCustomer,
+        timestamp: newMessage.createdAt,
+        attachments: newMessage.attachments ? JSON.parse(newMessage.attachments) : null,
+        metadata: newMessage.metadata ? JSON.parse(newMessage.metadata) : null
+      };
+
+      console.log(`🔌 [SOCKET] Emitting new_message event:`, socketData);
+      io.emit('new_message', socketData);
+    }
 
     // البحث عن الرسالة الأصلية المُرد عليها
     let originalMessage = null;
@@ -1543,7 +1577,7 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
       // Save AI response to database (only if not silent)
       if (!aiResponse.silent) {
         const contentToSave = aiResponse.content || aiResponse.imageAnalysis || responseContent;
-        await prisma.message.create({
+        const aiMessage = await prisma.message.create({
           data: {
             content: contentToSave,
             type: 'TEXT',
@@ -1564,6 +1598,23 @@ async function handleFacebookMessage(webhookEvent, currentPageId = null) {
             createdAt: new Date()
           }
         });
+
+        // 🔌 إرسال Socket.IO event لرسالة الذكاء الصناعي
+        const io = socketService.getIO();
+        if (io) {
+          const socketData = {
+            id: aiMessage.id,
+            conversationId: aiMessage.conversationId,
+            content: aiMessage.content,
+            type: 'text',
+            isFromCustomer: false,
+            timestamp: aiMessage.createdAt,
+            metadata: JSON.parse(aiMessage.metadata)
+          };
+
+          console.log(`🔌 [SOCKET-AI] Emitting AI message event:`, socketData);
+          io.emit('new_message', socketData);
+        }
         console.log('💾 [SAVE] تم حفظ الرد في قاعدة البيانات');
       } else {
         console.log('🤐 [SILENT-SAVE] لم يتم حفظ الرد - النظام صامت');
@@ -3535,6 +3586,23 @@ app.post('/api/v1/conversations/:id/messages', async (req, res) => {
       }
     });
 
+    // 🔌 إرسال Socket.IO event للرسالة اليدوية
+    const io = socketService.getIO();
+    if (io) {
+      const socketData = {
+        id: newMessage.id,
+        conversationId: newMessage.conversationId,
+        content: newMessage.content,
+        type: 'text',
+        isFromCustomer: false,
+        timestamp: newMessage.createdAt,
+        metadata: JSON.parse(newMessage.metadata)
+      };
+
+      console.log(`🔌 [SOCKET-MANUAL] Emitting manual message event:`, socketData);
+      io.emit('new_message', socketData);
+    }
+
     // Update conversation last message
     await prisma.conversation.update({
       where: { id },
@@ -3584,7 +3652,6 @@ app.post('/api/v1/conversations/:id/messages', async (req, res) => {
     }
 
     // Emit to Socket.IO clients
-    const io = socketService.getIO();
     if (io) {
       io.emit('new_message', {
         conversationId: id,
